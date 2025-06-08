@@ -30,10 +30,43 @@
 		0197C43D2DF45A5200AB0564 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = "SDL3.xcframework/macos-arm64_x86_64/SDL3.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		0197C4592DF59EA800AB0564 /* Exceptions for "Core" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 0197C4222DF459E400AB0564 /* Sources */;
+			membershipExceptions = (
+				"game-core.h",
+			);
+		};
+		0197C45A2DF59EA800AB0564 /* Exceptions for "Player" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 0197C4222DF459E400AB0564 /* Sources */;
+			membershipExceptions = (
+				player.h,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0197C4282DF459E400AB0564 /* pseudo-3d */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "pseudo-3d";
+			sourceTree = "<group>";
+		};
+		0197C4462DF58F5100AB0564 /* Player */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0197C45A2DF59EA800AB0564 /* Exceptions for "Player" folder in "Compile Sources" phase from "pseudo-3d" target */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		0197C4532DF5915300AB0564 /* Core */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0197C4592DF59EA800AB0564 /* Exceptions for "Core" folder in "Compile Sources" phase from "pseudo-3d" target */,
+			);
+			path = Core;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -53,6 +86,8 @@
 		0197C41D2DF459E400AB0564 = {
 			isa = PBXGroup;
 			children = (
+				0197C4532DF5915300AB0564 /* Core */,
+				0197C4462DF58F5100AB0564 /* Player */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				0197C43C2DF45A5200AB0564 /* Frameworks */,
 				0197C4272DF459E400AB0564 /* Products */,
@@ -93,6 +128,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
+				0197C4462DF58F5100AB0564 /* Player */,
+				0197C4532DF5915300AB0564 /* Core */,
 			);
 			name = "pseudo-3d";
 			packageProductDependencies = (
@@ -112,6 +149,7 @@
 				TargetAttributes = {
 					0197C4252DF459E400AB0564 = {
 						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
@@ -275,6 +313,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "pseudo-3d/pseudo_3d.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -295,6 +334,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "saul-goodman.pseudo-3d";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -303,6 +344,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "pseudo-3d/pseudo_3d.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -323,6 +365,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "saul-goodman.pseudo-3d";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
