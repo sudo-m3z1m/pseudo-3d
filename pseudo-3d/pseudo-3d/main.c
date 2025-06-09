@@ -1,5 +1,5 @@
 #define SDL_MAIN_USE_CALLBACKS 1
-#define RAYCASTS_COUNT 30
+#define RAYCASTS_COUNT 128
 #define RAYCASTS_SPREAD (PI / 2)
 
 #include <stdio.h>
@@ -16,27 +16,65 @@ Raycast** raycasts = NULL;
 
 float last_ticks = 0;
 
-void draw_raycasts(Player** player)
+void draw_3d(int width, int height)
 {
+	float cast_width = width / RAYCASTS_COUNT;
+	float origin_y = (float)height / 2;
+	
+	for (size_t raycast_index = 0; raycast_index < RAYCASTS_COUNT; raycast_index++)
+	{
+		Raycast* current_raycast = raycasts[raycast_index];
+		if(current_raycast->collided == false) continue;
+		
+		float x_coord = raycast_index * cast_width;
+		float wall_height = (float)height / current_raycast->length;
+		
+		SDL_RenderLine(renderer, x_coord, origin_y - wall_height / 2, x_coord, origin_y + wall_height / 2);
+	}
+}
+
+void get_raycasts_collisions(Player** player, int width, int height)
+{
+	char map[] = MAP;
+	
 	for (size_t raycast_index = 0; raycast_index < RAYCASTS_COUNT; raycast_index++)
 	{
 		const Vector2D origin = (*player)->position;
 		Raycast* current_raycast = raycasts[raycast_index];
 		
 		Vector2D last_point = (Vector2D){origin.x, origin.y};
-		apply_length_pos(current_raycast->max_length, &last_point, &current_raycast);
-		
-		SDL_RenderLine(renderer, origin.x, origin.y, last_point.x, last_point.y);
+		apply_collision_pos(&last_point, &current_raycast, map);
 	}
 }
+
+//void draw_raycasts(Player** player, int width, int height)
+//{
+//	char map[] = MAP;
+//	const float x_k = ((float)width / MAP_SIZE);
+//	const float y_k = ((float)height / MAP_SIZE);
+//	
+//	for (size_t raycast_index = 0; raycast_index < RAYCASTS_COUNT; raycast_index++)
+//	{
+//		const Vector2D origin = (*player)->position;
+//		Raycast* current_raycast = raycasts[raycast_index];
+//		
+//		Vector2D last_point = (Vector2D){origin.x, origin.y};
+//		apply_collision_pos(&last_point, &current_raycast, map);
+//		
+//		Vector2D draw_origin = (Vector2D){origin.x * x_k, origin.y * y_k};
+//		Vector2D draw_last_point = (Vector2D){last_point.x * x_k, last_point.y * y_k};
+//		
+//		SDL_RenderLine(renderer, draw_origin.x, draw_origin.y, draw_last_point.x, draw_last_point.y);
+//	}
+//}
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
 	const int width = 640;
-	const int height = 480;
+	const int height = 640;
 	
 	SDL_CreateWindowAndRenderer("Test Window", width, height, SDL_WINDOW_RESIZABLE, &window, &renderer);
-	initialize_player(&player, 10);
+	initialize_player(&player, 1, (Vector2D){MAP_SIZE / 2, MAP_SIZE / 2});
 	initialize_raycasts(&raycasts, RAYCASTS_SPREAD, RAYCASTS_COUNT);
 	
 	return SDL_APP_CONTINUE;
@@ -87,9 +125,6 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	player->position.x = SDL_clamp(player->position.x, 0, width / render_scale - 1);
 //	player->position.y = SDL_clamp(player->position.y, 0, height / render_scale - 1);
 	
-	player->position.x = width / render_scale / 2;
-	player->position.y = height / render_scale / 2;
-	
 	update_raycasts(&raycasts, dir.x * delta * speed, RAYCASTS_COUNT);
 	
 //	dir.x *= speed * delta;
@@ -105,7 +140,9 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 	SDL_FRect player_rect = (SDL_FRect){player->position.x - 3, player->position.y - 3, 6, 6};
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderFillRect(renderer, &player_rect);
-	draw_raycasts(&player);
+	get_raycasts_collisions(&player, width, height);
+	draw_3d(width, height);
+//	draw_raycasts(&player, width, height);
 	
 	SDL_RenderPresent(renderer);
 	return SDL_APP_CONTINUE;

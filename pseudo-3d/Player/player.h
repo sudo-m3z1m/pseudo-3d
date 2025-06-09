@@ -15,4 +15,4 @@ typedef struct Player
 	float angle;
 } Player;
 
-void initialize_player(Player** player, float speed);
+void initialize_player(Player** player, float speed, Vector2D init_position);

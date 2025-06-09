@@ -1,19 +1,46 @@
 #include "raycast.h"
 
-void apply_length_pos(float length, Vector2D* position, Raycast** raycast)
+void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map)
 {
-	length = SDL_min(length, (*raycast)->max_length);
-	
+	float current_length = 1;
+	float max_length = (*raycast)->max_length;
 	float raycast_angle = (*raycast)->angle;
-	position->x += length * cosf(raycast_angle);
-	position->y += length * sinf(raycast_angle);
+	
+	while (current_length < max_length)
+	{
+		const float last_position_x = current_length * cosf(raycast_angle);
+		const float last_position_y = current_length * sinf(raycast_angle);
+		
+		const float global_position_x = position->x + last_position_x;
+		const float global_position_y = position->y + last_position_y;
+		
+		if (global_position_x > MAP_SIZE || global_position_y > MAP_SIZE || global_position_x < 0 || global_position_y < 0)
+			break;
+		
+		const int map_index = ((int)global_position_y * MAP_SIZE) + (int)global_position_x;
+		if (map[map_index] == '0')
+		{
+			(*raycast)->collided = true;
+			position->x = global_position_x;
+			position->y = global_position_y;
+			(*raycast)->length = current_length;
+			return;
+		}
+		current_length += 0.01;
+	}
+	
+	(*raycast)->collided = false;
+	(*raycast)->length = current_length;
+	position->x += current_length * cosf(raycast_angle);
+	position->y += current_length * sinf(raycast_angle);
 }
 
 static void initialize_raycast(Raycast** raycast, float angle)
 {
 	Raycast* new_raycast = malloc(sizeof(raycast));
 	new_raycast->angle = angle;
-	new_raycast->max_length = LEVEL_SIZE * 15;
+	new_raycast->max_length = MAP_SIZE; //Need to make it less
+	new_raycast->collided = false;
 	
 	*raycast = new_raycast;
 }
