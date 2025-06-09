@@ -7,6 +7,8 @@
 #define X_VECTOR_2D ((Vector2D){1.0, 0.0})
 #define Y_VECTOR_2D ((Vector2D){0.0, 1.0})
 
+#define LEVEL_SIZE 16
+
 #include <stdio.h>
 #include <math.h>
 

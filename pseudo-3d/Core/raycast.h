@@ -2,6 +2,7 @@
 #define RAYCAST_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <SDL3/SDL.h>
 #include "game-core.h"
 
@@ -14,3 +15,9 @@ typedef struct Raycast
 } Raycast;
 
 void apply_length_pos(float length, Vector2D* position, Raycast** raycast);
+
+static void initialize_raycast(Raycast** raycast, float angle);
+void initialize_raycasts(Raycast** raycasts[], float spread_angle, size_t raycasts_num);
+
+static void update_raycast(Raycast** raycast, float delta_angle);
+void update_raycasts(Raycast** raycasts[], float delta_angle, size_t raycasts_num);
