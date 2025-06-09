@@ -1,6 +1,10 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "../Core/game-core.h"
+#endif
 
 typedef struct Player
 {
