@@ -1,6 +1,6 @@
 #define SDL_MAIN_USE_CALLBACKS 1
-#define RAYCASTS_COUNT 128
-#define RAYCASTS_SPREAD (PI / 2)
+#define RAYCASTS_COUNT 1024
+#define RAYCASTS_SPREAD (PI / 3)
 
 #include <stdio.h>
 #include <SDL3/SDL.h>
@@ -14,21 +14,26 @@ SDL_Renderer* renderer = NULL;
 Player* player = NULL;
 Raycast** raycasts = NULL;
 
+float global_rotation = 0;
+
 float last_ticks = 0;
 
 void draw_3d(int width, int height)
 {
-	float cast_width = width / RAYCASTS_COUNT;
+	float cast_width = (float)width / RAYCASTS_COUNT;
 	float origin_y = (float)height / 2;
 	
 	for (size_t raycast_index = 0; raycast_index < RAYCASTS_COUNT; raycast_index++)
 	{
+		Color current_color;
 		Raycast* current_raycast = raycasts[raycast_index];
 		if(current_raycast->collided == false) continue;
 		
+		current_color = current_raycast->color;
 		float x_coord = raycast_index * cast_width;
-		float wall_height = (float)height / current_raycast->length;
+		float wall_height = (float)height / (current_raycast->length * cos(current_raycast->angle - global_rotation));
 		
+		SDL_SetRenderDrawColor(renderer, current_color.r, current_color.g, current_color.b, current_color.a);
 		SDL_RenderLine(renderer, x_coord, origin_y - wall_height / 2, x_coord, origin_y + wall_height / 2);
 	}
 }
@@ -109,9 +114,21 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 	return SDL_APP_CONTINUE;
 }
 
+Vector2D get_rotated_vector2d(float rotation)
+{
+	Vector2D new_vector = X_VECTOR_2D;
+	
+	new_vector.x = cos(rotation);
+	new_vector.y = sin(rotation);
+	
+	return new_vector;
+}
+
 SDL_AppResult SDL_AppIterate(void* appstate)
 {
 	Vector2D dir = player->direction;
+	Vector2D player_dir = get_rotated_vector2d(global_rotation);
+	
 	float speed = player->speed;
 	
 	float delta = (SDL_GetTicks() - last_ticks) * 0.001f;
@@ -121,10 +138,14 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 	int render_scale = 1;
 	
 	SDL_GetRenderOutputSize(renderer, &width, &height);
+	
+	player->position.x += player_dir.x * delta * speed;
+	player->position.y += player_dir.y * delta * speed;
 
 //	player->position.x = SDL_clamp(player->position.x, 0, width / render_scale - 1);
 //	player->position.y = SDL_clamp(player->position.y, 0, height / render_scale - 1);
 	
+	global_rotation += dir.x * delta * speed;
 	update_raycasts(&raycasts, dir.x * delta * speed, RAYCASTS_COUNT);
 	
 //	dir.x *= speed * delta;
@@ -134,8 +155,12 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	player->position.y += dir.y;
 	
 	SDL_SetRenderScale(renderer, render_scale, render_scale);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(renderer, 72, 72, 72, 255);
 	SDL_RenderClear(renderer);
+	
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_FRect rect = (SDL_FRect){0, 0, width, height / 2};
+	SDL_RenderFillRect(renderer, &rect);
 	
 	SDL_FRect player_rect = (SDL_FRect){player->position.x - 3, player->position.y - 3, 6, 6};
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

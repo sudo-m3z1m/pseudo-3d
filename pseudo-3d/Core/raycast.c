@@ -18,12 +18,16 @@ void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map)
 			break;
 		
 		const int map_index = ((int)global_position_y * MAP_SIZE) + (int)global_position_x;
-		if (map[map_index] == '0')
+		if (map[map_index] != ' ')
 		{
+			Color new_color = (Color){255, 0, 255, 255};
+			if (map[map_index] == '1') new_color = (Color){0, 255, 72, 255};
+			
 			(*raycast)->collided = true;
 			position->x = global_position_x;
 			position->y = global_position_y;
 			(*raycast)->length = current_length;
+			(*raycast)->color = new_color;
 			return;
 		}
 		current_length += 0.01;
@@ -37,7 +41,7 @@ void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map)
 
 static void initialize_raycast(Raycast** raycast, float angle)
 {
-	Raycast* new_raycast = malloc(sizeof(raycast));
+	Raycast* new_raycast = malloc(sizeof(Raycast));
 	new_raycast->angle = angle;
 	new_raycast->max_length = MAP_SIZE; //Need to make it less
 	new_raycast->collided = false;

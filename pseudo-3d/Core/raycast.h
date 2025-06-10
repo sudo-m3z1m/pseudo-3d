@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL3/SDL.h>
+#include <stdint.h>
 #include "game-core.h"
 
 #endif
@@ -14,6 +15,7 @@ typedef struct Raycast
 	float max_length;
 	float length;
 	bool collided;
+	Color color;
 } Raycast;
 
 void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map);
