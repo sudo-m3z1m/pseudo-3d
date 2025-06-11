@@ -1,5 +1,14 @@
 #include "game-core.h"
 
+float get_delta_ticks(void)
+{
+	float new_ticks = SDL_GetTicks();
+	float delta = new_ticks - prev_ticks;
+	prev_ticks = new_ticks;
+	
+	return delta;
+}
+
 float get_vector_length(Vector2D vector)
 {
 	float length = sqrt(pow(vector.x, 2) + pow(vector.y, 2));

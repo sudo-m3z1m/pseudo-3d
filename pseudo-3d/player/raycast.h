@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <SDL3/SDL.h>
 #include <stdint.h>
-#include "game-core.h"
+#include "../core/game-core.h"
 
 #endif
 

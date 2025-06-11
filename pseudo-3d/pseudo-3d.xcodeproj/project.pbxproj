@@ -31,14 +31,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		0197C4592DF59EA800AB0564 /* Exceptions for "Core" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
+		0197C4592DF59EA800AB0564 /* Exceptions for "core" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 0197C4222DF459E400AB0564 /* Sources */;
 			membershipExceptions = (
 				"game-core.h",
 			);
 		};
-		0197C45A2DF59EA800AB0564 /* Exceptions for "Player" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
+		0197C45A2DF59EA800AB0564 /* Exceptions for "player" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 0197C4222DF459E400AB0564 /* Sources */;
 			membershipExceptions = (
@@ -48,25 +48,30 @@
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		01792BBE2DFA3F3000DB57F4 /* game-core */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "game-core";
+			sourceTree = "<group>";
+		};
 		0197C4282DF459E400AB0564 /* pseudo-3d */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "pseudo-3d";
 			sourceTree = "<group>";
 		};
-		0197C4462DF58F5100AB0564 /* Player */ = {
+		0197C4462DF58F5100AB0564 /* player */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0197C45A2DF59EA800AB0564 /* Exceptions for "Player" folder in "Compile Sources" phase from "pseudo-3d" target */,
+				0197C45A2DF59EA800AB0564 /* Exceptions for "player" folder in "Compile Sources" phase from "pseudo-3d" target */,
 			);
-			path = Player;
+			path = player;
 			sourceTree = "<group>";
 		};
-		0197C4532DF5915300AB0564 /* Core */ = {
+		0197C4532DF5915300AB0564 /* core */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0197C4592DF59EA800AB0564 /* Exceptions for "Core" folder in "Compile Sources" phase from "pseudo-3d" target */,
+				0197C4592DF59EA800AB0564 /* Exceptions for "core" folder in "Compile Sources" phase from "pseudo-3d" target */,
 			);
-			path = Core;
+			path = core;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -86,8 +91,9 @@
 		0197C41D2DF459E400AB0564 = {
 			isa = PBXGroup;
 			children = (
-				0197C4532DF5915300AB0564 /* Core */,
-				0197C4462DF58F5100AB0564 /* Player */,
+				01792BBE2DFA3F3000DB57F4 /* game-core */,
+				0197C4532DF5915300AB0564 /* core */,
+				0197C4462DF58F5100AB0564 /* player */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				0197C43C2DF45A5200AB0564 /* Frameworks */,
 				0197C4272DF459E400AB0564 /* Products */,
@@ -127,9 +133,10 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				01792BBE2DFA3F3000DB57F4 /* game-core */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
-				0197C4462DF58F5100AB0564 /* Player */,
-				0197C4532DF5915300AB0564 /* Core */,
+				0197C4462DF58F5100AB0564 /* player */,
+				0197C4532DF5915300AB0564 /* core */,
 			);
 			name = "pseudo-3d";
 			packageProductDependencies = (
