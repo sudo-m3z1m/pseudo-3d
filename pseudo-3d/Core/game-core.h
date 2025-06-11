@@ -35,6 +35,6 @@ typedef struct Color
 float get_vector_length(Vector2D vector);
 float get_vector_angle(Vector2D vector);
 
-float normalize_vector_2d(Vector2D vector);
+Vector2D normalize_vector_2d(Vector2D vector);
 
 #endif
