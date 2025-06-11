@@ -15,7 +15,7 @@ float global_rotation = 0;
 
 float last_ticks = 0;
 
-void draw_3d(int width, int height)
+void draw_3d(int width, int height) //TODO: Place it into the Renderer
 {
 	float cast_width = (float)width / RAYCASTS_COUNT;
 	float origin_y = (float)height / 2;
@@ -35,7 +35,7 @@ void draw_3d(int width, int height)
 	}
 }
 
-void get_raycasts_collisions(Player** player, int width, int height)
+void get_raycasts_collisions(Player** player, int width, int height) //TODO: Place it to update with rotation updating
 {
 	char map[] = MAP;
 	
@@ -51,7 +51,7 @@ void get_raycasts_collisions(Player** player, int width, int height)
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
-	const int width = 640;
+	const int width = 640; // TODO: This all into the Renderer
 	const int height = 640;
 	
 	SDL_CreateWindowAndRenderer("Test Window", width, height, SDL_WINDOW_RESIZABLE, &window, &renderer);
@@ -69,36 +69,6 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 
 SDL_AppResult SDL_AppIterate(void* appstate)
 {
-//	Vector2D dir = player->direction;
-//	
-//	float speed = player->speed;
-//	
-//	float delta = (SDL_GetTicks() - last_ticks) * 0.001f;
-//	last_ticks = SDL_GetTicks();
-//	
-//	int width = 0, height = 0;
-//	int render_scale = 1;
-//	
-//	SDL_GetRenderOutputSize(renderer, &width, &height);
-//	
-//	global_rotation += dir.x * delta * speed;
-//	update_raycasts(&raycasts, dir.x * delta * speed, RAYCASTS_COUNT);
-//	
-//	SDL_SetRenderScale(renderer, render_scale, render_scale);
-//	SDL_SetRenderDrawColor(renderer, 72, 72, 72, 255);
-//	SDL_RenderClear(renderer);
-//	
-//	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-//	SDL_FRect rect = (SDL_FRect){0, 0, width, height / 2};
-//	SDL_RenderFillRect(renderer, &rect);
-//	
-//	SDL_FRect player_rect = (SDL_FRect){player->position.x - 3, player->position.y - 3, 6, 6};
-//	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-//	SDL_RenderFillRect(renderer, &player_rect);
-//	get_raycasts_collisions(&player, width, height);
-//	draw_3d(width, height);
-//	
-//	SDL_RenderPresent(renderer);
 	return SDL_APP_CONTINUE;
 }
 

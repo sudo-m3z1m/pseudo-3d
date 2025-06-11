@@ -12,8 +12,8 @@ typedef struct Player
 	Vector2D position;
 	Vector2D direction;
 	UpdatableComponent* updatable_component;
-	float speed;
 	
+	float speed;
 	float rotation;
 } Player;
 

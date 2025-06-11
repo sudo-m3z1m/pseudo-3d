@@ -6,6 +6,7 @@
 #include <SDL3/SDL.h>
 #include <stdint.h>
 #include "../core/game-core.h"
+#include "../game-core/updatable-component.h"
 
 #endif
 
@@ -15,9 +16,12 @@ typedef struct Raycast
 	float max_length;
 	float length;
 	bool collided;
+	
+	UpdatableComponent* updatable_component;
 	Color color;
 } Raycast;
 
+void update(float delta);
 void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map);
 
 static void initialize_raycast(Raycast** raycast, float angle);
