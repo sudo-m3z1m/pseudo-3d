@@ -8,24 +8,21 @@
 #include "../core/game-core.h"
 #include "../game-core/updatable-component.h"
 
-#endif
-
 typedef struct Raycast
 {
-	float angle;
+	Vector2D target_pos;
+	
+	float rotation;
 	float max_length;
 	float length;
 	bool collided;
 	
 	UpdatableComponent* updatable_component;
-	Color color;
 } Raycast;
 
-void update(float delta);
-void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map);
+void raycast_update(float delta, void* raycast);
+Vector2D get_collision_pos(Vector2D position, Raycast** raycast, char* map);
 
-static void initialize_raycast(Raycast** raycast, float angle);
-void initialize_raycasts(Raycast** raycasts[], float spread_angle, size_t raycasts_num);
+Raycast* initialize_raycast(float rotation);
 
-static void update_raycast(Raycast** raycast, float delta_angle);
-void update_raycasts(Raycast** raycasts[], float delta_angle, size_t raycasts_num);
+#endif

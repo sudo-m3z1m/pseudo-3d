@@ -15,6 +15,6 @@ typedef struct Renderer
 } Renderer;
 
 Renderer* initialize_renderer(int width, int height);
-void draw_3d(Renderer* renderer, Player* player);
+void draw_3d(Renderer renderer, Player player);
 
 #endif

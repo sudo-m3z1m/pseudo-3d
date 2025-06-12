@@ -1,6 +1,6 @@
 #include "raycast.h"
 
-void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map)
+Vector2D get_collision_pos(Vector2D position, Raycast** raycast, char* map)
 {
 	float current_length = 1;
 	float max_length = (*raycast)->max_length;
@@ -39,40 +39,15 @@ void apply_collision_pos(Vector2D* position, Raycast** raycast, char* map)
 	position->y += current_length * sinf(raycast_angle);
 }
 
-static void initialize_raycast(Raycast** raycast, float angle)
+Raycast* initialize_raycast(float rotation)
 {
 	Raycast* new_raycast = malloc(sizeof(Raycast));
-	new_raycast->angle = angle;
+	
+	new_raycast->target_pos = X_VECTOR_2D;
+	new_raycast->rotation = rotation;
+	new_raycast->length = 1;
 	new_raycast->max_length = MAP_SIZE; //Need to make it less
 	new_raycast->collided = false;
 	
-	*raycast = new_raycast;
-}
-
-void initialize_raycasts(Raycast** raycasts[], float spread_angle, size_t raycasts_num)
-{
-	float start_angle = 0 - spread_angle / 2;
-	float delta_angle = spread_angle / raycasts_num;
-	*raycasts = malloc(sizeof(Raycast*) * raycasts_num);
-	
-	for (size_t raycast_index = 0; raycast_index < raycasts_num; raycast_index++)
-	{
-		float raycast_angle = start_angle + delta_angle * raycast_index;
-		
-		initialize_raycast(&(*raycasts)[raycast_index], raycast_angle);
-	}
-}
-
-static void update_raycast(Raycast** raycast, float delta_angle)
-{
-	Raycast* current_raycast = *raycast;
-	current_raycast->angle += delta_angle;
-}
-
-void update_raycasts(Raycast** raycasts[], float delta_angle, size_t raycasts_num)
-{
-	for (size_t raycast_index = 0; raycast_index < raycasts_num; raycast_index++)
-	{
-		update_raycast(&(*raycasts)[raycast_index], delta_angle);
-	}
+	return new_raycast;
 }

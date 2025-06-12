@@ -1,22 +1,29 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#define FOV PI / 2
+#define RAYS_COUNT 128
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "../core/game-core.h"
 #include "../game-core/updatable-component.h"
-#endif
+#include "raycast.h"
 
 typedef struct Player
 {
 	Vector2D position;
 	Vector2D direction;
 	UpdatableComponent* updatable_component;
+	Raycast** raycasts;
 	
 	float speed;
 	float rotation;
 } Player;
 
-static void update(float delta);
-static void get_input_data();
-void initialize_player(Player** player, float speed, Vector2D init_position);
+void player_update(float delta, void* player);
+static void get_input_data(void);
+Player* initialize_player(float speed, Vector2D init_position, float init_rotation);
+
+Raycast** initialize_player_raycasts(void);
+#endif

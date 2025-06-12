@@ -5,9 +5,9 @@
 
 typedef struct UpdatableComponent
 {
-	void (*update)(float);
+	void (*update)(float, void*);
 } UpdatableComponent;
 
-void update(float delta);
+void update(float delta, void* owner);
 
 #endif
