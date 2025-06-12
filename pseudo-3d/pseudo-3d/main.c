@@ -2,10 +2,10 @@
 
 #include "../player/player.h"
 #include "../player/raycast.h"
+#include "../core/renderer.h"
 
-//SDL_Window* window = NULL;
-//SDL_Renderer* renderer = NULL;
 Player* player = NULL;
+Renderer* renderer = NULL;
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {

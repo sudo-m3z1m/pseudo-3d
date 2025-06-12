@@ -1,42 +1,38 @@
 #include "raycast.h"
 
-Vector2D get_collision_pos(Vector2D position, Raycast** raycast, char* map)
+Vector2D get_collision_pos(Vector2D position, Raycast** raycast, char* map) //TODO: Need to call it from raycast_update method
 {
 	float current_length = 1;
 	float max_length = (*raycast)->max_length;
-	float raycast_angle = (*raycast)->angle;
+	float raycast_rotation = (*raycast)->rotation;
+	Vector2D global_pos = X_VECTOR_2D;
 	
 	while (current_length < max_length)
 	{
-		const float last_position_x = current_length * cosf(raycast_angle);
-		const float last_position_y = current_length * sinf(raycast_angle);
+		const Vector2D last_pos = (Vector2D){current_length * cosf(raycast_rotation), current_length * sinf(raycast_rotation)};
+		global_pos.x = position.x + last_pos.x;
+		global_pos.y = position.y + last_pos.y;
 		
-		const float global_position_x = position->x + last_position_x;
-		const float global_position_y = position->y + last_position_y;
-		
-		if (global_position_x > MAP_SIZE || global_position_y > MAP_SIZE || global_position_x < 0 || global_position_y < 0)
+		if (global_pos.x > MAP_SIZE || global_pos.y > MAP_SIZE || global_pos.x < 0 || global_pos.y < 0)
 			break;
 		
-		const int map_index = ((int)global_position_y * MAP_SIZE) + (int)global_position_x;
+		const int map_index = ((int)global_pos.y * MAP_SIZE) + (int)global_pos.x;
 		if (map[map_index] != ' ')
 		{
-			Color new_color = (Color){255, 0, 255, 255};
-			if (map[map_index] == '1') new_color = (Color){0, 255, 72, 255};
-			
 			(*raycast)->collided = true;
-			position->x = global_position_x;
-			position->y = global_position_y;
 			(*raycast)->length = current_length;
-			(*raycast)->color = new_color;
-			return;
+			(*raycast)->target_pos = global_pos;
+			
+			return global_pos;
 		}
 		current_length += 0.01;
 	}
 	
 	(*raycast)->collided = false;
 	(*raycast)->length = current_length;
-	position->x += current_length * cosf(raycast_angle);
-	position->y += current_length * sinf(raycast_angle);
+	(*raycast)->target_pos = global_pos;
+	
+	return global_pos;
 }
 
 Raycast* initialize_raycast(float rotation)

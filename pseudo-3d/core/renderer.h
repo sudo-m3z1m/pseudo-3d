@@ -1,6 +1,11 @@
 #ifndef renderer_h
 #define renderer_h
 
+#define GAME_NAME "PseudoName"
+
+#define INIT_WIN_WIDTH 640
+#define INIT_WIN_HEIGHT 640
+
 #include <stdio.h>
 #include <SDL3/SDL.h>
 

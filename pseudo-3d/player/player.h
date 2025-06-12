@@ -22,8 +22,9 @@ typedef struct Player
 } Player;
 
 void player_update(float delta, void* player);
-static void get_input_data(void);
+static void handle_input_data(Player* player);
 Player* initialize_player(float speed, Vector2D init_position, float init_rotation);
 
 Raycast** initialize_player_raycasts(void);
+static void update_player_raycasts(Player* player);
 #endif

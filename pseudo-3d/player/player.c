@@ -1,27 +1,37 @@
 #include "player.h"
 
-static void get_input_data(void)
-{
-	
-}
-
-//void get_raycasts_collisions(Player** player, int width, int height) //TODO: Place it to update with rotation updating
-//{
-//	char map[] = MAP;
-//	
-//	for (size_t raycast_index = 0; raycast_index < RAYCASTS_COUNT; raycast_index++)
-//	{
-//		const Vector2D origin = (*player)->position;
-//		Raycast* current_raycast = raycasts[raycast_index];
-//		
-//		Vector2D last_point = (Vector2D){origin.x, origin.y};
-//		apply_collision_pos(&last_point, &current_raycast, map);
-//	}
-//}
-
 void player_update(float delta, void* player)
 {
+	Player* cur_player = (Player*)player;
 	
+	handle_input_data(cur_player);
+	update_player_raycasts(cur_player);
+}
+
+static void handle_input_data(Player* player)
+{
+	Vector2D direction = ZERO_VECTOR_2D;
+	float delta_rotation = 0;
+	
+	SDL_Event event;
+	SDL_PollEvent(&event);
+	
+	if (event.key.key == SDLK_W)
+		direction.y += 1;
+	if (event.key.key == SDLK_S)
+		direction.y -= 1;
+	if (event.key.key == SDLK_D)
+		direction.x += 1;
+	if (event.key.key == SDLK_A)
+		direction.x -= 1;
+	
+	if (event.key.key == SDLK_LEFT)
+		delta_rotation -= 1;
+	if (event.key.key == SDLK_W)
+		delta_rotation += 1;
+	
+	player->direction = direction;
+	player->rotation += delta_rotation;
 }
 
 Player* initialize_player(float speed, Vector2D init_position, float init_rotation)
@@ -55,4 +65,16 @@ Raycast** initialize_player_raycasts(void)
 	}
 	
 	return raycasts;
+}
+
+static void update_player_raycasts(Player* player)
+{
+	Raycast** raycasts = player->raycasts;
+	Vector2D player_pos = player->position;
+	char map[] = MAP;
+	
+	for (size_t raycast_index = 0; raycast_index < RAYS_COUNT; raycast_index++)
+	{
+		get_collision_pos(player_pos, &raycasts[raycast_index], map);
+	}
 }
