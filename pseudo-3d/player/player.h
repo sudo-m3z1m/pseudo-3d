@@ -1,8 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#define FOV PI / 2
-#define RAYS_COUNT 128
+#define FOV PI / 3
+#define RAYS_COUNT 1024
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,13 +18,18 @@ typedef struct Player
 	Raycast** raycasts;
 	
 	float speed;
+	float rotation_speed;
 	float rotation;
+	float delta_rotation;
 } Player;
+
+static void move(Player* player, float delta);
 
 void player_update(float delta, void* player);
 static void handle_input_data(Player* player);
-Player* initialize_player(float speed, Vector2D init_position, float init_rotation);
+Player* initialize_player(float speed, float rotation_speed, Vector2D init_position, float init_rotation);
 
 Raycast** initialize_player_raycasts(void);
 static void update_player_raycasts(Player* player);
+
 #endif

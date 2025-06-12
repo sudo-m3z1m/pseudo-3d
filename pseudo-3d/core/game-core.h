@@ -1,7 +1,6 @@
 #ifndef GAME_CORE_H
 #define GAME_CORE_H
 
-//#define SDL_MAIN_USE_CALLBACKS 1
 #define PI 3.141592
 #define ZERO_VECTOR_2D ((Vector2D){0.0, 0.0})
 #define ONE_VECTOR_2D ((Vector2D){1.0, 1.0})
@@ -23,7 +22,6 @@
 #include <math.h>
 #include <stdint.h>
 #include <SDL3/SDL.h>
-//#include <SDL3/SDL_main.h>
 
 static float prev_ticks = 0;
 
@@ -39,7 +37,8 @@ typedef struct Color
 
 float get_delta_ticks(void);
 float get_vector_length(Vector2D vector);
-float get_vector_angle(Vector2D vector);
+float get_vector_rotation(Vector2D vector);
+Vector2D rotate_vector(Vector2D vector, float rotation);
 
 Vector2D normalize_vector_2d(Vector2D vector);
 

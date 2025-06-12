@@ -21,7 +21,7 @@ typedef struct Raycast
 } Raycast;
 
 void raycast_update(float delta, void* raycast);
-Vector2D get_collision_pos(Vector2D position, Raycast** raycast, char* map);
+Vector2D get_collision_pos(Vector2D position, Raycast** raycast, float player_rotation, char* map);
 
 Raycast* initialize_raycast(float rotation);
 

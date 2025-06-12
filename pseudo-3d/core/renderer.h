@@ -1,5 +1,5 @@
-#ifndef renderer_h
-#define renderer_h
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #define GAME_NAME "PseudoName"
 

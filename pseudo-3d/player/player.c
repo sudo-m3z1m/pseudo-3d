@@ -5,7 +5,26 @@ void player_update(float delta, void* player)
 	Player* cur_player = (Player*)player;
 	
 	handle_input_data(cur_player);
+	move(cur_player, delta);
 	update_player_raycasts(cur_player);
+}
+
+static void move(Player* player, float delta)
+{
+	Vector2D direction = player->direction;
+	const float speed = player->speed;
+	const float rotation_speed = player->rotation_speed;
+	
+	direction = normalize_vector_2d(direction);
+	direction = rotate_vector(direction, player->rotation);
+	direction.x *= speed * delta;
+	direction.y *= speed * delta;
+	
+	player->position.x += direction.x;
+	player->position.y += direction.y;
+	
+	player->rotation += player->delta_rotation * rotation_speed * delta;
+	printf("%f, delta_rot: %f, delta: %f\n", player->rotation, player->delta_rotation, delta);
 }
 
 static void handle_input_data(Player* player)
@@ -13,28 +32,27 @@ static void handle_input_data(Player* player)
 	Vector2D direction = ZERO_VECTOR_2D;
 	float delta_rotation = 0;
 	
-	SDL_Event event;
-	SDL_PollEvent(&event);
+	const bool* keys = SDL_GetKeyboardState(NULL);
 	
-	if (event.key.key == SDLK_W)
-		direction.y += 1;
-	if (event.key.key == SDLK_S)
-		direction.y -= 1;
-	if (event.key.key == SDLK_D)
+	if (keys[SDL_SCANCODE_W])
 		direction.x += 1;
-	if (event.key.key == SDLK_A)
+	if (keys[SDL_SCANCODE_S])
 		direction.x -= 1;
+	if (keys[SDL_SCANCODE_D])
+		direction.y += 1;
+	if (keys[SDL_SCANCODE_A])
+		direction.y -= 1;
 	
-	if (event.key.key == SDLK_LEFT)
+	if (keys[SDL_SCANCODE_LEFT])
 		delta_rotation -= 1;
-	if (event.key.key == SDLK_W)
+	if (keys[SDL_SCANCODE_RIGHT])
 		delta_rotation += 1;
 	
-	player->direction = direction;
-	player->rotation += delta_rotation;
+	player->direction.x = direction.x; player->direction.y = direction.y;
+	player->delta_rotation = delta_rotation;
 }
 
-Player* initialize_player(float speed, Vector2D init_position, float init_rotation)
+Player* initialize_player(float speed, float rotation_speed, Vector2D init_position, float init_rotation)
 {
 	Player* player = malloc(sizeof(Player));
 	
@@ -42,6 +60,7 @@ Player* initialize_player(float speed, Vector2D init_position, float init_rotati
 	player->direction = ZERO_VECTOR_2D;
 	
 	player->speed = speed;
+	player->rotation_speed = rotation_speed;
 	player->rotation = init_rotation;
 	
 	player->updatable_component = malloc(sizeof(UpdatableComponent));
@@ -75,6 +94,6 @@ static void update_player_raycasts(Player* player)
 	
 	for (size_t raycast_index = 0; raycast_index < RAYS_COUNT; raycast_index++)
 	{
-		get_collision_pos(player_pos, &raycasts[raycast_index], map);
+		get_collision_pos(player_pos, &raycasts[raycast_index], player->rotation, map);
 	}
 }

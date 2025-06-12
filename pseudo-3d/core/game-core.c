@@ -3,8 +3,8 @@
 float get_delta_ticks(void)
 {
 	float new_ticks = SDL_GetTicks();
-	float delta = new_ticks - prev_ticks;
-	prev_ticks = new_ticks;
+	float delta = (new_ticks - prev_ticks) * 0.001f;
+	prev_ticks = SDL_GetTicks();
 	
 	return delta;
 }
@@ -15,22 +15,37 @@ float get_vector_length(Vector2D vector)
 	return length;
 }
 
-float get_vector_angle(Vector2D vector)
+float get_vector_rotation(Vector2D vector)
 {
 	float angle = PI / 2;
 	if (vector.x == 0) return angle + PI * (int)(vector.y < 0);
 	
-	angle = atan(vector.y / vector.x);
+	angle = atanf(vector.y / vector.x);
+	angle += PI * (int)(vector.x < 0);
 	return angle;
 }
 
 Vector2D normalize_vector_2d(Vector2D vector)
 {
-	Vector2D new_vector;
+	Vector2D new_vector = (Vector2D){0.0f, 0.0f};
 	float vector_len = get_vector_length(vector);
+	
+	if(vector_len == 0)
+		return new_vector;
 	
 	new_vector.x = vector.x / vector_len;
 	new_vector.y = vector.y / vector_len;
 	
 	return new_vector;
+}
+
+Vector2D rotate_vector(Vector2D vector, float rotation)
+{
+	const float length = get_vector_length(vector);
+	const float current_rotation = get_vector_rotation(vector);
+	const Vector2D rotated_vector = (Vector2D){length * cosf(current_rotation + rotation), length * sinf(current_rotation + rotation)};
+	
+	printf("Old vector: (%f, %f), new vector: (%f, %f), vector rotation: %f\n", vector.x, vector.y, rotated_vector.x, rotated_vector.y, current_rotation);
+	
+	return rotated_vector;
 }
