@@ -16,13 +16,16 @@
 typedef struct Renderer
 {
 	SDL_Renderer* main_renderer;
+	SDL_Surface** textures_buffer;
 	SDL_Window* main_window;
 	int width, height;
 	
-	SDL_Surface* main_texture_surface; //Need to remove it
+	SDL_Surface* color_buffer;
 } Renderer;
 
 Renderer* initialize_renderer(int width, int height);
+
+void render_buffer(Renderer renderer);
 void draw_3d(Renderer renderer, Player player);
 void draw_texture_column(Renderer renderer,
 						 Vector2D draw_position,

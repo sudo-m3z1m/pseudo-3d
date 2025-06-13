@@ -44,7 +44,7 @@ void draw_texture_column(Renderer renderer,
 						 float texture_delta)
 {
 	Color pixel_color;
-	SDL_Surface* surface = renderer.main_texture_surface;
+	SDL_Surface* texture_surface = renderer.textures_buffer[0];
 	
 	const int texture_pos_x = (int)(texture_delta * TEXTURE_SIZE);
 	
@@ -53,9 +53,7 @@ void draw_texture_column(Renderer renderer,
 		float height_ratio = (draw_y - draw_position.y) / wall_height;
 		int pixel_y = (int)(height_ratio * TEXTURE_SIZE);
 		
-		SDL_ReadSurfacePixel(surface, texture_pos_x, pixel_y, &pixel_color.r, &pixel_color.g, &pixel_color.b, &pixel_color.a);
-		SDL_SetRenderDrawColor(renderer.main_renderer, pixel_color.r, pixel_color.g, pixel_color.b, pixel_color.a);
-		SDL_RenderPoint(renderer.main_renderer, draw_position.x, draw_y);
+		SDL_ReadSurfacePixel(texture_surface, texture_pos_x, pixel_y, &pixel_color.r, &pixel_color.g, &pixel_color.b, &pixel_color.a);
 	}
 }
 
@@ -66,10 +64,11 @@ Renderer* initialize_renderer(int width, int height)
 	
 	renderer->width = width;
 	renderer->height = height;
+	renderer->color_buffer = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
 	SDL_CreateWindowAndRenderer(GAME_NAME, width, height, SDL_WINDOW_RESIZABLE, &renderer->main_window, &renderer->main_renderer);
 	
 	get_resources_path(path, "bricks.bmp");
-	renderer->main_texture_surface = SDL_LoadBMP(path);
+//	renderer->textures_buffer[0] = SDL_LoadBMP(path);
 	
 	return renderer;
 }
