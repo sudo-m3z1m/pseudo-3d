@@ -49,3 +49,9 @@ Vector2D rotate_vector(Vector2D vector, float rotation)
 	
 	return rotated_vector;
 }
+
+void get_resources_path(char* path, char* file_name)
+{
+	const char* base_path = SDL_GetBasePath();
+	snprintf(path, 512, "%s%s", base_path, file_name);
+}

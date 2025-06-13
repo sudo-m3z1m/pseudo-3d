@@ -5,6 +5,7 @@
 
 #define INIT_WIN_WIDTH 640
 #define INIT_WIN_HEIGHT 640
+#define TEXTURE_SIZE 64
 
 #include <stdio.h>
 #include <SDL3/SDL.h>
@@ -21,5 +22,6 @@ typedef struct Renderer
 
 Renderer* initialize_renderer(int width, int height);
 void draw_3d(Renderer renderer, Player player);
+void draw_texture_column(Renderer renderer, Vector2D draw_position, char* texture_name);
 
 #endif

@@ -29,3 +29,22 @@ Renderer* initialize_renderer(int width, int height)
 	
 	return renderer;
 }
+
+void draw_texture_column(Renderer renderer, Vector2D draw_position, char* texture_name)
+{
+	int texture_x = draw_position.x;
+	char path[512];
+	get_resources_path(path, texture_name);
+	
+	SDL_Surface* surface = SDL_LoadBMP(path);
+	Color pixel_color;
+	
+	for (size_t texture_y = 0; texture_y < TEXTURE_SIZE; texture_y++)
+	{
+		SDL_ReadSurfacePixel(surface, texture_x, (int)texture_y, &pixel_color.r, &pixel_color.g, &pixel_color.b, &pixel_color.a);
+		SDL_SetRenderDrawColor(renderer.main_renderer, pixel_color.r, pixel_color.g, pixel_color.b, pixel_color.a);
+		SDL_RenderPoint(renderer.main_renderer, INIT_WIN_WIDTH / 2 + texture_x, INIT_WIN_HEIGHT / 2 + texture_y);
+	}
+	
+	SDL_DestroySurface(surface);
+}
