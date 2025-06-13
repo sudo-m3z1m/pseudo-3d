@@ -3,9 +3,16 @@
 float get_delta_ticks(void)
 {
 	float new_ticks = SDL_GetTicks();
-	float delta = (new_ticks - prev_ticks) * 0.001f;
+	float new_delta = (new_ticks - prev_ticks) * 0.001f;
 	prev_ticks = SDL_GetTicks();
 	
+	delta = new_delta;
+	
+	return new_delta;
+}
+
+float get_delta(void)
+{
 	return delta;
 }
 

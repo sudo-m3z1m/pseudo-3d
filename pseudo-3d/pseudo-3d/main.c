@@ -29,18 +29,13 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 SDL_AppResult SDL_AppIterate(void* appstate)
 {
 	SDL_Renderer* sdl_renderer = renderer->main_renderer;
-	SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(sdl_renderer, 72, 72, 72, 255);
 	SDL_RenderClear(sdl_renderer);
 	
-	for (size_t texture_x = 0; texture_x < TEXTURE_SIZE; texture_x++)
-	{
-		draw_texture_column(*renderer, (Vector2D){texture_x, 0}, "bricks.bmp");
-	}
+	const float delta = get_delta_ticks();
 	
-//	const float delta = get_delta_ticks();
-	
-//	player->updatable_component->update(delta, player);
-//	draw_3d(*renderer, *player);
+	player->updatable_component->update(delta, player);
+	draw_3d(*renderer, *player);
 	
 	SDL_RenderPresent(sdl_renderer);
 	
@@ -49,5 +44,5 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
-	
+	SDL_DestroySurface(renderer->main_texture_surface);
 }

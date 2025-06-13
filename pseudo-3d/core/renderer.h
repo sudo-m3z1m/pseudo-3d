@@ -18,10 +18,15 @@ typedef struct Renderer
 	SDL_Renderer* main_renderer;
 	SDL_Window* main_window;
 	int width, height;
+	
+	SDL_Surface* main_texture_surface; //Need to remove it
 } Renderer;
 
 Renderer* initialize_renderer(int width, int height);
 void draw_3d(Renderer renderer, Player player);
-void draw_texture_column(Renderer renderer, Vector2D draw_position, char* texture_name);
+void draw_texture_column(Renderer renderer,
+						 Vector2D draw_position,
+						 float wall_height,
+						 float texture_delta);
 
 #endif

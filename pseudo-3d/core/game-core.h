@@ -24,6 +24,7 @@
 #include <SDL3/SDL.h>
 
 static float prev_ticks = 0;
+static float delta = 0;
 
 typedef struct Vector2D
 {
@@ -36,6 +37,8 @@ typedef struct Color
 } Color;
 
 float get_delta_ticks(void);
+float get_delta(void);
+
 float get_vector_length(Vector2D vector);
 float get_vector_rotation(Vector2D vector);
 Vector2D rotate_vector(Vector2D vector, float rotation);
