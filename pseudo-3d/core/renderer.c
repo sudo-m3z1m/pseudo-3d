@@ -11,10 +11,6 @@ void draw_3d(Renderer renderer, Player player) //TODO: Place it into the Rendere
 	
 	Vector2D target_pos;
 	
-	SDL_FRect rect = (SDL_FRect){0, 0, renderer.width, horizon_pos_y};
-	SDL_SetRenderDrawColor(sdl_renderer, 78, 139, 243, 255);
-	SDL_RenderFillRect(renderer.main_renderer, &rect);
-	
 	for (size_t raycast_index = 0; raycast_index < RAYS_COUNT; raycast_index++)
 	{
 		Raycast* current_raycast = player.raycasts[raycast_index];
@@ -43,10 +39,16 @@ void draw_texture_column(Renderer renderer,
 						 float wall_height,
 						 float texture_delta)
 {
+	SDL_Surface* color_buffer = renderer.color_buffer;
+	int buffer_pitch = color_buffer->pitch;
+	int pixel_size = buffer_pitch / renderer.width;
+	uint8_t* pixels = (uint8_t*)color_buffer->pixels;
+	
 	Color pixel_color;
 	SDL_Surface* texture_surface = renderer.textures_buffer[0];
 	
 	const int texture_pos_x = (int)(texture_delta * TEXTURE_SIZE);
+	int pixel_index;
 	
 	for (size_t draw_y = draw_position.y; draw_y < draw_position.y + wall_height; draw_y++)
 	{
@@ -54,6 +56,10 @@ void draw_texture_column(Renderer renderer,
 		int pixel_y = (int)(height_ratio * TEXTURE_SIZE);
 		
 		SDL_ReadSurfacePixel(texture_surface, texture_pos_x, pixel_y, &pixel_color.r, &pixel_color.g, &pixel_color.b, &pixel_color.a);
+		
+		pixel_index = (int)draw_y * buffer_pitch + ((int)draw_position.x * pixel_size);
+		pixels[pixel_index] = pixel_color.r; pixels[pixel_index + 1] = pixel_color.g;
+		pixels[pixel_index + 2] = pixel_color.b; pixels[pixel_index + 3] = pixel_color.a;
 	}
 }
 
@@ -68,7 +74,13 @@ Renderer* initialize_renderer(int width, int height)
 	SDL_CreateWindowAndRenderer(GAME_NAME, width, height, SDL_WINDOW_RESIZABLE, &renderer->main_window, &renderer->main_renderer);
 	
 	get_resources_path(path, "bricks.bmp");
-//	renderer->textures_buffer[0] = SDL_LoadBMP(path);
+	renderer->textures_buffer[0] = SDL_LoadBMP(path);
 	
 	return renderer;
+}
+
+void render_buffer(Renderer renderer)
+{
+	SDL_Texture* screen_texture = SDL_CreateTextureFromSurface(renderer.main_renderer, renderer.color_buffer);
+	SDL_RenderTexture(renderer.main_renderer, screen_texture, NULL, NULL);
 }

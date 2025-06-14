@@ -16,7 +16,7 @@
 typedef struct Renderer
 {
 	SDL_Renderer* main_renderer;
-	SDL_Surface** textures_buffer;
+	SDL_Surface* textures_buffer[32];
 	SDL_Window* main_window;
 	int width, height;
 	

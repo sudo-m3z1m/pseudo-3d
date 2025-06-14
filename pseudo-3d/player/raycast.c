@@ -41,7 +41,7 @@ Raycast* initialize_raycast(float rotation)
 	
 	new_raycast->target_pos = X_VECTOR_2D;
 	new_raycast->rotation = rotation;
-	new_raycast->length = 1;
+	new_raycast->length = 0.1;
 	new_raycast->max_length = MAP_SIZE; //Need to make it less
 	new_raycast->collided = false;
 	
