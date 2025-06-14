@@ -29,7 +29,6 @@ void draw_3d(Renderer renderer, Player player) //TODO: Place it into the Rendere
 		float wall_height = (float)renderer.height / (current_raycast->length * cos(current_raycast->rotation));
 		
 		SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
-//		SDL_RenderLine(sdl_renderer, x_coord, horizon_pos_y - wall_height / 2, x_coord, horizon_pos_y + wall_height / 2);
 		draw_texture_column(renderer, (Vector2D){x_coord, horizon_pos_y - wall_height / 2}, wall_height, texture_delta);
 	}
 }
