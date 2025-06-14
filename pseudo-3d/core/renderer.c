@@ -83,4 +83,5 @@ void render_buffer(Renderer renderer)
 {
 	SDL_Texture* screen_texture = SDL_CreateTextureFromSurface(renderer.main_renderer, renderer.color_buffer);
 	SDL_RenderTexture(renderer.main_renderer, screen_texture, NULL, NULL);
+	SDL_DestroyTexture(screen_texture);
 }
