@@ -26,7 +26,9 @@ typedef struct Renderer
 Renderer* initialize_renderer(int width, int height);
 
 void render_buffer(Renderer renderer);
+void draw_pixel_in_buffer(Renderer renderer, int x, int y, Color color);
 void draw_3d(Renderer renderer, Player player);
+void draw_floor_3d(Renderer renderer, Player player);
 void draw_texture_column(Renderer renderer,
 						 Vector2D draw_position,
 						 float wall_height,

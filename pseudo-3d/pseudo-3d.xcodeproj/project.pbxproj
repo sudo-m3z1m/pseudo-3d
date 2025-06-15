@@ -79,11 +79,6 @@
 			path = assets;
 			sourceTree = "<group>";
 		};
-		01F2CBAE2DFC1F53006965D9 /* resources */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = resources;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +96,6 @@
 		0197C41D2DF459E400AB0564 = {
 			isa = PBXGroup;
 			children = (
-				01F2CBAE2DFC1F53006965D9 /* resources */,
 				01A423162DFB7E4A00D7075E /* assets */,
 				01792BBE2DFA3F3000DB57F4 /* game-core */,
 				0197C4532DF5915300AB0564 /* core */,
@@ -150,7 +144,6 @@
 				0197C4462DF58F5100AB0564 /* player */,
 				0197C4532DF5915300AB0564 /* core */,
 				01A423162DFB7E4A00D7075E /* assets */,
-				01F2CBAE2DFC1F53006965D9 /* resources */,
 			);
 			name = "pseudo-3d";
 			packageProductDependencies = (
