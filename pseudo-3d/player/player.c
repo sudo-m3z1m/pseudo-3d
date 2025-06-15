@@ -24,7 +24,7 @@ static void move(Player* player, float delta)
 	player->position.y += direction.y;
 	
 	player->rotation += player->delta_rotation * rotation_speed * delta;
-	printf("%f, delta_rot: %f, delta: %f\n", player->rotation, player->delta_rotation, delta);
+//	printf("%f, delta_rot: %f, delta: %f\n", player->rotation, player->delta_rotation, delta);
 }
 
 static void handle_input_data(Player* player)

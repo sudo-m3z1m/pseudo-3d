@@ -54,7 +54,6 @@ void draw_texture_column(Renderer renderer,
 						 float texture_delta)
 {
 	SDL_Surface* color_buffer = renderer.color_buffer;
-	int buffer_pitch = color_buffer->pitch;
 	
 	Color pixel_color;
 	SDL_Surface* texture_surface = renderer.textures_buffer[0];
@@ -78,8 +77,12 @@ void draw_floor_3d(Renderer renderer, Player player)
 	int texture_width = floor_texture->w;
 	int texture_height = floor_texture->h;
 	
-	Vector2D player_dir = rotate_vector(player.direction, player.rotation);
-	Vector2D plane = (Vector2D){-player_dir.y * tanf(FOV / 2), player_dir.x * tanf(FOV / 2)};
+	Vector2D player_dir = player.direction;
+	if (player_dir.x == 0 && player_dir.y == 0) player_dir.x = 1.0f;
+	player_dir = rotate_vector(player_dir, player.rotation);
+	
+	Vector2D plane = (Vector2D){0, tanf(FOV / 2)};
+	plane = rotate_vector(plane, player.rotation);
 	
 	Vector2D ray_dir_left = (Vector2D){player_dir.x - plane.x, player_dir.y - plane.y};
 	Vector2D ray_dir_right = (Vector2D){player_dir.x + plane.x, player_dir.y + plane.y};
@@ -89,10 +92,11 @@ void draw_floor_3d(Renderer renderer, Player player)
 	
 	Color pixel_color;
 	
+	printf("player dir: (%f, %f), plane: (%f, %f),\n left: (%f, %f), right: (%f, %f)\n", player_dir.x, player_dir.y, plane.x, plane.y, ray_dir_left.x, ray_dir_left.y, ray_dir_right.x, ray_dir_right.y);
+	
 	for (size_t draw_y = renderer.height / 2 + 1; draw_y < renderer.height; draw_y++)
 	{
 		distance = camera_height / (draw_y - renderer.height / 2);
-		
 		Vector2D floor_pos;
 		floor_pos.x = distance * ray_dir_left.x + player.position.x;
 		floor_pos.y = distance * ray_dir_left.y + player.position.y;
@@ -103,7 +107,6 @@ void draw_floor_3d(Renderer renderer, Player player)
 		Vector2D floor_step;
 		floor_step.x = distance * (ray_dir_right.x - ray_dir_left.x) / renderer.width;
 		floor_step.y = distance * (ray_dir_right.y - ray_dir_left.y) / renderer.width;
-		
 		
 		for (size_t draw_x = 0; draw_x < renderer.width; draw_x++)
 		{

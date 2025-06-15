@@ -52,8 +52,6 @@ Vector2D rotate_vector(Vector2D vector, float rotation)
 	const float current_rotation = get_vector_rotation(vector);
 	const Vector2D rotated_vector = (Vector2D){length * cosf(current_rotation + rotation), length * sinf(current_rotation + rotation)};
 	
-	printf("Old vector: (%f, %f), new vector: (%f, %f), vector rotation: %f\n", vector.x, vector.y, rotated_vector.x, rotated_vector.y, current_rotation);
-	
 	return rotated_vector;
 }
 
