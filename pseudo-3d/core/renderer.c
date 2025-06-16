@@ -17,6 +17,8 @@ void draw_pixel_in_buffer(Renderer renderer, int x, int y, Color color)
 
 void draw_3d(Renderer renderer, Player player)
 {
+	draw_floor_3d(renderer, player);
+	
 	SDL_Renderer* sdl_renderer = renderer.main_renderer;
 	
 	float cast_width = (float)renderer.width / RAYS_COUNT;
@@ -79,8 +81,6 @@ void draw_floor_3d(Renderer renderer, Player player)
 	Vector2D player_pos = player.position;
 	Vector2D plane = (Vector2D){0, tanf(FOV / 2)};
 	
-	if (player_dir.x == 0 && player_dir.y == 0) player_dir.x = 1.0f;
-	
 	player_dir = rotate_vector(player_dir, player.rotation);
 	plane = rotate_vector(plane, player.rotation);
 	
@@ -91,8 +91,6 @@ void draw_floor_3d(Renderer renderer, Player player)
 	float distance;
 	
 	Color pixel_color;
-	
-//	printf("player dir: (%f, %f), plane: (%f, %f),\nleft: (%f, %f), right: (%f, %f)\n", player_dir.x, player_dir.y, plane.x, plane.y, ray_dir_left.x, ray_dir_left.y, ray_dir_right.x, ray_dir_right.y);
 	
 	for (size_t draw_y = renderer.height / 2 + 1; draw_y < renderer.height; draw_y++)
 	{
@@ -142,6 +140,8 @@ Renderer* initialize_renderer(int width, int height)
 	renderer->textures_buffer[0] = SDL_LoadBMP(path);
 	get_resources_path(path, "floor-bricks.bmp");
 	renderer->textures_buffer[1] = SDL_LoadBMP(path);
+	get_resources_path(path, "celling.bmp");
+	renderer->textures_buffer[2] = SDL_LoadBMP(path);
 	
 	return renderer;
 }
