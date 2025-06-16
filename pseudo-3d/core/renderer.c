@@ -75,13 +75,11 @@ void draw_floor_3d(Renderer renderer, Player player)
 	int texture_width = floor_texture->w;
 	int texture_height = floor_texture->h;
 	
-	Vector2D player_dir = player.direction;
+	Vector2D player_dir = (Vector2D){1.0f, 0};
 	Vector2D player_pos = player.position;
 	Vector2D plane = (Vector2D){0, tanf(FOV / 2)};
 	
 	if (player_dir.x == 0 && player_dir.y == 0) player_dir.x = 1.0f;
-	player_dir.x = fabsf(player_dir.x);
-	player_dir.y = fabsf(player_dir.y);
 	
 	player_dir = rotate_vector(player_dir, player.rotation);
 	plane = rotate_vector(plane, player.rotation);
