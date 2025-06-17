@@ -28,10 +28,17 @@ Renderer* initialize_renderer(int width, int height);
 void render_buffer(Renderer renderer);
 void draw_pixel_in_buffer(Renderer renderer, int x, int y, Color color);
 void draw_3d(Renderer renderer, Player player);
-void draw_floor_3d(Renderer renderer, Player player);
+void draw_horizontal_surfaces_3d(Renderer renderer, Player player);
+
 void draw_texture_column(Renderer renderer,
 						 Vector2D draw_position,
 						 float wall_height,
 						 float texture_delta);
+
+static void draw_texture_row(Renderer renderer,
+							 Player player,
+							 SDL_Surface* texture,
+							 float distance,
+							 int screen_delta);
 
 #endif

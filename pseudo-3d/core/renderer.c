@@ -17,7 +17,7 @@ void draw_pixel_in_buffer(Renderer renderer, int x, int y, Color color)
 
 void draw_3d(Renderer renderer, Player player)
 {
-	draw_floor_3d(renderer, player);
+	draw_horizontal_surfaces_3d(renderer, player);
 	
 	SDL_Renderer* sdl_renderer = renderer.main_renderer;
 	
@@ -70,12 +70,12 @@ void draw_texture_column(Renderer renderer,
 	}
 }
 
-void draw_floor_3d(Renderer renderer, Player player)
+static void draw_texture_row(Renderer renderer, Player player, SDL_Surface* texture, float distance, int screen_delta)
 {
-	SDL_Surface* floor_texture = renderer.textures_buffer[1];
+	int texture_width = texture->w;
+	int texture_height = texture->h;
 	
-	int texture_width = floor_texture->w;
-	int texture_height = floor_texture->h;
+	Color pixel_color;
 	
 	Vector2D player_dir = (Vector2D){1.0f, 0};
 	Vector2D player_pos = player.position;
@@ -87,42 +87,55 @@ void draw_floor_3d(Renderer renderer, Player player)
 	Vector2D ray_dir_left = (Vector2D){player_dir.x - plane.x, player_dir.y - plane.y};
 	Vector2D ray_dir_right = (Vector2D){player_dir.x + plane.x, player_dir.y + plane.y};
 	
-	float camera_height = 0.5f * renderer.height;
+	Vector2D floor_pos;
+	floor_pos.x = distance * ray_dir_left.x + player_pos.x;
+	floor_pos.y = distance * ray_dir_left.y + player_pos.y;
+	
+	int floor_cell_x;
+	int floor_cell_y;
+	
+	Vector2D floor_step;
+	floor_step.x = distance * (ray_dir_right.x - ray_dir_left.x) / renderer.width;
+	floor_step.y = distance * (ray_dir_right.y - ray_dir_left.y) / renderer.width;
+	
+	for (size_t draw_x = 0; draw_x < renderer.width; draw_x++)
+	{
+		floor_cell_x = (int)floor_pos.x;
+		floor_cell_y = (int)floor_pos.y;
+		
+		int pixel_x = (int)(texture_width * (floor_pos.x - floor_cell_x)) % texture_width;
+		int pixel_y = (int)(texture_height * (floor_pos.y - floor_cell_y)) % texture_height;
+		
+		if (pixel_x < 0) pixel_x += texture_width;
+		if (pixel_y < 0) pixel_y += texture_height;
+		
+		floor_pos.x += floor_step.x;
+		floor_pos.y += floor_step.y;
+		
+		SDL_ReadSurfacePixel(texture, pixel_x, pixel_y, &pixel_color.r, &pixel_color.g, &pixel_color.b, &pixel_color.a);
+		draw_pixel_in_buffer(renderer, (int)draw_x, (int)screen_delta, pixel_color);
+	}
+}
+
+void draw_horizontal_surfaces_3d(Renderer renderer, Player player)
+{
+	SDL_Surface* floor_texture = renderer.textures_buffer[1];
+	SDL_Surface* ceiling_texture = renderer.textures_buffer[2];
+	float height = 0.5;
+	float ceiling_height = 1 - height;
+	
 	float distance;
 	
-	Color pixel_color;
+	for (size_t draw_y = 1; draw_y < renderer.height / 2; draw_y++)
+	{
+		distance = ceiling_height * renderer.height / (renderer.height / 2 - draw_y);
+		draw_texture_row(renderer, player, ceiling_texture, distance, (int)draw_y);
+	}
 	
 	for (size_t draw_y = renderer.height / 2 + 1; draw_y < renderer.height; draw_y++)
 	{
-		distance = camera_height / (draw_y - renderer.height / 2);
-		Vector2D floor_pos;
-		floor_pos.x = distance * ray_dir_left.x + player_pos.x;
-		floor_pos.y = distance * ray_dir_left.y + player_pos.y;
-
-		int floor_cell_x;
-		int floor_cell_y;
-		
-		Vector2D floor_step;
-		floor_step.x = distance * (ray_dir_right.x - ray_dir_left.x) / renderer.width;
-		floor_step.y = distance * (ray_dir_right.y - ray_dir_left.y) / renderer.width;
-		
-		for (size_t draw_x = 0; draw_x < renderer.width; draw_x++)
-		{
-			floor_cell_x = (int)floor_pos.x;
-			floor_cell_y = (int)floor_pos.y;
-			
-			int pixel_x = (int)(texture_width * (floor_pos.x - floor_cell_x)) % texture_width;
-			int pixel_y = (int)(texture_height * (floor_pos.y - floor_cell_y)) % texture_height;
-			
-			if (pixel_x < 0) pixel_x += texture_width;
-			if (pixel_y < 0) pixel_y += texture_height;
-			
-			floor_pos.x += floor_step.x;
-			floor_pos.y += floor_step.y;
-			
-			SDL_ReadSurfacePixel(floor_texture, pixel_x, pixel_y, &pixel_color.r, &pixel_color.g, &pixel_color.b, &pixel_color.a);
-			draw_pixel_in_buffer(renderer, (int)draw_x, (int)draw_y, pixel_color);
-		}
+		distance = height * renderer.height / (draw_y - renderer.height / 2);
+		draw_texture_row(renderer, player, floor_texture, distance, (int)draw_y);
 	}
 }
 
