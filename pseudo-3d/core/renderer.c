@@ -46,17 +46,18 @@ void draw_3d(Renderer renderer, Player player)
 		float wall_height = (float)renderer.height / (current_raycast->length * cos(current_raycast->rotation));
 		
 		SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
-		draw_texture_column(renderer, (Vector2D){x_coord, horizon_pos_y - wall_height / 2}, wall_height, texture_delta);
+		draw_texture_column(renderer, (Vector2D){x_coord, horizon_pos_y - wall_height / 2}, wall_height, texture_delta, current_raycast->texture_index);
 	}
 }
 
 void draw_texture_column(Renderer renderer,
 						 Vector2D draw_position,
 						 float wall_height,
-						 float texture_delta)
+						 float texture_delta,
+						 int texture_index)
 {
 	Color pixel_color;
-	SDL_Surface* texture_surface = renderer.textures_buffer[0];
+	SDL_Surface* texture_surface = renderer.textures_buffer[texture_index];
 	
 	const int texture_pos_x = (int)(texture_delta * TEXTURE_SIZE);
 	
@@ -119,8 +120,8 @@ static void draw_texture_row(Renderer renderer, Player player, SDL_Surface* text
 
 void draw_horizontal_surfaces_3d(Renderer renderer, Player player)
 {
-	SDL_Surface* floor_texture = renderer.textures_buffer[1];
-	SDL_Surface* ceiling_texture = renderer.textures_buffer[2];
+	SDL_Surface* floor_texture = renderer.textures_buffer[2];
+	SDL_Surface* ceiling_texture = renderer.textures_buffer[3];
 	float height = 0.5;
 	float ceiling_height = 1 - height;
 	
@@ -151,10 +152,12 @@ Renderer* initialize_renderer(int width, int height)
 	
 	get_resources_path(path, "bricks.bmp");			//TODO: Need to simplify this.
 	renderer->textures_buffer[0] = SDL_LoadBMP(path);
-	get_resources_path(path, "floor-bricks.bmp");
+	get_resources_path(path, "wood-wall.bmp");
 	renderer->textures_buffer[1] = SDL_LoadBMP(path);
-	get_resources_path(path, "celling.bmp");
+	get_resources_path(path, "floor-bricks.bmp");
 	renderer->textures_buffer[2] = SDL_LoadBMP(path);
+	get_resources_path(path, "celling.bmp");
+	renderer->textures_buffer[3] = SDL_LoadBMP(path);
 	
 	return renderer;
 }

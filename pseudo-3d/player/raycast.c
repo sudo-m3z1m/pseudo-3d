@@ -22,6 +22,7 @@ Vector2D get_collision_pos(Vector2D position, Raycast** raycast, float player_ro
 			(*raycast)->collided = true;
 			(*raycast)->length = current_length;
 			(*raycast)->target_pos = global_pos;
+			(*raycast)->texture_index = (int)(map[map_index] - '0');
 			
 			return global_pos;
 		}
@@ -44,6 +45,7 @@ Raycast* initialize_raycast(float rotation)
 	new_raycast->length = 0.1;
 	new_raycast->max_length = MAP_SIZE; //Need to make it less
 	new_raycast->collided = false;
+	new_raycast->texture_index = 0;
 	
 	return new_raycast;
 }

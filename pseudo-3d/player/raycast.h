@@ -17,6 +17,7 @@ typedef struct Raycast
 	float length;
 	bool collided;
 	
+	int texture_index;
 	UpdatableComponent* updatable_component;
 } Raycast;
 

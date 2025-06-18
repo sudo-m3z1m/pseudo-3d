@@ -33,7 +33,8 @@ void draw_horizontal_surfaces_3d(Renderer renderer, Player player);
 void draw_texture_column(Renderer renderer,
 						 Vector2D draw_position,
 						 float wall_height,
-						 float texture_delta);
+						 float texture_delta,
+						 int texture_index);
 
 static void draw_texture_row(Renderer renderer,
 							 Player player,
