@@ -48,9 +48,12 @@ Vector2D normalize_vector_2d(Vector2D vector)
 
 Vector2D rotate_vector(Vector2D vector, float rotation)
 {
-	const float length = get_vector_length(vector);
-	const float current_rotation = get_vector_rotation(vector);
-	const Vector2D rotated_vector = (Vector2D){length * cosf(current_rotation + rotation), length * sinf(current_rotation + rotation)};
+	const float rot_cos = cosf(rotation);
+	const float rot_sin = sinf(rotation);
+	
+	Vector2D rotated_vector;
+	rotated_vector.x = vector.x * rot_cos - vector.y * rot_sin;
+	rotated_vector.y = vector.x * rot_sin + vector.y * rot_cos;
 	
 	return rotated_vector;
 }
