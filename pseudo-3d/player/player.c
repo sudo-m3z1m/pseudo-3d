@@ -14,17 +14,17 @@ static void move(Player* player, float delta)
 	Vector2D direction = player->direction;
 	const float speed = player->speed;
 	const float rotation_speed = player->rotation_speed;
+	const float collision_radius = 0.4;
+	int cell_pos_x = (int)(player->position.x + collision_radius), cell_pos_y = (int)(player->position.y + collision_radius);
 	
-	direction = normalize_vector_2d(direction);
 	direction = rotate_vector(direction, player->rotation);
+	direction = normalize_vector_2d(direction);
 	direction.x *= speed * delta;
 	direction.y *= speed * delta;
 	
+	player->rotation += player->delta_rotation * rotation_speed * delta; //TODO: Need to make it separatly
 	player->position.x += direction.x;
 	player->position.y += direction.y;
-	
-	player->rotation += player->delta_rotation * rotation_speed * delta;
-//	printf("%f, delta_rot: %f, delta: %f\n", player->rotation, player->delta_rotation, delta);
 }
 
 static void handle_input_data(Player* player)
@@ -89,6 +89,7 @@ Raycast** initialize_player_raycasts(void)
 static void update_player_raycasts(Player* player)
 {
 	Raycast** raycasts = player->raycasts;
+	
 	Vector2D player_pos = player->position;
 	char map[] = MAP;
 	

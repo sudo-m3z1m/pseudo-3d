@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #define FOV PI / 3
-#define RAYS_COUNT 1024
+#define RAYS_COUNT 643
 
 #include <stdio.h>
 #include <stdlib.h>
