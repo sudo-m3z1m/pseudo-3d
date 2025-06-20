@@ -6,9 +6,10 @@
 
 typedef struct CollisionComponent
 {
+	float collision_radius;
 	void(*update)(void* owner);
 } CollisionComponent;
 
-CollisionComponent* initialize_collision_component(void(*update)(void* owner));
+CollisionComponent* initialize_collision_component(float collision_radius, void(*update)(void* owner));
 
 #endif

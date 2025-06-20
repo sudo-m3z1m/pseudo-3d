@@ -41,11 +41,17 @@
 
 static float prev_ticks = 0;
 static float delta = 0;
+//char map[] = MAP;
 
 typedef struct Vector2D
 {
 	float x, y;
 } Vector2D;
+
+typedef struct Vector2DI
+{
+	int x, y;
+} Vector2DI;
 
 typedef struct Color
 {
