@@ -1,5 +1,10 @@
 #include "player.h"
 
+void collisions_update(void* player)
+{
+	
+}
+
 void player_update(float delta, void* player)
 {
 	Player* cur_player = (Player*)player;
@@ -60,6 +65,8 @@ Player* initialize_player(float speed, float rotation_speed, Vector2D init_posit
 	player->speed = speed;
 	player->rotation_speed = rotation_speed;
 	player->rotation = init_rotation;
+	
+	player->collision_component = initialize_collision_component(&collisions_update);
 	
 	player->updatable_component = malloc(sizeof(UpdatableComponent));
 	player->updatable_component->update = &player_update;

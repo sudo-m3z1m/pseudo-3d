@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../core/game-core.h"
+#include "../components/collision-component.h"
 #include "../components/updatable-component.h"
 #include "raycast.h"
 
@@ -14,6 +15,7 @@ typedef struct Player
 {
 	Vector2D position;
 	Vector2D direction;
+	CollisionComponent* collision_component;
 	UpdatableComponent* updatable_component;
 	Raycast** raycasts;
 	
@@ -25,6 +27,7 @@ typedef struct Player
 
 static void move(Player* player, float delta);
 
+void collisions_update(void* player);
 void player_update(float delta, void* player);
 static void handle_input_data(Player* player);
 Player* initialize_player(float speed, float rotation_speed, Vector2D init_position, float init_rotation);
