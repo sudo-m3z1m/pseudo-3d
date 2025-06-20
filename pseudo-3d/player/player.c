@@ -14,10 +14,7 @@ static void move(Player* player, float delta)
 	Vector2D direction = player->direction;
 	const float speed = player->speed;
 	const float rotation_speed = player->rotation_speed;
-	const float collision_radius = 0.4;
-	int cell_pos_x = (int)(player->position.x + collision_radius), cell_pos_y = (int)(player->position.y + collision_radius);
 	
-	direction = rotate_vector(direction, player->rotation);
 	direction = normalize_vector_2d(direction);
 	direction.x *= speed * delta;
 	direction.y *= speed * delta;
@@ -49,6 +46,7 @@ static void handle_input_data(Player* player)
 		delta_rotation += 1;
 	
 	player->direction.x = direction.x; player->direction.y = direction.y;
+	player->direction = rotate_vector(direction, player->rotation);
 	player->delta_rotation = delta_rotation;
 }
 

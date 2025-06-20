@@ -6,7 +6,7 @@
 #include <SDL3/SDL.h>
 #include <stdint.h>
 #include "../core/game-core.h"
-#include "../game-core/updatable-component.h"
+#include "../components/updatable-component.h"
 
 typedef struct Raycast
 {

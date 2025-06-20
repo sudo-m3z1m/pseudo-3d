@@ -48,9 +48,9 @@
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		01792BBE2DFA3F3000DB57F4 /* game-core */ = {
+		01792BBE2DFA3F3000DB57F4 /* components */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "game-core";
+			path = components;
 			sourceTree = "<group>";
 		};
 		0197C4282DF459E400AB0564 /* pseudo-3d */ = {
@@ -97,7 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				01A423162DFB7E4A00D7075E /* assets */,
-				01792BBE2DFA3F3000DB57F4 /* game-core */,
+				01792BBE2DFA3F3000DB57F4 /* components */,
 				0197C4532DF5915300AB0564 /* core */,
 				0197C4462DF58F5100AB0564 /* player */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
@@ -139,7 +139,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				01792BBE2DFA3F3000DB57F4 /* game-core */,
+				01792BBE2DFA3F3000DB57F4 /* components */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				0197C4462DF58F5100AB0564 /* player */,
 				0197C4532DF5915300AB0564 /* core */,

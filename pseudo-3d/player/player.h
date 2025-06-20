@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../core/game-core.h"
-#include "../game-core/updatable-component.h"
+#include "../components/updatable-component.h"
 #include "raycast.h"
 
 typedef struct Player
