@@ -19,7 +19,6 @@ void collisions_update(void* player)
 		next_cell_pos.x = player_pos.x + cell_vector.x * collision_radius;
 		next_cell_pos.y = player_pos.y + cell_vector.y * collision_radius;
 		
-		printf("coll cell pos:(%d, %d), player pos: (%f, %f);\n", next_cell_pos.x, next_cell_pos.y, player_pos.x, player_pos.y);
 		map_index = next_cell_pos.y * MAP_SIZE + next_cell_pos.x;
 		cell_vector = rotate_vector(cell_vector, PI / 2);
 		
@@ -29,8 +28,8 @@ void collisions_update(void* player)
 	}
 	
 	collision_direction = normalize_vector_2d(collision_direction);
-	current_player->direction.x += collision_direction.x * 5;
-	current_player->direction.y += collision_direction.y * 5;
+	current_player->direction.x += current_player->direction.x * 5;
+	current_player->direction.y += current_player->direction.y * 5;
 }
 
 void player_update(float delta, void* player)

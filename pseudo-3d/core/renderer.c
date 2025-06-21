@@ -59,12 +59,15 @@ void draw_texture_column(Renderer renderer,
 	Color pixel_color;
 	SDL_Surface* texture_surface = renderer.textures_buffer[texture_index];
 	
-	const int texture_pos_x = (int)(texture_delta * TEXTURE_SIZE);
+	int texture_pos_x = (int)(texture_delta * TEXTURE_SIZE);
+	int draw_height = draw_position.y + wall_height;
+	draw_height = SDL_clamp(draw_height, 0, INIT_WIN_HEIGHT);
 	
-	for (size_t draw_y = draw_position.y; draw_y < draw_position.y + wall_height; draw_y++)
+	for (size_t draw_y = draw_position.y; draw_y < draw_height; draw_y++)
 	{
 		float height_ratio = (draw_y - draw_position.y) / wall_height;
 		int pixel_y = (int)(height_ratio * TEXTURE_SIZE);
+		pixel_y = SDL_clamp(pixel_y, 0, INIT_WIN_HEIGHT);
 		
 		SDL_ReadSurfacePixel(texture_surface, texture_pos_x, pixel_y, &pixel_color.r, &pixel_color.g, &pixel_color.b, &pixel_color.a);
 		draw_pixel_in_buffer(renderer, draw_position.x, (int)draw_y, pixel_color);
