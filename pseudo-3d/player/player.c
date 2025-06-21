@@ -7,7 +7,6 @@ void collisions_update(void* player)
 	char map[] = MAP;
 	
 	const Vector2D player_pos = current_player->position;
-	const Vector2DI cell_player_pos = (Vector2DI){(int)player_pos.x, (int)player_pos.y};
 	Vector2D cell_vector = (Vector2D){1, 0};
 	Vector2DI next_cell_pos;
 	int map_index;
@@ -15,15 +14,20 @@ void collisions_update(void* player)
 	
 	for (size_t side_num = 0; side_num < 4; side_num++)
 	{
-		next_cell_pos.x = cell_player_pos.x + cell_vector.x * collision_radius;
-		next_cell_pos.y = cell_player_pos.y + cell_vector.y * collision_radius;
+		next_cell_pos.x = player_pos.x + cell_vector.x * collision_radius;
+		next_cell_pos.y = player_pos.y + cell_vector.y * collision_radius;
 		
+		printf("coll cell pos:(%d, %d), player pos: (%f, %f);\n", next_cell_pos.x, next_cell_pos.y, player_pos.x, player_pos.y);
 		map_index = next_cell_pos.y * MAP_SIZE + next_cell_pos.x;
+		cell_vector = rotate_vector(cell_vector, PI / 2);
+		
 		if (map[map_index] == ' ') continue;
 		collision_direction.x += player_pos.x - (next_cell_pos.x + 0.5);
 		collision_direction.y += player_pos.y - (next_cell_pos.y + 0.5);
 	}
-	current_player->direction = normalize_vector_2d(collision_direction);
+	collision_direction = normalize_vector_2d(collision_direction);
+	current_player->direction.x += collision_direction.x * 5;
+	current_player->direction.y += collision_direction.y * 5;
 }
 
 void player_update(float delta, void* player)
@@ -31,6 +35,7 @@ void player_update(float delta, void* player)
 	Player* cur_player = (Player*)player;
 	
 	handle_input_data(cur_player);
+	cur_player->collision_component->update(cur_player);
 	move(cur_player, delta);
 	update_player_raycasts(cur_player);
 }
