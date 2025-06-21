@@ -2,7 +2,7 @@
 
 Vector2D get_collision_pos(Vector2D position, Raycast** raycast, float player_rotation, char* map) //TODO: Need to call it from raycast_update method
 {
-	float current_length = 1;
+	float current_length = 0.1;
 	float max_length = (*raycast)->max_length;
 	float raycast_rotation = player_rotation + (*raycast)->rotation;
 	Vector2D global_pos = X_VECTOR_2D;

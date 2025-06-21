@@ -39,8 +39,8 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 	
 	const float delta = get_delta_ticks();
 	
-	player->updatable_component->update(delta, player);
 //	player->collision_component->update(player);
+	player->updatable_component->update(delta, player);
 	
 	draw_3d(*renderer, *player);
 	SDL_UnlockSurface(renderer->color_buffer);

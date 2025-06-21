@@ -7,10 +7,12 @@ void collisions_update(void* player)
 	char map[] = MAP;
 	
 	const Vector2D player_pos = current_player->position;
+	
+	Vector2D collision_direction = ZERO_VECTOR_2D;
+	
 	Vector2D cell_vector = (Vector2D){1, 0};
 	Vector2DI next_cell_pos;
 	int map_index;
-	Vector2D collision_direction = ZERO_VECTOR_2D;
 	
 	for (size_t side_num = 0; side_num < 4; side_num++)
 	{
@@ -25,6 +27,7 @@ void collisions_update(void* player)
 		collision_direction.x += player_pos.x - (next_cell_pos.x + 0.5);
 		collision_direction.y += player_pos.y - (next_cell_pos.y + 0.5);
 	}
+	
 	collision_direction = normalize_vector_2d(collision_direction);
 	current_player->direction.x += collision_direction.x * 5;
 	current_player->direction.y += collision_direction.y * 5;
@@ -92,7 +95,7 @@ Player* initialize_player(float speed, float rotation_speed, Vector2D init_posit
 	player->rotation_speed = rotation_speed;
 	player->rotation = init_rotation;
 	
-	player->collision_component = initialize_collision_component(0.4, &collisions_update);
+	player->collision_component = initialize_collision_component(0.3, &collisions_update);
 	
 	player->updatable_component = malloc(sizeof(UpdatableComponent));
 	player->updatable_component->update = &player_update;
