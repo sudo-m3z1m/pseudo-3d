@@ -58,6 +58,8 @@ typedef struct Color
 	Uint8 r, g, b, a;
 } Color;
 
+Vector2DI get_cell_wall_normal(Vector2DI cell_position, Vector2DI intersect_position); //TODO: Need to make map class
+
 float get_delta_ticks(void);
 float get_delta(void);
 

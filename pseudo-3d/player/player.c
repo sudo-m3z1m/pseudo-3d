@@ -20,16 +20,20 @@ void collisions_update(void* player)
 		next_cell_pos.y = player_pos.y + cell_vector.y * collision_radius;
 		
 		map_index = next_cell_pos.y * MAP_SIZE + next_cell_pos.x;
-		cell_vector = rotate_vector(cell_vector, PI / 2);
 		
-		if (map[map_index] == ' ') continue;
-		collision_direction.x += player_pos.x - (next_cell_pos.x + 0.5);
-		collision_direction.y += player_pos.y - (next_cell_pos.y + 0.5);
+		if (map[map_index] == ' ')
+		{
+			cell_vector = rotate_vector(cell_vector, PI / 2);
+			continue;
+		}
+		collision_direction.x += -cell_vector.x;
+		collision_direction.y += -cell_vector.y;
+		cell_vector = rotate_vector(cell_vector, PI / 2);
 	}
 	
 	collision_direction = normalize_vector_2d(collision_direction);
-	current_player->direction.x += current_player->direction.x * 5;
-	current_player->direction.y += current_player->direction.y * 5;
+	current_player->direction.x += collision_direction.x * 1.7;
+	current_player->direction.y += collision_direction.y * 1.7;
 }
 
 void player_update(float delta, void* player)

@@ -60,6 +60,7 @@ void draw_texture_column(Renderer renderer,
 	SDL_Surface* texture_surface = renderer.textures_buffer[texture_index];
 	
 	int texture_pos_x = (int)(texture_delta * TEXTURE_SIZE);
+	
 	int draw_height = draw_position.y + wall_height;
 	draw_height = SDL_clamp(draw_height, 0, INIT_WIN_HEIGHT);
 	
