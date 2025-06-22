@@ -32,8 +32,8 @@ void collisions_update(void* player)
 	}
 	
 	collision_direction = normalize_vector_2d(collision_direction);
-	current_player->direction.x += collision_direction.x * 1.7;
-	current_player->direction.y += collision_direction.y * 1.7;
+	current_player->direction.x += collision_direction.x * 1.5;
+	current_player->direction.y += collision_direction.y * 1.5;
 }
 
 void player_update(float delta, void* player)
