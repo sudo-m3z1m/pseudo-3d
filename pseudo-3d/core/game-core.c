@@ -16,48 +16,6 @@ float get_delta(void)
 	return delta;
 }
 
-float get_vector_length(Vector2D vector)
-{
-	float length = sqrt(pow(vector.x, 2) + pow(vector.y, 2));
-	return length;
-}
-
-float get_vector_rotation(Vector2D vector)
-{
-	float angle = PI / 2;
-	if (vector.x == 0) return angle + PI * (int)(vector.y < 0);
-	
-	angle = atanf(vector.y / vector.x);
-	angle += PI * (int)(vector.x < 0);
-	return angle;
-}
-
-Vector2D normalize_vector_2d(Vector2D vector)
-{
-	Vector2D new_vector = (Vector2D){0.0f, 0.0f};
-	float vector_len = get_vector_length(vector);
-	
-	if(vector_len == 0)
-		return new_vector;
-	
-	new_vector.x = vector.x / vector_len;
-	new_vector.y = vector.y / vector_len;
-	
-	return new_vector;
-}
-
-Vector2D rotate_vector(Vector2D vector, float rotation)
-{
-	const float rot_cos = cosf(rotation);
-	const float rot_sin = sinf(rotation);
-	
-	Vector2D rotated_vector;
-	rotated_vector.x = vector.x * rot_cos - vector.y * rot_sin;
-	rotated_vector.y = vector.x * rot_sin + vector.y * rot_cos;
-	
-	return rotated_vector;
-}
-
 void get_resources_path(char* path, char* file_name)
 {
 	const char* base_path = SDL_GetBasePath();
