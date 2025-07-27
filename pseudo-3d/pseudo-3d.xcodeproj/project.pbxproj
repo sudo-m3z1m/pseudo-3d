@@ -38,11 +38,11 @@
 				"game-core.h",
 			);
 		};
-		0197C45A2DF59EA800AB0564 /* Exceptions for "player" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
+		01DFD00F2E32E4E1006707AA /* Exceptions for "gameplay" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 0197C4222DF459E400AB0564 /* Sources */;
 			membershipExceptions = (
-				player.h,
+				player/player.h,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -63,14 +63,6 @@
 			path = "pseudo-3d";
 			sourceTree = "<group>";
 		};
-		0197C4462DF58F5100AB0564 /* player */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				0197C45A2DF59EA800AB0564 /* Exceptions for "player" folder in "Compile Sources" phase from "pseudo-3d" target */,
-			);
-			path = player;
-			sourceTree = "<group>";
-		};
 		0197C4532DF5915300AB0564 /* core */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -82,6 +74,19 @@
 		01A423162DFB7E4A00D7075E /* assets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = assets;
+			sourceTree = "<group>";
+		};
+		01DFD0062E32E4D6006707AA /* gameplay */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				01DFD00F2E32E4E1006707AA /* Exceptions for "gameplay" folder in "Compile Sources" phase from "pseudo-3d" target */,
+			);
+			path = gameplay;
+			sourceTree = "<group>";
+		};
+		01DFD0122E32E5B3006707AA /* common */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = common;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -101,11 +106,12 @@
 		0197C41D2DF459E400AB0564 = {
 			isa = PBXGroup;
 			children = (
+				01DFD0122E32E5B3006707AA /* common */,
+				01DFD0062E32E4D6006707AA /* gameplay */,
 				013EB2AE2E1480F200B1E178 /* types */,
 				01A423162DFB7E4A00D7075E /* assets */,
 				01792BBE2DFA3F3000DB57F4 /* components */,
 				0197C4532DF5915300AB0564 /* core */,
-				0197C4462DF58F5100AB0564 /* player */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				0197C43C2DF45A5200AB0564 /* Frameworks */,
 				0197C4272DF459E400AB0564 /* Products */,
@@ -148,9 +154,10 @@
 				013EB2AE2E1480F200B1E178 /* types */,
 				01792BBE2DFA3F3000DB57F4 /* components */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
-				0197C4462DF58F5100AB0564 /* player */,
 				0197C4532DF5915300AB0564 /* core */,
 				01A423162DFB7E4A00D7075E /* assets */,
+				01DFD0062E32E4D6006707AA /* gameplay */,
+				01DFD0122E32E5B3006707AA /* common */,
 			);
 			name = "pseudo-3d";
 			packageProductDependencies = (
