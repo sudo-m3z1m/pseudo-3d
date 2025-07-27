@@ -37,7 +37,7 @@ void create_physics_components()
 	std::vector<Vector2D<float>> circles_points = {Vector2D<float>(83.0f, 73.0f)};
 	std::vector<Vector2D<float>> line_points = {Vector2D<float>(50.0f, 62.0f), Vector2D<float>(92.0f, 90.0f)};
 	
-	ShapeComponent circle_shape = ShapeComponent(CIRCLE, 20.0f, circles_points);
+	ShapeComponent circle_shape = ShapeComponent(CIRCLE, 10.0f, circles_points);
 	ShapeComponent line_shape = ShapeComponent(LINE, 0, line_points);
 	
 	circle = new PhysicsComponent(circle_shape, Vector2D<float>());

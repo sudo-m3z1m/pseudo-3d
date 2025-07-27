@@ -10,13 +10,21 @@ void PhysicsServer::render_physics_components(SDL_Renderer* renderer)
 		
 		if (current_shape.type == CIRCLE)
 		{
-			SDL_FRect rect;
-			rect.x = current_shape.points[0].x;
-			rect.y = current_shape.points[0].y;
-			rect.w = current_shape.radius;
-			rect.h = current_shape.radius;
+			const float resolution = 480;
+			const float degree_rad = (2 * PI) / resolution;
+			float angle = 0;
 			
-			SDL_RenderRect(renderer, &rect);
+			Vector2D<float> pos = current_shape.points[0];
+			Vector2D<float> draw_point = Vector2D<float>(current_shape.radius, 0.0f);
+			
+			while (angle < 2 * PI)
+			{
+				draw_point = draw_point.rotate_vector(angle);
+				SDL_RenderPoint(renderer, pos.x + draw_point.x, pos.y + draw_point.y);
+				
+				angle += degree_rad;
+			}
+			
 			continue;
 		}
 		
