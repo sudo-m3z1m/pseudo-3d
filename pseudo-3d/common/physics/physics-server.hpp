@@ -17,7 +17,8 @@ public:
 	~PhysicsServer();
 	void add_physics_component(PhysicsComponent* component);
 	void calculate_sector_colliding();
-	bool is_components_colliding(PhysicsComponent* first_component, PhysicsComponent* second_component);
+	Vector2D<float> get_line_projection_point(PhysicsComponent* dot_component, PhysicsComponent* line_component);
+	bool collide_components(PhysicsComponent* first_component, PhysicsComponent* second_component);
 	
 	void render_physics_components(SDL_Renderer* renderer); //Temp method
 };

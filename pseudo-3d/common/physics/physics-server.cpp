@@ -48,6 +48,23 @@ void PhysicsServer::add_physics_component(PhysicsComponent* component)
 	physics_components.push_back(component);
 }
 
+Vector2D<float> PhysicsServer::get_line_projection_point(PhysicsComponent* dot_component, PhysicsComponent* line_component)
+{
+	ShapeComponent dot_shape = dot_component->shape, line_shape = line_component->shape;
+	
+	Vector2D<float> line_vector = line_shape.points[1] - line_shape.points[0]; //Method of global position is awful, need smth better
+	Vector2D<float> components_vector = dot_shape.points[0] - line_shape.points[0];
+	
+	float line_length = powf(line_vector.x, 2) + powf(line_vector.y, 2);
+	
+	float dot_product = line_vector * components_vector;
+	
+	const float line_projection_k = std::fminf(line_length, std::fmaxf(0, dot_product)) / line_length;
+	Vector2D<float> projection_point = line_shape.points[0] + line_vector * line_projection_k;
+	
+	return projection_point;
+}
+
 void PhysicsServer::calculate_sector_colliding()
 {
 	const size_t components_size = physics_components.size();
@@ -60,33 +77,28 @@ void PhysicsServer::calculate_sector_colliding()
 			if (f_component_index == s_component_index) continue;
 			if (physics_components[f_component_index]->shape.type != CIRCLE || physics_components[s_component_index]->shape.type != LINE) continue;
 			
-			is_colliding = is_components_colliding(physics_components[f_component_index], physics_components[s_component_index]);
+			is_colliding = collide_components(physics_components[f_component_index], physics_components[s_component_index]);
 			std::cout << f_component_index << ' ' << s_component_index << " is colliding: " << is_colliding << std::endl;
 		}
 	}
 }
 
-bool PhysicsServer::is_components_colliding(PhysicsComponent* first_component, PhysicsComponent* second_component)
+bool PhysicsServer::collide_components(PhysicsComponent* first_component, PhysicsComponent* second_component)
 {
 	const float circle_radius = first_component->shape.radius;
 	
 	//TODO: it's not counting physics_component position only shape dotes.
+	Vector2D<float> projection_point = get_line_projection_point(first_component, second_component);
 	
-	Vector2D<float> line_vector = second_component->shape.points[1] - second_component->shape.points[0];
-	Vector2D<float> components_vector = first_component->shape.points[0] - second_component->shape.points[0];
+	float collide_distance = (projection_point - first_component->shape.points[0]).length;
 	
-	float line_length = powf(line_vector.x, 2) + powf(line_vector.y, 2);
-	
-	float dot_product = line_vector * components_vector;
-	
-	const float line_projection_k = std::fminf(line_length, std::fmaxf(0, dot_product)) / line_length;
-	Vector2D<float> projection_point = second_component->shape.points[0] + line_vector * line_projection_k;
-	
-	if ((projection_point - first_component->shape.points[0]).length < circle_radius)
+	if (collide_distance < circle_radius)
 	{
-		Vector2D<float> knockback_dir = line_vector.rotate_vector(PI / 2).normalize_vector_2d();
-		float knockback_length = circle_radius - (projection_point - first_component->shape.points[0]).length;
-		first_component->shape.points[0] = first_component->shape.points[0] + (knockback_dir * knockback_length);
+//		Vector2D<float> line_normal = second_component->shape.get_line_normal(0, 1);
+		Vector2D<float> line_normal = (first_component->shape.points[0] - projection_point).normalize_vector_2d();
+		float knockback_strength = circle_radius - collide_distance;
+		first_component->shape.points[0] = first_component->shape.points[0] + (line_normal * knockback_strength);
+		
 		return true;
 	}
 	

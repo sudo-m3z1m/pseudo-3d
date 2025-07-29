@@ -36,15 +36,19 @@ void create_physics_components()
 {
 	std::vector<Vector2D<float>> circles_points = {Vector2D<float>(83.0f, 73.0f)};
 	std::vector<Vector2D<float>> line_points = {Vector2D<float>(50.0f, 62.0f), Vector2D<float>(92.0f, 90.0f)};
+	std::vector<Vector2D<float>> sec_line_points = {Vector2D<float>(92.0f, 90.0f), Vector2D<float>(80.0f, 128.0f)};
 	
 	ShapeComponent circle_shape = ShapeComponent(CIRCLE, 10.0f, circles_points);
 	ShapeComponent line_shape = ShapeComponent(LINE, 0, line_points);
+	ShapeComponent second_line_shape = ShapeComponent(LINE, 0, sec_line_points);
 	
 	circle = new PhysicsComponent(circle_shape, Vector2D<float>());
 	PhysicsComponent* line = new PhysicsComponent(line_shape, Vector2D<float>());
+	PhysicsComponent* second_line = new PhysicsComponent(second_line_shape, Vector2D<float>());
 	
 	physics_server.add_physics_component(circle);
 	physics_server.add_physics_component(line);
+	physics_server.add_physics_component(second_line);
 }
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)

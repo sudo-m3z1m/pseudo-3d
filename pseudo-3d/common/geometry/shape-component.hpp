@@ -24,6 +24,7 @@ public:
 	std::vector<Vector2D<float>> points;
 	
 	//TODO: Getting SAT projection with shape separation
+	Vector2D<float> get_line_normal(int f_point, int s_point);
 	
 	float radius;
 };
