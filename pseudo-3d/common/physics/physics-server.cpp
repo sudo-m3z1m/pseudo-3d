@@ -14,7 +14,7 @@ void PhysicsServer::render_physics_components(SDL_Renderer* renderer)
 			const float degree_rad = (2 * PI) / resolution;
 			float angle = 0;
 			
-			Vector2D<float> pos = current_shape.points[0];
+			Vector2D<float> pos = component->position + current_shape.points[0];
 			Vector2D<float> draw_point = Vector2D<float>(current_shape.radius, 0.0f);
 			
 			while (angle < 2 * PI)
@@ -28,7 +28,10 @@ void PhysicsServer::render_physics_components(SDL_Renderer* renderer)
 			continue;
 		}
 		
-		SDL_RenderLine(renderer, current_shape.points[0].x, current_shape.points[0].y, current_shape.points[1].x, current_shape.points[1].y);
+		const Vector2D<float> f_point = component->position + current_shape.points[0];
+		const Vector2D<float> s_point = component->position + current_shape.points[1];
+		
+		SDL_RenderLine(renderer, f_point.x, f_point.y, s_point.x, s_point.y);
 	}
 }
 
@@ -51,16 +54,17 @@ void PhysicsServer::add_physics_component(PhysicsComponent* component)
 Vector2D<float> PhysicsServer::get_line_projection_point(PhysicsComponent* dot_component, PhysicsComponent* line_component)
 {
 	ShapeComponent dot_shape = dot_component->shape, line_shape = line_component->shape;
+	Vector2D<float> dot_position = dot_component->position, line_position = line_component->position;
 	
-	Vector2D<float> line_vector = line_shape.points[1] - line_shape.points[0]; //Method of global position is awful, need smth better
-	Vector2D<float> components_vector = dot_shape.points[0] - line_shape.points[0];
+	Vector2D<float> line_vector = line_shape.points[1] - line_shape.points[0];
+	Vector2D<float> components_vector = (dot_position + dot_shape.points[0]) - (line_position + line_shape.points[0]);
 	
 	float line_length = powf(line_vector.x, 2) + powf(line_vector.y, 2);
 	
 	float dot_product = line_vector * components_vector;
 	
 	const float line_projection_k = std::fminf(line_length, std::fmaxf(0, dot_product)) / line_length;
-	Vector2D<float> projection_point = line_shape.points[0] + line_vector * line_projection_k;
+	Vector2D<float> projection_point = (line_position + line_shape.points[0]) + line_vector * line_projection_k;
 	
 	return projection_point;
 }
@@ -87,17 +91,16 @@ bool PhysicsServer::collide_components(PhysicsComponent* first_component, Physic
 {
 	const float circle_radius = first_component->shape.radius;
 	
-	//TODO: it's not counting physics_component position only shape dotes.
 	Vector2D<float> projection_point = get_line_projection_point(first_component, second_component);
 	
-	float collide_distance = (projection_point - first_component->shape.points[0]).length;
+	float collide_distance = (projection_point - (first_component->position + first_component->shape.points[0])).length;
 	
 	if (collide_distance < circle_radius)
 	{
 //		Vector2D<float> line_normal = second_component->shape.get_line_normal(0, 1);
-		Vector2D<float> line_normal = (first_component->shape.points[0] - projection_point).normalize_vector_2d();
+		Vector2D<float> line_normal = ((first_component->position + first_component->shape.points[0]) - projection_point).normalize_vector_2d();
 		float knockback_strength = circle_radius - collide_distance;
-		first_component->shape.points[0] = first_component->shape.points[0] + (line_normal * knockback_strength);
+		first_component->position = first_component->position + (line_normal * knockback_strength);
 		
 		return true;
 	}
