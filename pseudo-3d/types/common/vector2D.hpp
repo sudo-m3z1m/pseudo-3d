@@ -30,6 +30,11 @@ public:
 	{
 		return Vector2D<T>(x + addend.x, y + addend.y);
 	}
+	Vector2D<T>* operator+=(Vector2D<T> addend)
+	{
+		x += addend.x; y += addend.y;
+		return this;
+	}
 	Vector2D<T> operator*(float multiplier)
 	{
 		return Vector2D<T>(x * multiplier, y * multiplier);

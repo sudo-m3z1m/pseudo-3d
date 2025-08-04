@@ -51,59 +51,56 @@ void PhysicsServer::add_physics_component(PhysicsComponent* component)
 	physics_components.push_back(component);
 }
 
-Vector2D<float> PhysicsServer::get_line_projection_point(PhysicsComponent* dot_component, PhysicsComponent* line_component)
-{
-	ShapeComponent dot_shape = dot_component->shape, line_shape = line_component->shape;
-	Vector2D<float> dot_position = dot_component->position, line_position = line_component->position;
-	
-	Vector2D<float> line_vector = line_shape.points[1] - line_shape.points[0];
-	Vector2D<float> components_vector = (dot_position + dot_shape.points[0]) - (line_position + line_shape.points[0]);
-	
-	float line_length = powf(line_vector.x, 2) + powf(line_vector.y, 2);
-	
-	float dot_product = line_vector * components_vector;
-	
-	const float line_projection_k = std::fminf(line_length, std::fmaxf(0, dot_product)) / line_length;
-	Vector2D<float> projection_point = (line_position + line_shape.points[0]) + line_vector * line_projection_k;
-	
-	return projection_point;
-}
-
 void PhysicsServer::calculate_sector_colliding()
 {
 	const size_t components_size = physics_components.size();
-	bool is_colliding = false;
 	
 	for (size_t f_component_index = 0; f_component_index < components_size; f_component_index++)
 	{
-		for (size_t s_component_index = 0; s_component_index < components_size; s_component_index++)
+		for (size_t s_component_index = f_component_index; s_component_index < components_size; s_component_index++)
 		{
 			if (f_component_index == s_component_index) continue;
-			if (physics_components[f_component_index]->shape.type != CIRCLE || physics_components[s_component_index]->shape.type != LINE) continue;
 			
-			is_colliding = collide_components(physics_components[f_component_index], physics_components[s_component_index]);
-			std::cout << f_component_index << ' ' << s_component_index << " is colliding: " << is_colliding << std::endl;
+			resolve_collision(physics_components[f_component_index], physics_components[s_component_index]);
 		}
 	}
 }
 
-bool PhysicsServer::collide_components(PhysicsComponent* first_component, PhysicsComponent* second_component)
+void PhysicsServer::resolve_collision(PhysicsComponent* f_component, PhysicsComponent* s_component)
 {
-	const float circle_radius = first_component->shape.radius;
+	Vector2D<float> collision_vector = Vector2D<float>();
 	
-	Vector2D<float> projection_point = get_line_projection_point(first_component, second_component);
-	
-	float collide_distance = (projection_point - (first_component->position + first_component->shape.points[0])).length;
-	
-	if (collide_distance < circle_radius)
+	switch (f_component->shape.type)
 	{
-//		Vector2D<float> line_normal = second_component->shape.get_line_normal(0, 1);
-		Vector2D<float> line_normal = ((first_component->position + first_component->shape.points[0]) - projection_point).normalize_vector_2d();
-		float knockback_strength = circle_radius - collide_distance;
-		first_component->position = first_component->position + (line_normal * knockback_strength);
+		case CIRCLE:
+			collision_vector = get_circle_collision_vector(f_component, s_component);
+			break;
+			
+		default:
+			break;
+	}
+	f_component->position += collision_vector;
+}
+
+Vector2D<float> PhysicsServer::get_circle_collision_vector(PhysicsComponent* f_component, PhysicsComponent* s_component)
+{
+	Vector2D<float> collision_vector = Vector2D<float>();
+	const float circle_radius = f_component->shape.radius;
+	
+	Vector2D<float> circle_position = f_component->position + f_component->shape.points[0];
+	Vector2D<float> line_points[] = {s_component->position + s_component->shape.points[0], s_component->position + s_component->shape.points[1]};
+	Vector2D<float> projection_point = get_line_projection_point(circle_position, line_points);
+	
+	Vector2D<float> to_projection_vector = projection_point - circle_position;
+	
+	if (to_projection_vector.length < circle_radius)
+	{
+		Vector2D<float> line_normal = s_component->shape.get_line_normal(0, 1);
+		const float normal_direction = line_normal * to_projection_vector;
+		line_normal = line_normal * -get_sign(normal_direction);
 		
-		return true;
+		collision_vector = line_normal * (circle_radius - to_projection_vector.length);
 	}
 	
-	return false;
+	return collision_vector;
 }
