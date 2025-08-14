@@ -12,7 +12,8 @@ public:
 	PhysicsComponent(ShapeComponent shape, Vector2D<float> position);
 	
 	Vector2D<float> position;
-	ShapeComponent shape; //Now just
+	ShapeComponent shape;
+	float rotation;
 	//float mass; TODO: Make some physics!
 };
 

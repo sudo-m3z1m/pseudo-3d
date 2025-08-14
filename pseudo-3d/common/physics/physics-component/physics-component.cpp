@@ -3,6 +3,7 @@
 PhysicsComponent::PhysicsComponent()
 {
 	position = Vector2D<float>();
+	rotation = 0;
 	shape = ShapeComponent();
 }
 PhysicsComponent::PhysicsComponent(ShapeComponent shape, Vector2D<float> position)
