@@ -12,8 +12,10 @@ enum COLLISION_TYPES
 {
 	CIRCLE_CIRCLE = 2,
 	CIRCLE_LINE = 5,
+	CIRCLE_RECTANGE = 10,
+	CIRCLE_POLYGON = 17,
 	RECTANGLE_RECTANGLE = 18
-	//And Shape - Shape but it's all what is not other
+	//And SHAPE_SHAPE but it's all what is not other
 };
 
 class PhysicsServer
@@ -31,9 +33,9 @@ public:
 	Vector2D<float> get_circle_circle_collision_vector(PhysicsComponent* f_component, PhysicsComponent* s_component);
 	Vector2D<float> get_circle_line_collision_vector(PhysicsComponent* f_component, PhysicsComponent* s_component);
 	Vector2D<float> get_rect_rect_collision_vector(PhysicsComponent* f_component, PhysicsComponent* s_component);
-	Vector2D<float> get_shape_shape_collision_vector(PhysicsComponent* f_component, PhysicsComponent* s_component);
+	//TODO: Dificult stuff. Other 3 methods is anough for us.
+	Vector2D<float> get_polygon_polygon_collision_vector(PhysicsComponent* f_component, PhysicsComponent* s_component);
 	
-//	bool collide_components(PhysicsComponent* first_component, PhysicsComponent* second_component);
 	void render_physics_components(SDL_Renderer* renderer); //Temp method
 };
 

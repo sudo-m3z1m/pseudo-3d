@@ -1,13 +1,6 @@
-//
-//  level-server.hpp
-//  pseudo-3d
-//
-//  Created by MeZiM Tabla on 7/25/25.
-//
-
-#ifndef level_server_hpp
-#define level_server_hpp
+#ifndef LEVEL_SERVER_HPP
+#define LEVEL_SERVER_HPP
 
 #include <stdio.h>
 
-#endif /* level_server_hpp */
+#endif
