@@ -137,7 +137,7 @@ Vector2D<float> PhysicsServer::get_circle_line_collision_vector(PhysicsComponent
 		
 		if (to_projection_vector.length >= circle_radius) continue;
 		
-		Vector2D<float> line_normal = s_shape.get_line_normal(0, 1);
+		Vector2D<float> line_normal = s_shape.get_line_normal((int)f_point_index, (int)s_point_index);
 		const float normal_direction = line_normal * to_projection_vector;
 		line_normal = line_normal * -get_sign(normal_direction);
 		

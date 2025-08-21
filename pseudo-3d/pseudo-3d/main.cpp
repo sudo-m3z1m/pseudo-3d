@@ -35,8 +35,8 @@ Vector2D<float> get_input_direction()
 void create_physics_components()
 {
 	std::vector<Vector2D<float>> circles_points = {Vector2D<float>(0.0f, 0.0f)};
-	std::vector<Vector2D<float>> polygon_points = {Vector2D<float>(0.0f, 0.0f), Vector2D<float>(42.0f, 28.0f), Vector2D<float>(10.0f, 48.0f)};
-	std::vector<Vector2D<float>> line_points = {Vector2D<float>(0.0f, 0.0f), Vector2D<float>(-10.0f, 32.0f)};
+	std::vector<Vector2D<float>> polygon_points = {Vector2D<float>(-30.0f, -30.0f), Vector2D<float>(89.0f, -42.0f), Vector2D<float>(106.0f, 56.0f), Vector2D<float>(28.0f, 83.0f), Vector2D<float>(-35.0f, 54.0f)};
+	std::vector<Vector2D<float>> line_points = {Vector2D<float>(0.0f, 0.0f), Vector2D<float>(5.0f, -52.0f)};
 	
 	ShapeComponent circle_shape = ShapeComponent(CIRCLE, 10.0f, circles_points);
 	ShapeComponent s_circle_shape = ShapeComponent(CIRCLE, 15.0f, circles_points);
@@ -46,7 +46,7 @@ void create_physics_components()
 	circle = new PhysicsComponent(circle_shape, Vector2D<float>(83.0f, 73.0f));
 	PhysicsComponent* s_circle = new PhysicsComponent(s_circle_shape, Vector2D<float>(130.0f, 90.0f));
 	PhysicsComponent* polygon = new PhysicsComponent(polygon_shape, Vector2D<float>(50.0f, 62.0f));
-	PhysicsComponent* line = new PhysicsComponent(line_shape, Vector2D<float>(60.0f, 110.0f));
+	PhysicsComponent* line = new PhysicsComponent(line_shape, Vector2D<float>(78.0f, 145.0f));
 	
 	physics_server.add_physics_component(circle);
 	physics_server.add_physics_component(s_circle);
