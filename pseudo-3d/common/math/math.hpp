@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <cmath>
-#include "../../types/common/vector2D.hpp"
+#include "../../types/math/vector2D.hpp"
 
 template <typename T>
 int get_sign(T number)

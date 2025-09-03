@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <vector>
-#include "../../types/common/vector2D.hpp"
+#include "../../types/math/vector2D.hpp"
 
 enum ShapeType
 {

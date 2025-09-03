@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "../../geometry/shape-component.hpp"
-#include "../../../types/common/vector2D.hpp"
+#include "../../../types/math/vector2D.hpp"
 
 class PhysicsComponent
 {
