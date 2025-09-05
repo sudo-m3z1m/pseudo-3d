@@ -4,62 +4,87 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include "../common/physics/physics-server.hpp"
-#include "../common/physics/physics-component/physics-component.hpp"
+#include "physics-server.hpp"
+#include "physics-component.hpp"
+#include "level-server.hpp"
 
-PhysicsServer physics_server;
+//PhysicsServer physics_server;
 SDL_Window* main_window;
 SDL_Renderer* main_renderer;
+LevelServer* level_server;
 
-PhysicsComponent* circle;
+//PhysicsComponent* circle;
 
-Vector2D<float> get_input_direction()
+//Vector2D<float> get_input_direction()
+//{
+//	Vector2D direction = Vector2D<float>();
+//	
+//	const bool* keys = SDL_GetKeyboardState(NULL);
+//	
+//	if (keys[SDL_SCANCODE_W])
+//		direction.y -= 1;
+//	if (keys[SDL_SCANCODE_S])
+//		direction.y += 1;
+//	if (keys[SDL_SCANCODE_D])
+//		direction.x += 1;
+//	if (keys[SDL_SCANCODE_A])
+//		direction.x -= 1;
+//
+//	return direction;
+//}
+
+
+//void create_physics_components()
+//{
+//	std::vector<Vector2D<float>> circles_points = {Vector2D<float>(0.0f, 0.0f)};
+//	std::vector<Vector2D<float>> polygon_points = {Vector2D<float>(-30.0f, -30.0f), Vector2D<float>(89.0f, -42.0f), Vector2D<float>(106.0f, 56.0f), Vector2D<float>(28.0f, 83.0f), Vector2D<float>(-35.0f, 54.0f)};
+//	std::vector<Vector2D<float>> line_points = {Vector2D<float>(0.0f, 0.0f), Vector2D<float>(5.0f, -52.0f)};
+//	
+//	ShapeComponent circle_shape = ShapeComponent(CIRCLE, 10.0f, circles_points);
+//	ShapeComponent s_circle_shape = ShapeComponent(CIRCLE, 15.0f, circles_points);
+//	ShapeComponent polygon_shape = ShapeComponent(POLYGON, 0, polygon_points);
+//	ShapeComponent line_shape = ShapeComponent(LINE, 0, line_points);
+//	
+//	circle = new PhysicsComponent(circle_shape, Vector2D<float>(83.0f, 73.0f));
+//	PhysicsComponent* s_circle = new PhysicsComponent(s_circle_shape, Vector2D<float>(130.0f, 90.0f));
+//	PhysicsComponent* polygon = new PhysicsComponent(polygon_shape, Vector2D<float>(50.0f, 62.0f));
+//	PhysicsComponent* line = new PhysicsComponent(line_shape, Vector2D<float>(78.0f, 145.0f));
+//	
+//	physics_server.add_physics_component(circle);
+//	physics_server.add_physics_component(s_circle);
+//	physics_server.add_physics_component(polygon);
+//	physics_server.add_physics_component(line);
+//}
+
+void create_level_server()
 {
-	Vector2D direction = Vector2D<float>();
+	level_server = new LevelServer();
 	
-	const bool* keys = SDL_GetKeyboardState(NULL);
+	std::vector<Vector2D<float>> f_tri_points = {Vector2D<float>(1.0f, 2.0f), Vector2D<float>(2.0f, 1.0f), Vector2D<float>(3.0f, 2.0f)};
+	std::vector<Vector2D<float>> s_tri_points = {Vector2D<float>(4.0f, 3.0f), Vector2D<float>(5.0f, 4.0f), Vector2D<float>(4.0f, 5.0f)};
+	std::vector<Vector2D<float>> t_tri_points = {Vector2D<float>(0.0f, 2.0f), Vector2D<float>(1.0f, 0.0f), Vector2D<float>(1.0f, -1.0f)};
 	
-	if (keys[SDL_SCANCODE_W])
-		direction.y -= 1;
-	if (keys[SDL_SCANCODE_S])
-		direction.y += 1;
-	if (keys[SDL_SCANCODE_D])
-		direction.x += 1;
-	if (keys[SDL_SCANCODE_A])
-		direction.x -= 1;
-
-	return direction;
-}
-
-
-void create_physics_components()
-{
-	std::vector<Vector2D<float>> circles_points = {Vector2D<float>(0.0f, 0.0f)};
-	std::vector<Vector2D<float>> polygon_points = {Vector2D<float>(-30.0f, -30.0f), Vector2D<float>(89.0f, -42.0f), Vector2D<float>(106.0f, 56.0f), Vector2D<float>(28.0f, 83.0f), Vector2D<float>(-35.0f, 54.0f)};
-	std::vector<Vector2D<float>> line_points = {Vector2D<float>(0.0f, 0.0f), Vector2D<float>(5.0f, -52.0f)};
+	ShapeComponent f_triangle_shape = ShapeComponent(POLYGON, 0, f_tri_points);
+	ShapeComponent s_triangle_shape = ShapeComponent(POLYGON, 0, s_tri_points);
+	ShapeComponent t_triangle_shape = ShapeComponent(POLYGON, 0, t_tri_points);
 	
-	ShapeComponent circle_shape = ShapeComponent(CIRCLE, 10.0f, circles_points);
-	ShapeComponent s_circle_shape = ShapeComponent(CIRCLE, 15.0f, circles_points);
-	ShapeComponent polygon_shape = ShapeComponent(POLYGON, 0, polygon_points);
-	ShapeComponent line_shape = ShapeComponent(LINE, 0, line_points);
+	level_server->add_new_polygon(f_triangle_shape);
+	level_server->add_new_polygon(s_triangle_shape);
+	level_server->add_new_polygon(t_triangle_shape);
 	
-	circle = new PhysicsComponent(circle_shape, Vector2D<float>(83.0f, 73.0f));
-	PhysicsComponent* s_circle = new PhysicsComponent(s_circle_shape, Vector2D<float>(130.0f, 90.0f));
-	PhysicsComponent* polygon = new PhysicsComponent(polygon_shape, Vector2D<float>(50.0f, 62.0f));
-	PhysicsComponent* line = new PhysicsComponent(line_shape, Vector2D<float>(78.0f, 145.0f));
+	level_server->create_bsp_tree();
 	
-	physics_server.add_physics_component(circle);
-	physics_server.add_physics_component(s_circle);
-	physics_server.add_physics_component(polygon);
-	physics_server.add_physics_component(line);
+	return;
 }
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
 	SDL_CreateWindowAndRenderer("PSEUDO-NAME", 640, 640, SDL_WINDOW_RESIZABLE, &main_window, &main_renderer);
 	
-	physics_server = PhysicsServer();
-	create_physics_components();
+	create_level_server();
+	
+//	physics_server = PhysicsServer();
+//	create_physics_components();
 	
 	return SDL_APP_CONTINUE;
 }
@@ -71,16 +96,17 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 
 SDL_AppResult SDL_AppIterate(void* appstate)
 {
-	Vector2D<float> direction = get_input_direction();
-	circle->position = circle->position + (direction * 0.1);
+//	Vector2D<float> direction = get_input_direction();
+//	circle->position = circle->position + (direction * 0.1);
 	
-	physics_server.calculate_sector_colliding();
+//	physics_server.calculate_sector_colliding();
 	
 	SDL_SetRenderScale(main_renderer, 4, 4);
 	SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
 	SDL_RenderClear(main_renderer);
 	
-	physics_server.render_physics_components(main_renderer);
+//	physics_server.render_physics_components(main_renderer);
+//	physics_server.render_physics_components(main_renderer);
 	SDL_RenderPresent(main_renderer);
 	
 	return SDL_APP_CONTINUE;

@@ -2,7 +2,9 @@
 #define VECTOR2D
 
 #include <stdio.h>
-#include "../constants.hpp"
+#include <math.h>
+
+#include "constants.hpp"
 
 template <typename T>
 class Vector2D

@@ -2,7 +2,7 @@
 
 LevelServer::LevelServer()
 {
-	bsp_tree = new BSPNode();
+	bsp_tree = nullptr;
 }
 
 LevelServer::~LevelServer()
@@ -34,10 +34,10 @@ void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_sh
 		return;
 	}
 	
-	BSPShape bsp_shape = node_shapes[0];
+	BSPShape* bsp_shape = &node_shapes[0];
 	
-	Wall shape_wall = bsp_shape.get_shape_wall();
-	std::vector<Vector2D<float>> shape_points = bsp_shape.get_shape_points();
+	Wall shape_wall = bsp_shape->get_shape_wall();
+	std::vector<Vector2D<float>> shape_points = bsp_shape->get_shape_points();
 	Line separate_line = Line(shape_points[shape_wall.f_p_index], shape_points[shape_wall.s_p_index]);
 	
 	std::vector<BSPShape> front, back;
