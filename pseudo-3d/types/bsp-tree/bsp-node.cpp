@@ -41,7 +41,7 @@ void BSPNode::sort_shapes(Line line, std::vector<BSPShape>* front, std::vector<B
 			BSPShape front_shape = BSPShape(new_shape_points[1]);
 			
 			back->push_back(back_shape);
-			back->push_back(front_shape);
+			front->push_back(front_shape);
 			
 			delete[] new_shape_points;
 			continue;
