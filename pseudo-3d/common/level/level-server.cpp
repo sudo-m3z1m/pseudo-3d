@@ -30,14 +30,14 @@ void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_sh
 	if (node_shapes.empty()) return;
 	if (node_shapes.size() == 1)
 	{
-		node->shape_component = node_shapes[0].get_shape();
+		node->shape = node_shapes[0];
 		return;
 	}
 	
 	BSPShape* bsp_shape = &node_shapes[0];
 	
 	Wall shape_wall = bsp_shape->get_shape_wall();
-	std::vector<Vector2D<float>> shape_points = bsp_shape->get_shape_points();
+	std::vector<Vector2D<float>> shape_points = bsp_shape->points;
 	Line separate_line = Line(shape_points[shape_wall.f_p_index], shape_points[shape_wall.s_p_index]);
 	
 	std::vector<BSPShape> front, back;

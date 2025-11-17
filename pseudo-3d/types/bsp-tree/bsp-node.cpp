@@ -4,7 +4,6 @@ BSPNode::BSPNode()
 {
 	separate_line = Line();
 	front = back = nullptr;
-	shape_component = nullptr;
 }
 
 BSPNode::~BSPNode()
@@ -19,29 +18,35 @@ void BSPNode::sort_shapes(Line line, std::vector<BSPShape>* front, std::vector<B
 	for (BSPShape current_shape : shapes)
 	{
 		Vector2D<float> point;
-		std::vector<Vector2D<float>> shape_points = current_shape.get_shape_points();
+		std::vector<Vector2D<float>> shape_points = current_shape.points;
 		int points_side_count = 0;
-		
-		Vector2D<float> center_point;
+		int neutral_points_count = 0;
 		
 		for (size_t point_index = 0; point_index < shape_points.size(); point_index++)
 		{
 			point = shape_points[point_index];
-			center_point += point;
-//			const float result = (separate_line.a * point.x) + (separate_line.b * point.y) + separate_line.c;
-//			points_side_count += int(result > 0) - int(result < 0);
+			const float result = is_point_on_line(point, separate_line);
+			if(result == 0)
+			{
+				neutral_points_count++;
+				continue;
+			}
+			points_side_count += int(result > 0) - int(result < 0);
 		}
 		
-		center_point.x = center_point.x / shape_points.size();
-		center_point.y = center_point.y / shape_points.size();
-		const float result = (separate_line.a * center_point.x) + (separate_line.b * center_point.y) + separate_line.c;
-		
-		if (result == 0) continue;
-		if (result > 0) back->push_back(current_shape);
-		if (result < 0) front->push_back(current_shape);
-		
-//		if (abs(points_side_count) != shape_points.size()) continue;
-//		if (points_side_count > 0) back->push_back(current_shape);
-//		if (points_side_count < 0) front->push_back(current_shape);
+		if(abs(points_side_count) + neutral_points_count != shape_points.size())
+		{
+			std::vector<Vector2D<float>>* new_shape_points = separate_shape_by_line(shape_points, separate_line);
+			BSPShape back_shape = BSPShape(new_shape_points[0]);
+			BSPShape front_shape = BSPShape(new_shape_points[1]);
+			
+			back->push_back(back_shape);
+			back->push_back(front_shape);
+			
+			delete[] new_shape_points;
+			continue;
+		}
+		if (points_side_count > 0) back->push_back(current_shape);
+		if (points_side_count < 0) front->push_back(current_shape);	
 	}
 }

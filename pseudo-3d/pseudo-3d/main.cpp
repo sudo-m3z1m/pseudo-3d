@@ -61,8 +61,8 @@ void create_level_server()
 	level_server = new LevelServer();
 	
 	std::vector<Vector2D<float>> f_tri_points = {Vector2D<float>(1.0f, 2.0f), Vector2D<float>(2.0f, 1.0f), Vector2D<float>(3.0f, 2.0f)};
-	std::vector<Vector2D<float>> s_tri_points = {Vector2D<float>(4.0f, 3.0f), Vector2D<float>(5.0f, 4.0f), Vector2D<float>(4.0f, 5.0f)};
-	std::vector<Vector2D<float>> t_tri_points = {Vector2D<float>(0.0f, 2.0f), Vector2D<float>(1.0f, 0.0f), Vector2D<float>(1.0f, -1.0f)};
+	std::vector<Vector2D<float>> s_tri_points = {Vector2D<float>(4.0f, 2.0f), Vector2D<float>(5.0f, 3.0f), Vector2D<float>(6.0f, 2.0f)};
+	std::vector<Vector2D<float>> t_tri_points = {Vector2D<float>(7.0f, 3.0f), Vector2D<float>(7.0f, 1.0f), Vector2D<float>(8.0f, 1.0f)};
 	
 	ShapeComponent f_triangle_shape = ShapeComponent(POLYGON, 0, f_tri_points);
 	ShapeComponent s_triangle_shape = ShapeComponent(POLYGON, 0, s_tri_points);

@@ -2,9 +2,11 @@
 #define BSP_NODE_HPP
 
 #include <stdio.h>
+#include <iostream>
 #include <vector>
 
 #include "line.hpp"
+#include "math.hpp"
 #include "shape-component.hpp"
 #include "bsp-shape.hpp"
 
@@ -14,7 +16,7 @@ private:
 	Line separate_line;
 
 public:
-	ShapeComponent* shape_component;
+	BSPShape shape;
 	BSPNode* back;
 	BSPNode* front;
 	

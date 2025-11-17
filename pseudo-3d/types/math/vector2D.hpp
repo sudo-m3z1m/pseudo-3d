@@ -49,6 +49,14 @@ public:
 	{
 		return x * multiplier.x + y * multiplier.y;
 	}
+	bool operator==(Vector2D<T> point)
+	{
+		return (x == point.x) && (y == point.y);
+	}
+	bool operator!=(Vector2D<T> point)
+	{
+		return !((*this) == point);
+	}
 	
 	float calculate_vector_length()
 	{

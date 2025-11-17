@@ -107,7 +107,7 @@ Vector2D<float> PhysicsServer::get_circle_circle_collision_vector(PhysicsCompone
 	float f_radius = f_component->shape.radius, s_radius = s_component->shape.radius;
 	
 	Vector2D<float> circles_vector = s_position - f_position;
-	if (circles_vector.length - f_radius >= s_radius) return Vector2D<float>();
+	if (circles_vector.length - f_radius >= s_radius) return Vector2D<float>(); //TODO: Stupid condition. Need to make displacement earlier
 	
 	float dispacement = circles_vector.length - f_radius - s_radius;
 	
