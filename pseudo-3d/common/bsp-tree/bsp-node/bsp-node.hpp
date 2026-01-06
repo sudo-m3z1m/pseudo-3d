@@ -22,8 +22,6 @@ public:
 	
 	BSPNode();
 	~BSPNode();
-	
-	void sort_shapes(Line line, std::vector<BSPShape>* front, std::vector<BSPShape>* back, std::vector<BSPShape> shapes);
 };
 
 #endif

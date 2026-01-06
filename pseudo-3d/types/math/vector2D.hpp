@@ -86,7 +86,7 @@ public:
 	
 	Vector2D<T> normalize_vector_2d()
 	{
-		Vector2D new_vector = Vector2D(1.0f, 0.0f);
+		Vector2D new_vector = Vector2D();
 		
 		if(length == 0)
 			return new_vector;

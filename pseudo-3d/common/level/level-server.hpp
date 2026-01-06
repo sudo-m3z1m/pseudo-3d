@@ -21,7 +21,9 @@ public:
 	void add_new_polygon(ShapeComponent new_polygon);
 	
 	void create_bsp_tree();
+	std::vector<BSPShape> separate_shape_by_line(Line line, BSPShape shape);
 	void separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_shapes);
+	void sort_shapes(Line line, std::vector<BSPShape>* front, std::vector<BSPShape>* back, std::vector<BSPShape> shapes);
 	
 	std::vector<BSPShape> generate_bsp_shapes();
 };
