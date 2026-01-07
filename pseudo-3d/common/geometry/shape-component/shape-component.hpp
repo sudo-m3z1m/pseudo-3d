@@ -6,7 +6,7 @@
 
 #include "vector2D.hpp"
 #include "wall.hpp"
-#include "math.h"
+#include "math.hpp"
 
 enum ShapeType
 {

@@ -12,11 +12,9 @@
 
 class BSPNode
 {
-private:
-	Line separate_line;
-
 public:
-	BSPShape shape;
+	Line separate_line;
+	BSPShape shape; //TODO: Need to be a pointer
 	BSPNode* back;
 	BSPNode* front;
 	

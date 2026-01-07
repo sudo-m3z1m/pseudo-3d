@@ -74,19 +74,22 @@ public:
 	}
 	Vector2D<T> rotate_vector(float rotation)
 	{
-		const float rot_cos = cosf(rotation);
-		const float rot_sin = sinf(rotation);
+		float rot_cos = cosf(rotation), rot_sin = sinf(rotation);
+		
+		if(abs(rot_cos) < EPS) rot_cos = 0;
+		if(abs(rot_sin) < EPS) rot_sin = 0;
 		
 		Vector2D rotated_vector;
 		rotated_vector.x = x * rot_cos - y * rot_sin;
 		rotated_vector.y = x * rot_sin + y * rot_cos;
+		rotated_vector.length = length;
 		
 		return rotated_vector;
 	}
 	
 	Vector2D<T> normalize_vector_2d()
 	{
-		Vector2D new_vector = Vector2D();
+		Vector2D new_vector = Vector2D(1.0f, 0.0f);
 		
 		if(length == 0)
 			return new_vector;
@@ -95,6 +98,12 @@ public:
 		new_vector.y = y / length;
 		
 		return new_vector;
+	}
+	Vector2D<T> get_vector_normal()
+	{
+		Vector2D<T> vector_normal = {-y, x};
+		
+		return vector_normal.normalize_vector_2d();
 	}
 };
 

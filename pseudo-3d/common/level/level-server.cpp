@@ -88,6 +88,7 @@ void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_sh
 		
 		node_shapes.clear();
 		node->front = new BSPNode(); node->back = new BSPNode();
+		node->separate_line = separation_line;
 		separate_bsp_node(node->front, front);
 		separate_bsp_node(node->back, back);
 		break;
@@ -128,13 +129,28 @@ void LevelServer::sort_shapes(Line line, std::vector<BSPShape>* front, std::vect
 			std::vector<BSPShape> new_shapes = separate_shape_by_line(line, current_shape); //Works only for convex shapes
 			
 			back->push_back(new_shapes[0]);
-			back->push_back(new_shapes[1]);
+			front->push_back(new_shapes[1]);
 			
 			continue;
 		}
 		if (points_side_count > 0) back->push_back(current_shape);
 		if (points_side_count < 0) front->push_back(current_shape);
 	}
+}
+
+std::vector<Wall> LevelServer::get_walls_from_shape_points(std::vector<Vector2D<float>> points)
+{
+	std::vector<Wall> new_walls;
+	for(size_t point_index = 0; point_index < points.size(); point_index++)
+	{
+		const size_t next_point_index = (point_index + 1) % points.size();
+		Vector2D<float> wall_vector = points[next_point_index] - points[point_index];
+		
+		Wall new_wall = Wall(int(point_index), int(next_point_index), wall_vector.get_vector_normal());
+		new_walls.push_back(new_wall);
+	}
+	
+	return new_walls;
 }
 
 

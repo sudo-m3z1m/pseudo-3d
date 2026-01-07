@@ -2,8 +2,8 @@
 #define PHYSICS_COMPONENT_HPP
 
 #include <stdio.h>
-#include "../../geometry/shape-component.hpp"
-#include "../../../types/math/vector2D.hpp"
+#include "shape-component.hpp"
+#include "vector2D.hpp"
 
 class PhysicsComponent
 {

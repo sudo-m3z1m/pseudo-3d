@@ -34,19 +34,6 @@ float is_point_on_line(Vector2D<float> point, Line line)
 	return (line.a * point.x) + (line.b * point.y) + line.c;
 }
 
-std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> points)
-{
-	std::vector<Wall> new_walls;
-	for(size_t point_index = 0; point_index < points.size(); point_index++)
-	{
-		const size_t next_point_index = (point_index + 1) % points.size();
-		Vector2D<float> normal = (points[next_point_index] - points[point_index]).rotate_vector(PI / 2);
-		Wall new_wall = Wall(int(point_index), int(next_point_index), normal.normalize_vector_2d());
-	}
-	
-	return new_walls;
-}
-
 //std::vector<Vector2D<float>>* separate_shape_by_line(std::vector<Vector2D<float>> shape_points, Line separate_line)
 //{
 //	size_t next_point_index;
