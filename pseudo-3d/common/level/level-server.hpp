@@ -24,7 +24,6 @@ public:
 	std::vector<BSPShape> separate_shape_by_line(Line line, BSPShape shape);
 	void separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_shapes);
 	void sort_shapes(Line line, std::vector<BSPShape>* front, std::vector<BSPShape>* back, std::vector<BSPShape> shapes);
-	std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> points);
 	
 	std::vector<BSPShape> generate_bsp_shapes();
 };

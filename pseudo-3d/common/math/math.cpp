@@ -34,76 +34,21 @@ float is_point_on_line(Vector2D<float> point, Line line)
 	return (line.a * point.x) + (line.b * point.y) + line.c;
 }
 
-//std::vector<Vector2D<float>>* separate_shape_by_line(std::vector<Vector2D<float>> shape_points, Line separate_line)
-//{
-//	size_t next_point_index;
-//
-//	std::vector<Vector2D<float>>* new_shapes = new std::vector<Vector2D<float>>[2];
-//	
-//	int f_point_k, s_point_k;
-//	int f_point_side_index, s_point_side_index;
-//	
-//	for(size_t point_index = 0; point_index < shape_points.size(); point_index++)
-//	{
-//		next_point_index = (point_index + 1) % shape_points.size();
-//
-//		Vector2D<float> f_point = shape_points[point_index], s_point = shape_points[next_point_index];
-//		
-//		f_point_k = is_point_on_line(f_point, separate_line);
-//		s_point_k = is_point_on_line(s_point, separate_line);
-//		f_point_side_index = std::signbit(f_point_k);
-//		s_point_side_index = std::signbit(s_point_k);
-//		
-//		if(f_point_k == 0 || s_point_k == 0)
-//		{
-//			const int points_index = f_point_side_index + s_point_side_index;
-//			new_shapes[points_index].push_back(f_point);
-//			new_shapes[points_index].push_back(s_point);
-//			continue;
-//		}
-//		
-//		if (f_point_side_index != s_point_side_index)
-//		{
-////			Vector2D<float> back_point = (shape_points[point_index] * int(f_point_k > 0)) +
-////			(shape_points[next_point_index] * int(s_point_k > 0));
-////			Vector2D<float> front_point = (shape_points[point_index] * int(f_point_k < 0)) +
-////			(shape_points[next_point_index] * int(s_point_k < 0));
-//			Vector2D<float> new_point = get_line_segment_line_intersection(f_point, s_point, separate_line);
-//			
-//			new_shapes[f_point_side_index].push_back(f_point); new_shapes[f_point_side_index].push_back(new_point);
-//			new_shapes[s_point_side_index].push_back(new_point); new_shapes[s_point_side_index].push_back(s_point);
-////			new_shapes[0].push_back(back_point); new_shapes[0].push_back(new_point);
-////			new_shapes[1].push_back(new_point); new_shapes[1].push_back(front_point);
-//			
-//			continue;
-//		}
-//		
-//		new_shapes[f_point_side_index].push_back(shape_points[point_index]);
-//		new_shapes[s_point_side_index].push_back(shape_points[next_point_index]);
-//	}
-//	
-//	clear_separated_shape(&new_shapes[0]);
-//	clear_separated_shape(&new_shapes[1]);
-//	
-//	return new_shapes;
-//}
-//
-//void clear_separated_shape(std::vector<Vector2D<float>>* points)
-//{
-//	size_t next_point_index, point_index = 0;
-//	Vector2D<float> current_point, next_point;
-//	
-//	while(point_index < points->size())
-//	{
-//		next_point_index = (point_index + 1) % points->size();
-//		current_point = (*points)[point_index];
-//		next_point = (*points)[next_point_index];
-//		
-//		if (current_point != next_point)
-//		{
-//			point_index++;
-//			continue;
-//		}
-//		points->erase(points->begin() + point_index);
-//	}
-//}
+std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> points)
+{
+	std::vector<Wall> new_walls;
+	for(size_t point_index = 0; point_index < points.size(); point_index++)
+	{
+		const size_t next_point_index = (point_index + 1) % points.size();
+		
+		Vector2D<float> wall_vector = points[next_point_index] - points[point_index];
+		Vector2D<float> normal = wall_vector.get_vector_normal();
+		normal.x *= -1; normal.y *= -1;
+		
+		Wall new_wall = Wall(int(point_index), int(next_point_index), normal);
+		
+		new_walls.push_back(new_wall);
+	}
+	
+	return new_walls;
+}
