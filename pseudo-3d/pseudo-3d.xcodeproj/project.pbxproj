@@ -53,11 +53,6 @@
 			path = types;
 			sourceTree = "<group>";
 		};
-		01792BBE2DFA3F3000DB57F4 /* components */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = components;
-			sourceTree = "<group>";
-		};
 		0197C4282DF459E400AB0564 /* pseudo-3d */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "pseudo-3d";
@@ -110,7 +105,6 @@
 				01DFD0062E32E4D6006707AA /* gameplay */,
 				013EB2AE2E1480F200B1E178 /* types */,
 				01A423162DFB7E4A00D7075E /* assets */,
-				01792BBE2DFA3F3000DB57F4 /* components */,
 				0197C4532DF5915300AB0564 /* core */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				0197C43C2DF45A5200AB0564 /* Frameworks */,
@@ -152,7 +146,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				013EB2AE2E1480F200B1E178 /* types */,
-				01792BBE2DFA3F3000DB57F4 /* components */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				0197C4532DF5915300AB0564 /* core */,
 				01A423162DFB7E4A00D7075E /* assets */,
