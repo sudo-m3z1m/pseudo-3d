@@ -11,6 +11,7 @@ ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2
 	this->type = type;
 	this->radius = radius;
 	this->points = points;
+	walls = get_walls_from_shape_points(points);
 }
 
 Vector2D<float> ShapeComponent::get_line_normal(int f_point_index, int s_point_index)

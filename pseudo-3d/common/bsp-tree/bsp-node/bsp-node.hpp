@@ -12,18 +12,14 @@
 
 class BSPNode
 {
-private:
-	Line separate_line;
-
 public:
-	BSPShape shape;
+	Line separate_line;
+	BSPShape shape; //TODO: Need to be a pointer
 	BSPNode* back;
 	BSPNode* front;
 	
 	BSPNode();
 	~BSPNode();
-	
-	void sort_shapes(Line line, std::vector<BSPShape>* front, std::vector<BSPShape>* back, std::vector<BSPShape> shapes);
 };
 
 #endif

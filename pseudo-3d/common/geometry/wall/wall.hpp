@@ -1,0 +1,23 @@
+#ifndef WALL_HPP
+#define WALL_HPP
+
+#include <stdio.h>
+#include <vector>
+
+#include "vector2D.hpp"
+
+class Wall
+{
+private:
+	size_t f_p_index, s_p_index;
+
+public:
+	Vector2D<float> normal;
+	
+	Wall();
+	Wall(int f_p_index, int s_p_index, Vector2D<float> normal);
+	
+	std::vector<Vector2D<float>> get_wall_points(std::vector<Vector2D<float>> shape_points); //TODO: Maybe friendly class for shapes?
+};
+
+#endif

@@ -3,7 +3,10 @@
 
 #include <stdio.h>
 #include <vector>
-#include "../../types/math/vector2D.hpp"
+
+#include "vector2D.hpp"
+#include "wall.hpp"
+#include "math.hpp"
 
 enum ShapeType
 {
@@ -22,6 +25,7 @@ public:
 
 	ShapeType type;
 	std::vector<Vector2D<float>> points;
+	std::vector<Wall> walls;
 	
 	//TODO: Getting SAT projection with shape separation
 	Vector2D<float> get_line_normal(int f_point, int s_point);

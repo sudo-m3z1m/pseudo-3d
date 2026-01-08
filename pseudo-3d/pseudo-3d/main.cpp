@@ -4,9 +4,11 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+
 #include "physics-server.hpp"
 #include "physics-component.hpp"
 #include "level-server.hpp"
+#include "math.hpp"
 
 //PhysicsServer physics_server;
 SDL_Window* main_window;
@@ -60,17 +62,17 @@ void create_level_server()
 {
 	level_server = new LevelServer();
 	
-	std::vector<Vector2D<float>> f_tri_points = {Vector2D<float>(1.0f, 2.0f), Vector2D<float>(2.0f, 1.0f), Vector2D<float>(3.0f, 2.0f)};
-	std::vector<Vector2D<float>> s_tri_points = {Vector2D<float>(4.0f, 2.0f), Vector2D<float>(5.0f, 3.0f), Vector2D<float>(6.0f, 2.0f)};
-	std::vector<Vector2D<float>> t_tri_points = {Vector2D<float>(9.0f, 3.0f), Vector2D<float>(9.0f, 1.0f), Vector2D<float>(10.0f, 1.0f)};
+	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(1.0f, 1.0f), Vector2D<float>(3.0f, 1.0f), Vector2D<float>(3.0f, 2.0f)};
+	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
+	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
 	
-	ShapeComponent f_triangle_shape = ShapeComponent(POLYGON, 0, f_tri_points);
-	ShapeComponent s_triangle_shape = ShapeComponent(POLYGON, 0, s_tri_points);
-	ShapeComponent t_triangle_shape = ShapeComponent(POLYGON, 0, t_tri_points);
+	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points);
+	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points);
+	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points);
 	
-	level_server->add_new_polygon(f_triangle_shape);
-	level_server->add_new_polygon(s_triangle_shape);
-	level_server->add_new_polygon(t_triangle_shape);
+	level_server->add_new_polygon(f_shape);
+	level_server->add_new_polygon(s_shape);
+	level_server->add_new_polygon(t_shape);
 	
 	level_server->create_bsp_tree();
 	
