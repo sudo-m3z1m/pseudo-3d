@@ -52,3 +52,14 @@ std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> point
 	
 	return new_walls;
 }
+
+Line* get_frustrum(float angle)
+{
+	Line* frustrum = new Line[2];
+	Vector2D<float> origin_vector = Vector2D<float>(1.0f, 0.0f);
+	
+	frustrum[0] = Line(Vector2D<float>(0.0f, 0.0f), origin_vector.rotate_vector(-angle / 2));
+	frustrum[1] = Line(Vector2D<float>(0.0f, 0.0f), origin_vector.rotate_vector(angle / 2));
+	
+	return frustrum;
+}

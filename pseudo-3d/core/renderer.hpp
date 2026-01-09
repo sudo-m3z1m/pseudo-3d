@@ -1,19 +1,16 @@
-#ifndef RENDERER_H
-#define RENDERER_H
-
-#define INIT_SCREEN_WIDTH 640
-#define INIT_SCREEN_HEIGHT 640 //It needs to be in config
-#define TEXTURE_SIZE 64
+#ifndef RENDERER_HPP
+#define RENDERER_HPP
 	
 #include <stdio.h>
 #include <SDL3/SDL.h>
 
 #include "color.hpp"
+#include "camera.hpp"
 
 class Renderer
 {
 private:
-//	Camera* current_camera;
+	Camera* current_camera;
 	SDL_Renderer* application_renderer;
 	SDL_Surface* color_buffer;
 	SDL_Surface* textures_buffer;
