@@ -19,7 +19,7 @@ void LevelServer::add_new_polygon(ShapeComponent new_polygon)
 
 void LevelServer::create_bsp_tree()
 {
-	std::vector<BSPShape> bsp_shapes = generate_bsp_shapes();
+	std::vector<BSPShape*> bsp_shapes = generate_bsp_shapes();
 	bsp_tree = new BSPNode();
 	
 	separate_bsp_node(bsp_tree, bsp_shapes);
@@ -27,9 +27,9 @@ void LevelServer::create_bsp_tree()
 
 
 //Returns back to front vector
-std::vector<BSPShape> LevelServer::separate_shape_by_line(Line line, BSPShape shape)
+std::vector<BSPShape*> LevelServer::separate_shape_by_line(Line line, BSPShape shape)
 {
-	std::vector<BSPShape> new_shapes(2);
+	std::vector<BSPShape*> new_shapes = {new BSPShape(), new BSPShape()};
 	
 	std::vector<Vector2D<float>> shape_points = shape.points;
 	std::vector<Wall> shape_walls = shape.walls;
@@ -52,22 +52,22 @@ std::vector<BSPShape> LevelServer::separate_shape_by_line(Line line, BSPShape sh
 		
 		if(points_k[0] == 0 || points_k[1] == 0)
 		{
-			new_shapes[points_indeces[0] + points_indeces[1]].add_new_wall(wall_points[0], wall_points[1], current_wall.normal);
+			new_shapes[points_indeces[0] + points_indeces[1]]->add_new_wall(wall_points[0], wall_points[1], current_wall.normal);
 			continue;
 		}
 		if(points_k[0] != points_k[1])
 		{
-			new_shapes[points_indeces[0]].add_new_wall(wall_points[0], intersection_point, current_wall.normal);
-			new_shapes[points_indeces[1]].add_new_wall(intersection_point, wall_points[1], current_wall.normal);
+			new_shapes[points_indeces[0]]->add_new_wall(wall_points[0], intersection_point, current_wall.normal);
+			new_shapes[points_indeces[1]]->add_new_wall(intersection_point, wall_points[1], current_wall.normal);
 			continue;
 		}
-		new_shapes[points_indeces[0]].add_new_wall(wall_points[0], wall_points[1], current_wall.normal);
+		new_shapes[points_indeces[0]]->add_new_wall(wall_points[0], wall_points[1], current_wall.normal);
 	}
 	
 	return new_shapes;
 }
 
-void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_shapes)
+void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape*> node_shapes)
 {
 	if (node_shapes.size() == 1)
 	{
@@ -75,15 +75,16 @@ void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_sh
 		return;
 	}
 	
-	BSPShape current_shape = node_shapes[0];
+	BSPShape current_shape = *node_shapes[0];
 	
 	for (Wall current_wall : current_shape.walls)
 	{
-		std::vector<BSPShape> front, back;
+		std::vector<BSPShape*> front, back;
 		std::vector<Vector2D<float>> wall_points = current_wall.get_wall_points(current_shape.points);
 		Line separation_line = Line(wall_points[0], wall_points[1]);
 		
 		sort_shapes(separation_line, &front, &back, node_shapes);
+		size_t f_size = front.size(), b_size = back.size(), s_size = node_shapes.size();
 		if (!front.size() || !back.size()) continue;
 		
 		node_shapes.clear();
@@ -95,13 +96,13 @@ void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape> node_sh
 	}
 }
 
-void LevelServer::sort_shapes(Line line, std::vector<BSPShape>* front, std::vector<BSPShape>* back, std::vector<BSPShape> shapes)
+void LevelServer::sort_shapes(Line line, std::vector<BSPShape*>* front, std::vector<BSPShape*>* back, std::vector<BSPShape*> shapes)
 {
-	for (BSPShape current_shape : shapes)
+	for (BSPShape* current_shape : shapes)
 	{
 		Vector2D<float> point;
-		std::vector<Vector2D<float>> shape_points = current_shape.points;
-		std::vector<Wall> shape_walls = current_shape.walls;
+		std::vector<Vector2D<float>> shape_points = current_shape->points;
+		std::vector<Wall> shape_walls = current_shape->walls;
 		
 		int points_side_count = 0;
 		int neutral_points_count = 0;
@@ -120,7 +121,7 @@ void LevelServer::sort_shapes(Line line, std::vector<BSPShape>* front, std::vect
 		
 		if(abs(points_side_count) + neutral_points_count != shape_points.size())
 		{
-			std::vector<BSPShape> new_shapes = separate_shape_by_line(line, current_shape); //Works only for convex shapes
+			std::vector<BSPShape*> new_shapes = separate_shape_by_line(line, *current_shape); //Works only for convex shapes
 			
 			back->push_back(new_shapes[0]);
 			front->push_back(new_shapes[1]);
@@ -132,12 +133,12 @@ void LevelServer::sort_shapes(Line line, std::vector<BSPShape>* front, std::vect
 	}
 }
 
-std::vector<BSPShape> LevelServer::generate_bsp_shapes()
+std::vector<BSPShape*> LevelServer::generate_bsp_shapes()
 {
-	std::vector<BSPShape> bsp_shapes;
+	std::vector<BSPShape*> bsp_shapes;
 	for(size_t shape_index = 0; shape_index < level_polygons.size(); shape_index++)
 	{
-		BSPShape new_bsp_shape = BSPShape(&level_polygons[shape_index]);
+		BSPShape* new_bsp_shape = new BSPShape(&level_polygons[shape_index]);
 		bsp_shapes.push_back(new_bsp_shape);
 	}
 	return bsp_shapes;
