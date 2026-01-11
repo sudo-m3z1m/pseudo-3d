@@ -13,9 +13,10 @@ private:
 	Line frustrum[2]; //TODO: geometrical frustrum. Maybe I can use angle frustrum
 	float field_of_view;
 	
-	Vector2D<float> position;
 	float angle;
 public:
+	Vector2D<float> position;
+	
 	Camera();
 	Camera(float field_of_view, Vector2D<float> position, float angle);
 	

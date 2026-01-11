@@ -35,6 +35,7 @@ public:
 	bool is_screen_space_free(int x_point);
 	
 	void render_node(BSPNode* node);
+	void render_bsp_shape(BSPNode* node);
 	void render_horizontal();
 	
 	void draw_pixel_in_buffer(int x, int y, Color color);

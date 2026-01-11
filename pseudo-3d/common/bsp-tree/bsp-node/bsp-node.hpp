@@ -14,7 +14,7 @@ class BSPNode
 {
 public:
 	Line separate_line;
-	BSPShape shape; //TODO: Need to be a pointer
+	BSPShape shape; //TODO: Need to be a pointer for shape in heap
 	BSPNode* back;
 	BSPNode* front;
 	

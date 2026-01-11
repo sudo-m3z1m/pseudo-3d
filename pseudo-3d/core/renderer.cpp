@@ -42,6 +42,27 @@ bool Renderer::is_screen_space_free(int x_point)
 
 void Renderer::render_node(BSPNode* node)
 {
+	if (!node->back && !node->front)
+	{
+		render_bsp_shape(node);
+		return;
+	}
+	
+	Line node_separate_line = node->separate_line;
+	const float position_side = is_point_on_line(current_camera->position, node_separate_line);
+	if (position_side <= 0)
+	{
+		render_node(node->front);
+		render_node(node->back);
+		return;
+	}
+	render_node(node->back);
+	render_node(node->front);
+	return;
+}
+
+void Renderer::render_bsp_shape(BSPNode* node)
+{
 	
 }
 
