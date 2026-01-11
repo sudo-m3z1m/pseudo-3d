@@ -24,8 +24,16 @@ Camera::Camera(float field_of_view, Vector2D<float> position, float angle)
 	delete[] temp_frustrum;
 }
 
-bool Camera::is_shape_in_frustrum()
+bool Camera::is_shape_in_frustrum(std::vector<Vector2D<float>> shape_points)
 {
+	const float min_angle = angle - (field_of_view / 2), max_angle = angle + (field_of_view / 2);
+	float point_angle;
+	
+	for(Vector2D<float> point : shape_points)
+	{
+		point_angle = (point - position).get_vector_rotation();
+		if(point_angle >= min_angle && point_angle <= max_angle) return true;
+	}
 	return false; //TODO: Need to consider about angles
 }
 

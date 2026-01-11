@@ -6,20 +6,36 @@
 
 #include "color.hpp"
 #include "camera.hpp"
+#include "level-server.hpp"
+
+struct ScreenRange
+{
+	int f_point, s_point;
+};
 
 class Renderer
 {
 private:
 	Camera* current_camera;
+	LevelServer* level_server;
 	SDL_Renderer* application_renderer;
+	SDL_Window* application_window;
+	
 	SDL_Surface* color_buffer;
-	SDL_Surface* textures_buffer;
+	std::vector<ScreenRange> screen_width_buffer;
+	std::vector<SDL_Surface*> textures_buffer;
 	
 	int screen_width, screen_height;
 	
 public:
 	Renderer();
+	Renderer(Camera* camera, LevelServer* level_server, int width, int height);
 	~Renderer();
+	
+	bool is_screen_space_free(int x_point);
+	
+	void render_node(BSPNode* node);
+	void render_horizontal();
 	
 	void draw_pixel_in_buffer(int x, int y, Color color);
 	void render_buffer();
