@@ -43,7 +43,7 @@ std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> point
 		
 		Vector2D<float> wall_vector = points[next_point_index] - points[point_index];
 		Vector2D<float> normal = wall_vector.get_vector_normal();
-		normal.x *= -1; normal.y *= -1;
+//		normal.x *= -1; normal.y *= -1;
 		
 		Wall new_wall = Wall(int(point_index), int(next_point_index), normal);
 		

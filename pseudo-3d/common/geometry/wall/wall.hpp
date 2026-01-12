@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "vector2D.hpp"
+#include "color.hpp"
 
 class Wall
 {
@@ -13,6 +14,7 @@ private:
 
 public:
 	Vector2D<float> normal;
+	Color color;
 	
 	Wall();
 	Wall(int f_p_index, int s_p_index, Vector2D<float> normal);

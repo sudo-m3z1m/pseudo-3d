@@ -8,12 +8,13 @@
 #include "physics-server.hpp"
 #include "physics-component.hpp"
 #include "level-server.hpp"
+#include "camera.hpp"
+#include "renderer.hpp"
 #include "math.hpp"
 
 //PhysicsServer physics_server;
-SDL_Window* main_window;
-SDL_Renderer* main_renderer;
 LevelServer* level_server;
+Renderer* renderer;
 
 //PhysicsComponent* circle;
 
@@ -81,12 +82,9 @@ void create_level_server()
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
-	SDL_CreateWindowAndRenderer("PSEUDO-NAME", 640, 640, SDL_WINDOW_RESIZABLE, &main_window, &main_renderer);
-	
+	Camera* camera = new Camera(DEFAULT_FOV, Vector2D<float>(-2.0f, 2.0f), 0.2);
 	create_level_server();
-	
-//	physics_server = PhysicsServer();
-//	create_physics_components();
+	renderer = new Renderer(camera, level_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
 	
 	return SDL_APP_CONTINUE;
 }
@@ -102,14 +100,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	circle->position = circle->position + (direction * 0.1);
 	
 //	physics_server.calculate_sector_colliding();
-	
-	SDL_SetRenderScale(main_renderer, 4, 4);
-	SDL_SetRenderDrawColor(main_renderer, 0, 0, 0, 255);
-	SDL_RenderClear(main_renderer);
-	
-//	physics_server.render_physics_components(main_renderer);
-//	physics_server.render_physics_components(main_renderer);
-	SDL_RenderPresent(main_renderer);
+	renderer->render();
 	
 	return SDL_APP_CONTINUE;
 }

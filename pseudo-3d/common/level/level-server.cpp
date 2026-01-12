@@ -84,7 +84,6 @@ void LevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape*> node_s
 		Line separation_line = Line(wall_points[0], wall_points[1]);
 		
 		sort_shapes(separation_line, &front, &back, node_shapes);
-		size_t f_size = front.size(), b_size = back.size(), s_size = node_shapes.size();
 		if (!front.size() || !back.size()) continue;
 		
 		node_shapes.clear();

@@ -12,9 +12,10 @@ class LevelServer
 {
 private:
 	std::vector<ShapeComponent> level_polygons;
-	BSPNode* bsp_tree;
-
+	
 public:
+	BSPNode* bsp_tree;
+	
 	LevelServer();
 	~LevelServer();
 	

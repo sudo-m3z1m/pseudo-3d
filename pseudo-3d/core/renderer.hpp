@@ -36,11 +36,12 @@ public:
 	int get_point_on_camera_projection(Vector2D<float> point);
 	int get_wall_height(Vector2D<float> point);
 	
+	void render();
 	void render_node(BSPNode* node);
 	void render_bsp_shape(BSPNode* node);
-	void render_wall(std::vector<Vector2D<float>> wall_points);
+	void render_wall(std::vector<Vector2D<float>> wall_points, Color color);
 	void render_horizontal();
-	void render_column(int pos_x, int height);
+	void render_column(int pos_x, int height, Color color);
 	
 	void draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color);
 	void render_buffer();

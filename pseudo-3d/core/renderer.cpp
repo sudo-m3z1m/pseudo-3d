@@ -15,12 +15,12 @@ Renderer::Renderer()
 }
 
 Renderer::Renderer(Camera* camera, LevelServer* level_server, int width, int height)
-{
+{	
 	screen_width = width;
 	screen_height = height;
 	
 	current_camera = camera;
-	level_server = level_server;
+	this->level_server = level_server;
 	SDL_CreateWindowAndRenderer(WINDOW_NAME, screen_width, screen_height, SDL_WINDOW_RESIZABLE, &application_window, &application_renderer);
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	
@@ -55,13 +55,29 @@ int Renderer::get_point_on_camera_projection(Vector2D<float> point)
 int Renderer::get_wall_height(Vector2D<float> point)
 {
 	Vector2D<float> vector_to_point = point - current_camera->position;
-	const float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
-	const float vector_length = vector_to_point.length * cos(relative_vector_rot); //FIXME: Need to make it with constant of renderer
+//	const float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
+	const float vector_length = vector_to_point * Vector2D<float>(cos(current_camera->rotation), sin(current_camera->rotation));
 	
-	int height = (screen_height / vector_length) * (screen_width / 2) / (tan(current_camera->field_of_view / 2)); //FIXME: static height
+	int height = (1 / vector_length) * (screen_height / 2) / (tan(current_camera->field_of_view / 2)); //FIXME: static height
 	height = SDL_min(screen_height, SDL_max(0, height));
 	
 	return height;
+}
+
+void Renderer::render()
+{
+	SDL_SetRenderScale(application_renderer, 4, 4);
+	SDL_SetRenderDrawColor(application_renderer, 0, 0, 0, 255);
+	SDL_RenderClear(application_renderer);
+	
+	SDL_LockSurface(color_buffer);
+	
+	render_node(level_server->bsp_tree);
+	
+	SDL_UnlockSurface(color_buffer);
+	
+	render_buffer();
+	SDL_RenderPresent(application_renderer);
 }
 
 void Renderer::render_node(BSPNode* node)
@@ -96,17 +112,24 @@ void Renderer::render_bsp_shape(BSPNode* node)
 	
 	for(Wall current_wall : shape->walls)
 	{
-		if(camera_normal * current_wall.normal) continue;
+		if((camera_normal * current_wall.normal) >= 0) continue;
 		
 		std::vector<Vector2D<float>> wall_points = current_wall.get_wall_points(shape_points);
-		render_wall(wall_points);
+		render_wall(wall_points, current_wall.color);
 	}
 }
 
-void Renderer::render_wall(std::vector<Vector2D<float>> wall_points)
+void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color)
 {
 	int f_edge_pos_x = get_point_on_camera_projection(wall_points[0]);
 	int s_edge_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+	if(f_edge_pos_x > s_edge_pos_x)
+	{
+		int temp_edge_pos = f_edge_pos_x;
+		f_edge_pos_x = s_edge_pos_x;
+		s_edge_pos_x = temp_edge_pos;
+	}
 	
 	ScreenRange new_screen_range = {f_edge_pos_x, s_edge_pos_x};
 	if(!is_screen_space_free(new_screen_range)) return;
@@ -116,9 +139,9 @@ void Renderer::render_wall(std::vector<Vector2D<float>> wall_points)
 	
 	for(int wall_x = f_edge_pos_x; wall_x <= s_edge_pos_x; wall_x++)
 	{
-		float height_k = (wall_x - f_edge_pos_x) / (s_edge_pos_x - f_edge_pos_x);
+		float height_k = float(wall_x - f_edge_pos_x) / float(s_edge_pos_x - f_edge_pos_x);
 		int wall_height = f_edge_height + height_k * (s_edge_height - f_edge_height);
-		render_column(wall_x, wall_height);
+		render_column(wall_x, wall_height, color); //FIXME: Coloring is stupid shit. Broken architecture
 	}
 }
 
@@ -127,14 +150,12 @@ void Renderer::render_horizontal()
 	
 }
 
-void Renderer::render_column(int pos_x, int height) //TODO: It doesn't had height. It had top and bottom
+void Renderer::render_column(int pos_x, int height, Color color) //TODO: It doesn't had height. It had top and bottom
 {
-	Color wall_color = Color(255, 255, 255, 255);
-	
 	for(int cur_height = 0; cur_height < height / 2; cur_height++)
 	{
-		draw_pixel_in_buffer(Vector2D<int>(pos_x, (height / 2) + cur_height), wall_color);
-		draw_pixel_in_buffer(Vector2D<int>(pos_x, (height / 2) - cur_height), wall_color);
+		draw_pixel_in_buffer(Vector2D<int>(pos_x, (screen_height / 2) + cur_height), color);
+		draw_pixel_in_buffer(Vector2D<int>(pos_x, (screen_height / 2) - cur_height), color);
 	}
 }
 
