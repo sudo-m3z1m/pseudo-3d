@@ -2,7 +2,7 @@
 
 Camera::Camera()
 {
-	angle = 0;
+	rotation = 0;
 	position = Vector2D<float>();
 	field_of_view = DEFAULT_FOV;
 	
@@ -12,9 +12,9 @@ Camera::Camera()
 	delete[] temp_frustrum;
 }
 
-Camera::Camera(float field_of_view, Vector2D<float> position, float angle)
+Camera::Camera(float field_of_view, Vector2D<float> position, float rotation)
 {
-	this->angle = angle;
+	this->rotation = rotation;
 	this->position = position;
 	this->field_of_view = field_of_view;
 	
@@ -26,7 +26,7 @@ Camera::Camera(float field_of_view, Vector2D<float> position, float angle)
 
 bool Camera::is_shape_in_frustrum(std::vector<Vector2D<float>> shape_points)
 {
-	const float min_angle = angle - (field_of_view / 2), max_angle = angle + (field_of_view / 2);
+	const float min_angle = rotation - (field_of_view / 2), max_angle = rotation + (field_of_view / 2);
 	float point_angle;
 	
 	for(Vector2D<float> point : shape_points)
@@ -37,10 +37,10 @@ bool Camera::is_shape_in_frustrum(std::vector<Vector2D<float>> shape_points)
 	return false; //TODO: Need to consider about angles
 }
 
-float Camera::set_camera_angle(float new_angle)
+float Camera::set_camera_rotation(float new_rotation)
 {
-	angle = new_angle;
-	return angle;
+	rotation = new_rotation;
+	return rotation;
 }
 
 Vector2D<float> Camera::set_camera_position(Vector2D<float> new_position)

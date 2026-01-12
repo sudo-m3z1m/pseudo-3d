@@ -32,13 +32,17 @@ public:
 	Renderer(Camera* camera, LevelServer* level_server, int width, int height);
 	~Renderer();
 	
-	bool is_screen_space_free(int x_point);
+	bool is_screen_space_free(ScreenRange new_range);
+	int get_point_on_camera_projection(Vector2D<float> point);
+	int get_wall_height(Vector2D<float> point);
 	
 	void render_node(BSPNode* node);
 	void render_bsp_shape(BSPNode* node);
+	void render_wall(std::vector<Vector2D<float>> wall_points);
 	void render_horizontal();
+	void render_column(int pos_x, int height);
 	
-	void draw_pixel_in_buffer(int x, int y, Color color);
+	void draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color);
 	void render_buffer();
 };
 

@@ -35,14 +35,38 @@ Renderer::~Renderer()
 	delete color_buffer;
 }
 
-bool Renderer::is_screen_space_free(int x_point)
+bool Renderer::is_screen_space_free(ScreenRange new_range)
 {
-	return x_point >= 0 && x_point <= screen_width; //FIXME: Probably need to change
+	return true;
+}
+
+int Renderer::get_point_on_camera_projection(Vector2D<float> point)
+{
+	Vector2D<float> vector_to_point = point - current_camera->position;
+	const float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
+	
+	const float h_perspective_k = (screen_width / 2) / (tan(current_camera->field_of_view / 2));
+	int x_projection = screen_width / 2 + (h_perspective_k * tan(relative_vector_rot));
+	x_projection = SDL_min(screen_width, SDL_max(0, x_projection));
+	
+	return x_projection;
+}
+
+int Renderer::get_wall_height(Vector2D<float> point)
+{
+	Vector2D<float> vector_to_point = point - current_camera->position;
+	const float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
+	const float vector_length = vector_to_point.length * cos(relative_vector_rot); //FIXME: Need to make it with constant of renderer
+	
+	int height = (screen_height / vector_length) * (screen_width / 2) / (tan(current_camera->field_of_view / 2)); //FIXME: static height
+	height = SDL_min(screen_height, SDL_max(0, height));
+	
+	return height;
 }
 
 void Renderer::render_node(BSPNode* node)
 {
-	if (!node->back && !node->front)
+	if (node->shape)
 	{
 		render_bsp_shape(node);
 		return;
@@ -63,7 +87,39 @@ void Renderer::render_node(BSPNode* node)
 
 void Renderer::render_bsp_shape(BSPNode* node)
 {
+	BSPShape* shape = node->shape;
+	std::vector<Wall> shape_walls = shape->walls;
+	std::vector<Vector2D<float>> shape_points = shape->points;
+	Vector2D<float> camera_normal = Vector2D<float>(1, 0).rotate_vector(current_camera->rotation).normalize_vector_2d();
 	
+	if(!current_camera->is_shape_in_frustrum(shape_points)) return;
+	
+	for(Wall current_wall : shape->walls)
+	{
+		if(camera_normal * current_wall.normal) continue;
+		
+		std::vector<Vector2D<float>> wall_points = current_wall.get_wall_points(shape_points);
+		render_wall(wall_points);
+	}
+}
+
+void Renderer::render_wall(std::vector<Vector2D<float>> wall_points)
+{
+	int f_edge_pos_x = get_point_on_camera_projection(wall_points[0]);
+	int s_edge_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+	ScreenRange new_screen_range = {f_edge_pos_x, s_edge_pos_x};
+	if(!is_screen_space_free(new_screen_range)) return;
+	
+	int f_edge_height = get_wall_height(wall_points[0]);
+	int s_edge_height = get_wall_height(wall_points[1]);
+	
+	for(int wall_x = f_edge_pos_x; wall_x <= s_edge_pos_x; wall_x++)
+	{
+		float height_k = (wall_x - f_edge_pos_x) / (s_edge_pos_x - f_edge_pos_x);
+		int wall_height = f_edge_height + height_k * (s_edge_height - f_edge_height);
+		render_column(wall_x, wall_height);
+	}
 }
 
 void Renderer::render_horizontal()
@@ -71,12 +127,33 @@ void Renderer::render_horizontal()
 	
 }
 
-void Renderer::draw_pixel_in_buffer(int x, int y, Color color)
+void Renderer::render_column(int pos_x, int height) //TODO: It doesn't had height. It had top and bottom
 {
+	Color wall_color = Color(255, 255, 255, 255);
 	
+	for(int cur_height = 0; cur_height < height / 2; cur_height++)
+	{
+		draw_pixel_in_buffer(Vector2D<int>(pos_x, (height / 2) + cur_height), wall_color);
+		draw_pixel_in_buffer(Vector2D<int>(pos_x, (height / 2) - cur_height), wall_color);
+	}
+}
+
+void Renderer::draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color)
+{
+	const int buffer_pitch = color_buffer->pitch;
+	const int pixel_size = buffer_pitch / screen_width;
+	const int pixel_index = draw_pos.y * buffer_pitch + draw_pos.x * pixel_size;
+	uint8_t* buffer_pixels = (uint8_t*)color_buffer->pixels;
+	
+	buffer_pixels[pixel_index] = color.r;
+	buffer_pixels[pixel_index + 1] = color.g;
+	buffer_pixels[pixel_index + 2] = color.b;
+	buffer_pixels[pixel_index + 3] = color.a;
 }
 
 void Renderer::render_buffer()
 {
-	
+	SDL_Texture* screen_texture = SDL_CreateTextureFromSurface(application_renderer, color_buffer);
+	SDL_RenderTexture(application_renderer, screen_texture, NULL, NULL);
+	SDL_DestroyTexture(screen_texture);
 }
