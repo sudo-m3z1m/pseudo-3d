@@ -21,7 +21,7 @@ class ShapeComponent
 {
 public:
 	ShapeComponent();
-	ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points);
+	ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls);
 
 	ShapeType type;
 	std::vector<Vector2D<float>> points;

@@ -6,12 +6,13 @@ ShapeComponent::ShapeComponent()
 	radius = 0;
 }
 
-ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points)
+ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls)
 {
 	this->type = type;
 	this->radius = radius;
 	this->points = points;
-	walls = get_walls_from_shape_points(points);
+	this->walls = walls;
+	if(!walls.size()) this->walls = get_walls_from_shape_points(points); //TODO: walls will be readed from map file
 }
 
 Vector2D<float> ShapeComponent::get_line_normal(int f_point_index, int s_point_index)

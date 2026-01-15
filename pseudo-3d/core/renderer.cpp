@@ -35,18 +35,31 @@ Renderer::~Renderer()
 	delete color_buffer;
 }
 
-bool Renderer::is_screen_space_free(ScreenRange new_range)
+float Renderer::get_delta_ticks()
 {
-	return true;
+	float new_ticks = SDL_GetTicks();
+	float new_delta = (new_ticks - prev_ticks) * 0.001f;
+	prev_ticks = SDL_GetTicks();
+	
+	delta = new_delta;
+	
+	return new_delta;
+}
+
+ScreenRange Renderer::is_screen_space_free(ScreenRange new_range)
+{
+	ScreenRange screen_range;
+	
+	return screen_range;
 }
 
 int Renderer::get_point_on_camera_projection(Vector2D<float> point)
 {
 	Vector2D<float> vector_to_point = point - current_camera->position;
-	const float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
+	float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
 	
 	const float h_perspective_k = (screen_width / 2) / (tan(current_camera->field_of_view / 2));
-	int x_projection = screen_width / 2 + (h_perspective_k * tan(relative_vector_rot));
+	int x_projection = screen_width / 2 - (h_perspective_k * tan(relative_vector_rot));
 	x_projection = SDL_min(screen_width, SDL_max(0, x_projection));
 	
 	return x_projection;
@@ -58,17 +71,24 @@ int Renderer::get_wall_height(Vector2D<float> point)
 //	const float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
 	const float vector_length = vector_to_point * Vector2D<float>(cos(current_camera->rotation), sin(current_camera->rotation));
 	
-	int height = (1 / vector_length) * (screen_height / 2) / (tan(current_camera->field_of_view / 2)); //FIXME: static height
+	int height = (4 / vector_length) * (screen_height / 2) / (tan(current_camera->field_of_view / 2)); //FIXME: static height
 	height = SDL_min(screen_height, SDL_max(0, height));
 	
 	return height;
+}
+
+void Renderer::clear_screen_width_buffer()
+{
+	screen_width_buffer.clear();
 }
 
 void Renderer::render()
 {
 	SDL_SetRenderScale(application_renderer, 4, 4);
 	SDL_SetRenderDrawColor(application_renderer, 0, 0, 0, 255);
+	clear_screen_width_buffer();
 	SDL_RenderClear(application_renderer);
+	SDL_ClearSurface(color_buffer, 0, 0, 0, 255);
 	
 	SDL_LockSurface(color_buffer);
 	
@@ -106,15 +126,20 @@ void Renderer::render_bsp_shape(BSPNode* node)
 	BSPShape* shape = node->shape;
 	std::vector<Wall> shape_walls = shape->walls;
 	std::vector<Vector2D<float>> shape_points = shape->points;
-	Vector2D<float> camera_normal = Vector2D<float>(1, 0).rotate_vector(current_camera->rotation).normalize_vector_2d();
 	
-	if(!current_camera->is_shape_in_frustrum(shape_points)) return;
+	bool is_shape_in_frustrum = current_camera->is_shape_in_frustrum(shape_points);
+	
+	if(!is_shape_in_frustrum) return;
 	
 	for(Wall current_wall : shape->walls)
 	{
-		if((camera_normal * current_wall.normal) >= 0) continue;
-		
 		std::vector<Vector2D<float>> wall_points = current_wall.get_wall_points(shape_points);
+		Vector2D<float> to_wall_vector = wall_points[0] - current_camera->position;
+		
+		if(((to_wall_vector * current_wall.normal) >= 0)) continue;
+		
+		wall_points = current_camera->clip_wall_by_frustrum(wall_points);
+		if(wall_points.size() != 2) continue;
 		render_wall(wall_points, current_wall.color);
 	}
 }
@@ -124,18 +149,17 @@ void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color
 	int f_edge_pos_x = get_point_on_camera_projection(wall_points[0]);
 	int s_edge_pos_x = get_point_on_camera_projection(wall_points[1]);
 	
-	if(f_edge_pos_x > s_edge_pos_x)
-	{
-		int temp_edge_pos = f_edge_pos_x;
-		f_edge_pos_x = s_edge_pos_x;
-		s_edge_pos_x = temp_edge_pos;
-	}
-	
-	ScreenRange new_screen_range = {f_edge_pos_x, s_edge_pos_x};
-	if(!is_screen_space_free(new_screen_range)) return;
-	
 	int f_edge_height = get_wall_height(wall_points[0]);
 	int s_edge_height = get_wall_height(wall_points[1]);
+	
+	if(f_edge_pos_x > s_edge_pos_x)
+	{
+		std::swap(f_edge_pos_x, s_edge_pos_x);
+		std::swap(f_edge_height, s_edge_height);
+	}
+	
+//	ScreenRange new_screen_range = {f_edge_pos_x, s_edge_pos_x};
+//	if(!is_screen_space_free(new_screen_range)) return;
 	
 	for(int wall_x = f_edge_pos_x; wall_x <= s_edge_pos_x; wall_x++)
 	{
@@ -145,7 +169,7 @@ void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color
 	}
 }
 
-void Renderer::render_horizontal()
+void Renderer::render_horizontal() 
 {
 	
 }

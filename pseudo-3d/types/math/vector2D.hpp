@@ -65,12 +65,18 @@ public:
 	}
 	float get_vector_rotation()
 	{
-		float angle = PI / 2;
-		if (x == 0) return angle + PI * (int)(y < 0);
-		
-		angle = atanf(y / x);
-		angle += PI * (int)(x < 0);
-		return angle;
+//		float angle = PI / 2;
+//		if (x == 0) return angle + PI * (int)(y < 0);
+//		
+//		angle = atanf(y / x);
+//		angle += PI * (int)(x < 0);
+//		return angle;
+		float vector_angle = atan2(y, x);
+		return vector_angle;
+	}
+	float cross_product(Vector2D<T> vector)
+	{
+		return x * vector.y - y * vector.x;
 	}
 	Vector2D<T> rotate_vector(float rotation)
 	{
@@ -92,7 +98,7 @@ public:
 		Vector2D new_vector = Vector2D(1.0f, 0.0f);
 		
 		if(length == 0)
-			return new_vector;
+			return Vector2D(0.0f, 0.0f);
 		
 		new_vector.x = x / length;
 		new_vector.y = y / length;

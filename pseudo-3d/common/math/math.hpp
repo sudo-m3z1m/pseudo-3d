@@ -20,6 +20,7 @@ Vector2D<float> get_line_projection_point(Vector2D<float> dot_position, Vector2D
 
 Vector2D<float> get_line_segment_line_intersection(Vector2D<float> f_line_point, Vector2D<float> s_line_point, Line line);
 std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> points);
+float normalize_angle(float angle);
 
 Line* get_frustrum(float angle);
 

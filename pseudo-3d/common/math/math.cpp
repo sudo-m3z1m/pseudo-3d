@@ -53,6 +53,14 @@ std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> point
 	return new_walls;
 }
 
+float normalize_angle(float angle)
+{
+	while (angle > PI) angle -= 2 * PI;
+	while (angle <= -PI) angle += 2 * PI;
+	
+	return angle;
+}
+
 Line* get_frustrum(float angle)
 {
 	Line* frustrum = new Line[2];

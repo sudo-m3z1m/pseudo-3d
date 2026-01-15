@@ -15,26 +15,41 @@
 //PhysicsServer physics_server;
 LevelServer* level_server;
 Renderer* renderer;
+Camera* camera;
 
 //PhysicsComponent* circle;
 
-//Vector2D<float> get_input_direction()
-//{
-//	Vector2D direction = Vector2D<float>();
-//	
-//	const bool* keys = SDL_GetKeyboardState(NULL);
-//	
-//	if (keys[SDL_SCANCODE_W])
-//		direction.y -= 1;
-//	if (keys[SDL_SCANCODE_S])
-//		direction.y += 1;
-//	if (keys[SDL_SCANCODE_D])
-//		direction.x += 1;
-//	if (keys[SDL_SCANCODE_A])
-//		direction.x -= 1;
-//
-//	return direction;
-//}
+Vector2D<float> get_input_direction()
+{
+	Vector2D direction = Vector2D<float>();
+	
+	const bool* keys = SDL_GetKeyboardState(NULL);
+	
+	if (keys[SDL_SCANCODE_W])
+		direction.x += 1;
+	if (keys[SDL_SCANCODE_S])
+		direction.x -= 1;
+	if (keys[SDL_SCANCODE_D])
+		direction.y -= 1;
+	if (keys[SDL_SCANCODE_A])
+		direction.y += 1;
+	
+	direction.length = direction.calculate_vector_length();
+	return direction;
+}
+
+float get_input_rotation()
+{
+	float rotation = 0;
+	const bool* keys = SDL_GetKeyboardState(NULL);
+	
+	if (keys[SDL_SCANCODE_RIGHT])
+		rotation -= 1;
+	if (keys[SDL_SCANCODE_LEFT])
+		rotation += 1;
+	
+	return rotation;
+}
 
 
 //void create_physics_components()
@@ -63,17 +78,17 @@ void create_level_server()
 {
 	level_server = new LevelServer();
 	
-	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(1.0f, 1.0f), Vector2D<float>(3.0f, 1.0f), Vector2D<float>(3.0f, 2.0f)};
-	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
-	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
+	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(7.0f, -15.0f), Vector2D<float>(16.0f, 15.0f), Vector2D<float>(17.0f, 5.0f), Vector2D<float>(17.0f, -5.0f)};
+//	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
+//	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
 	
-	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points);
-	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points);
-	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points);
+	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, std::vector<Wall>());
+//	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, std::vector<Wall>());
+//	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>());
 	
 	level_server->add_new_polygon(f_shape);
-	level_server->add_new_polygon(s_shape);
-	level_server->add_new_polygon(t_shape);
+//	level_server->add_new_polygon(s_shape);
+//	level_server->add_new_polygon(t_shape);
 	
 	level_server->create_bsp_tree();
 	
@@ -82,7 +97,7 @@ void create_level_server()
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
-	Camera* camera = new Camera(DEFAULT_FOV, Vector2D<float>(-2.0f, 2.0f), 0.2);
+	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0);
 	create_level_server();
 	renderer = new Renderer(camera, level_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
 	
@@ -96,10 +111,26 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 
 SDL_AppResult SDL_AppIterate(void* appstate)
 {
-//	Vector2D<float> direction = get_input_direction();
 //	circle->position = circle->position + (direction * 0.1);
 	
 //	physics_server.calculate_sector_colliding();
+//	const float delta = renderer->get_delta_ticks();
+//	camera->set_camera_rotation(camera->rotation - (0.1 * delta));
+	float delta = renderer->get_delta_ticks();
+	Vector2D<float> direction = get_input_direction();
+	float rotation_direction = get_input_rotation();
+	
+	float rotation_speed = 1;
+	float move_speed = 5;
+	
+	float new_rotation = (rotation_direction * rotation_speed) * delta;
+	
+	camera->set_camera_rotation(camera->rotation + new_rotation);
+	
+	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
+	
+	camera->set_camera_position(camera->position + velocity);
+	
 	renderer->render();
 	
 	return SDL_APP_CONTINUE;

@@ -16,6 +16,7 @@ struct ScreenRange
 class Renderer
 {
 private:
+	float delta, prev_ticks;
 	Camera* current_camera;
 	LevelServer* level_server;
 	SDL_Renderer* application_renderer;
@@ -32,11 +33,13 @@ public:
 	Renderer(Camera* camera, LevelServer* level_server, int width, int height);
 	~Renderer();
 	
-	bool is_screen_space_free(ScreenRange new_range);
+	float get_delta_ticks();
+	ScreenRange is_screen_space_free(ScreenRange new_range);
 	int get_point_on_camera_projection(Vector2D<float> point);
 	int get_wall_height(Vector2D<float> point);
 	
 	void render();
+	void clear_screen_width_buffer();
 	void render_node(BSPNode* node);
 	void render_bsp_shape(BSPNode* node);
 	void render_wall(std::vector<Vector2D<float>> wall_points, Color color);
