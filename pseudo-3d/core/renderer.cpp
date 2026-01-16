@@ -128,7 +128,6 @@ void Renderer::render_bsp_shape(BSPNode* node)
 	std::vector<Vector2D<float>> shape_points = shape->points;
 	
 	bool is_shape_in_frustrum = current_camera->is_shape_in_frustrum(shape_points);
-	
 	if(!is_shape_in_frustrum) return;
 	
 	for(Wall current_wall : shape->walls)
@@ -139,7 +138,10 @@ void Renderer::render_bsp_shape(BSPNode* node)
 		if(((to_wall_vector * current_wall.normal) >= 0)) continue;
 		
 		wall_points = current_camera->clip_wall_by_frustrum(wall_points);
-		if(wall_points.size() != 2) continue;
+		if(wall_points.size() != 2)
+		{
+			continue;
+		}
 		render_wall(wall_points, current_wall.color);
 	}
 }
@@ -161,7 +163,7 @@ void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color
 //	ScreenRange new_screen_range = {f_edge_pos_x, s_edge_pos_x};
 //	if(!is_screen_space_free(new_screen_range)) return;
 	
-	for(int wall_x = f_edge_pos_x; wall_x <= s_edge_pos_x; wall_x++)
+	for(int wall_x = f_edge_pos_x; wall_x < s_edge_pos_x; wall_x++)
 	{
 		float height_k = float(wall_x - f_edge_pos_x) / float(s_edge_pos_x - f_edge_pos_x);
 		int wall_height = f_edge_height + height_k * (s_edge_height - f_edge_height);

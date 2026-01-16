@@ -26,13 +26,19 @@ Camera::Camera(float field_of_view, Vector2D<float> position, float rotation)
 bool Camera::is_shape_in_frustrum(std::vector<Vector2D<float>> shape_points)
 {
 	std::vector<float> points_angles;
+	float f_point_angle = (shape_points[0] - position).get_vector_rotation();
+	float min_angle = f_point_angle, max_angle = f_point_angle;
+	
 	for(Vector2D<float> point : shape_points)
 	{
-		points_angles.push_back((point - position).get_vector_rotation());
+		float angle_to_point = (point - position).get_vector_rotation();
+		points_angles.push_back(angle_to_point);
+		
+		min_angle = angle_to_point ? angle_to_point < min_angle : min_angle;
+		max_angle = angle_to_point ? angle_to_point > max_angle : max_angle;
+		
 		if (is_point_in_frustrum(point)) return true;
 	}
-	auto min_max_angles = std::minmax(points_angles.begin(), points_angles.end()); //TODO: AABB my belowed
-	float min_angle = normalize_angle(*min_max_angles.first) - rotation, max_angle = normalize_angle(*min_max_angles.second) - rotation;
 
 	if(max_angle - min_angle < PI) return true;
 	

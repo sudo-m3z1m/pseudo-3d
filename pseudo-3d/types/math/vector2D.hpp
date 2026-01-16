@@ -65,14 +65,12 @@ public:
 	}
 	float get_vector_rotation()
 	{
-//		float angle = PI / 2;
-//		if (x == 0) return angle + PI * (int)(y < 0);
-//		
-//		angle = atanf(y / x);
-//		angle += PI * (int)(x < 0);
-//		return angle;
-		float vector_angle = atan2(y, x);
-		return vector_angle;
+		float angle = PI / 2;
+		if (x == 0) return angle + PI * (int)(y < 0);
+		
+		angle = atanf(y / x);
+		angle += PI * (int)(x < 0);
+		return angle;
 	}
 	float cross_product(Vector2D<T> vector)
 	{
