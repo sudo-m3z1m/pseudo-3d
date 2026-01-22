@@ -10,7 +10,7 @@ Renderer::Renderer()
 	SDL_CreateWindowAndRenderer(WINDOW_NAME, screen_width, screen_height, SDL_WINDOW_RESIZABLE, &application_window, &application_renderer);
 	
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
-	screen_width_buffer = std::vector<ScreenRange>();
+	screen_width_buffer = std::vector<bool>(screen_width, false);
 	textures_buffer = std::vector<SDL_Surface*>();
 }
 
@@ -24,7 +24,7 @@ Renderer::Renderer(Camera* camera, LevelServer* level_server, int width, int hei
 	SDL_CreateWindowAndRenderer(WINDOW_NAME, screen_width, screen_height, SDL_WINDOW_RESIZABLE, &application_window, &application_renderer);
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	
-	screen_width_buffer = std::vector<ScreenRange>();
+	screen_width_buffer = std::vector<bool>(width, false);
 	textures_buffer = std::vector<SDL_Surface*>(); //TODO: loading level textures(from level server probably)
 }
 
@@ -46,11 +46,15 @@ float Renderer::get_delta_ticks()
 	return new_delta;
 }
 
-ScreenRange Renderer::is_screen_space_free(ScreenRange new_range)
+bool Renderer::is_screen_space_free(int x_point)
 {
-	ScreenRange screen_range;
+	x_point = SDL_min(screen_width, SDL_max(0, x_point));
+	bool is_point_taken = screen_width_buffer[x_point];
 	
-	return screen_range;
+	if (is_point_taken) return false;
+	
+	screen_width_buffer[x_point] = true;
+	return true;
 }
 
 int Renderer::get_point_on_camera_projection(Vector2D<float> point)
@@ -79,7 +83,10 @@ int Renderer::get_wall_height(Vector2D<float> point)
 
 void Renderer::clear_screen_width_buffer()
 {
-	screen_width_buffer.clear();
+	for(size_t buffer_index = 0; buffer_index < screen_width_buffer.size(); buffer_index++)
+	{
+		screen_width_buffer[buffer_index] = false;
+	}
 }
 
 void Renderer::render()
@@ -160,11 +167,9 @@ void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color
 		std::swap(f_edge_height, s_edge_height);
 	}
 	
-//	ScreenRange new_screen_range = {f_edge_pos_x, s_edge_pos_x};
-//	if(!is_screen_space_free(new_screen_range)) return;
-	
 	for(int wall_x = f_edge_pos_x; wall_x < s_edge_pos_x; wall_x++)
 	{
+		if(!is_screen_space_free(wall_x)) continue;
 		float height_k = float(wall_x - f_edge_pos_x) / float(s_edge_pos_x - f_edge_pos_x);
 		int wall_height = f_edge_height + height_k * (s_edge_height - f_edge_height);
 		render_column(wall_x, wall_height, color); //FIXME: Coloring is stupid shit. Broken architecture

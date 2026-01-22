@@ -8,11 +8,6 @@
 #include "camera.hpp"
 #include "level-server.hpp"
 
-struct ScreenRange
-{
-	int f_point, s_point;
-};
-
 class Renderer
 {
 private:
@@ -23,7 +18,7 @@ private:
 	SDL_Window* application_window;
 	
 	SDL_Surface* color_buffer;
-	std::vector<ScreenRange> screen_width_buffer;
+	std::vector<bool> screen_width_buffer;
 	std::vector<SDL_Surface*> textures_buffer;
 	
 	int screen_width, screen_height;
@@ -34,7 +29,7 @@ public:
 	~Renderer();
 	
 	float get_delta_ticks();
-	ScreenRange is_screen_space_free(ScreenRange new_range);
+	bool is_screen_space_free(int x_point);
 	int get_point_on_camera_projection(Vector2D<float> point);
 	int get_wall_height(Vector2D<float> point);
 	
