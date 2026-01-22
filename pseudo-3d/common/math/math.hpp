@@ -19,8 +19,10 @@ float is_point_on_line(Vector2D<float> point, Line line);
 Vector2D<float> get_line_projection_point(Vector2D<float> dot_position, Vector2D<float> line_points[]);
 
 Vector2D<float> get_line_segment_line_intersection(Vector2D<float> f_line_point, Vector2D<float> s_line_point, Line line);
+std::optional<Vector2D<float>> clip_line_segment_by_ray(Vector2D<float> ray, Vector2D<float> ray_pos, std::vector<Vector2D<float>> segment_points);
 std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> points);
 float normalize_angle(float angle);
+float normalize_angle_unsigned(float angle_rad);
 
 Line* get_frustrum(float angle);
 

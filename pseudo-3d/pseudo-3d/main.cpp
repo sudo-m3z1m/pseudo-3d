@@ -1,6 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 
 #include <stdio.h>
+#include <iostream>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -79,16 +80,16 @@ void create_level_server()
 	level_server = new LevelServer();
 	
 	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(7.0f, -15.0f), Vector2D<float>(16.0f, 15.0f), Vector2D<float>(17.0f, 5.0f), Vector2D<float>(17.0f, -5.0f)};
-//	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
-//	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
+	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
+	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
 	
 	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, std::vector<Wall>());
-//	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, std::vector<Wall>());
-//	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>());
+	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, std::vector<Wall>());
+	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>());
 	
 	level_server->add_new_polygon(f_shape);
-//	level_server->add_new_polygon(s_shape);
-//	level_server->add_new_polygon(t_shape);
+	level_server->add_new_polygon(s_shape);
+	level_server->add_new_polygon(t_shape);
 	
 	level_server->create_bsp_tree();
 	
@@ -116,6 +117,10 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	physics_server.calculate_sector_colliding();
 //	const float delta = renderer->get_delta_ticks();
 //	camera->set_camera_rotation(camera->rotation - (0.1 * delta));
+
+//	std::cout << "Position: " << camera->position.x << ',' << camera->position.y << std::endl;
+	std::cout << "Rotation: " << camera->rotation << std::endl;
+	
 	float delta = renderer->get_delta_ticks();
 	Vector2D<float> direction = get_input_direction();
 	float rotation_direction = get_input_rotation();

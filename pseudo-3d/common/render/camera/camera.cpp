@@ -60,46 +60,61 @@ std::vector<Vector2D<float>> Camera::clip_wall_by_frustrum(std::vector<Vector2D<
 {
 	std::vector<Vector2D<float>> new_wall_points;
 	std::vector<Vector2D<float>> local_points = {wall_points[0] - position, wall_points[1] - position};
+	std::vector<float> points_angles = {normalize_angle_unsigned(local_points[0].get_vector_rotation()), normalize_angle_unsigned(local_points[1].get_vector_rotation())};
 	
-	float min_ray_angle = rotation - field_of_view / 2;
-	float max_ray_angle = rotation + field_of_view / 2;
-	Vector2D<float> negative_ray = Vector2D<float>(cos(min_ray_angle), sin(min_ray_angle));
-	Vector2D<float> positive_ray = Vector2D<float>(cos(max_ray_angle), sin(max_ray_angle));
+	float half_fov = field_of_view / 2;
+	std::vector<float> camera_rays_angles = {normalize_angle_unsigned(rotation - half_fov), normalize_angle_unsigned(rotation + half_fov)};
+
+	if(fabs(camera_rays_angles[1] - camera_rays_angles[0]) > PI) camera_rays_angles[1] += 2 * PI;
 	
-	float min_ray_is_f_point_inside = negative_ray.cross_product(local_points[0]);
-	float min_ray_is_s_point_inside = negative_ray.cross_product(local_points[1]);
-	float max_ray_is_f_point_inside = positive_ray.cross_product(local_points[0]);
-	float max_ray_is_s_point_inside = positive_ray.cross_product(local_points[1]);
+	if(points_angles[0] < camera_rays_angles[0] - PI) points_angles[0] += 2 * PI;
+	if(points_angles[0] > camera_rays_angles[0] + PI) points_angles[0] -= 2 * PI;
+	if(points_angles[1] < camera_rays_angles[0] - PI) points_angles[1] += 2 * PI;
+	if(points_angles[1] > camera_rays_angles[0] + PI) points_angles[1] -= 2 * PI;
 	
-	if((max_ray_is_f_point_inside <= 0) && (min_ray_is_f_point_inside >= 0))
+	if(fabs(points_angles[0] - points_angles[1]) > PI)
 	{
-		new_wall_points.push_back(wall_points[0]);
-	}
-	if((max_ray_is_s_point_inside <= 0) && (min_ray_is_s_point_inside >= 0))
-	{
-		new_wall_points.push_back(wall_points[1]);
+		if(points_angles[0] > points_angles[1]) points_angles[1] += PI * 2;
+		else points_angles[0] += PI * 2;
 	}
 	
-	if((min_ray_is_f_point_inside <= 0) != (min_ray_is_s_point_inside <= 0))
+	float min_angle = fmin(points_angles[0], points_angles[1]);
+	float max_angle = fmax(points_angles[0], points_angles[1]);
+	
+	Vector2D<float> min_angle_point = min_angle == points_angles[0] ? wall_points[0] : wall_points[1];
+	Vector2D<float> max_angle_point = max_angle == points_angles[0] ? wall_points[0] : wall_points[1];
+	
+	Vector2D<float> min_ray = Vector2D<float>(cos(camera_rays_angles[0]), sin(camera_rays_angles[0]));
+	Vector2D<float> max_ray = Vector2D<float>(cos(camera_rays_angles[1]), sin(camera_rays_angles[1]));
+	
+	float clipped_min = fmax(min_angle, camera_rays_angles[0]);
+	float clipped_max = fmin(max_angle, camera_rays_angles[1]);
+	
+	if (clipped_min >= clipped_max) return new_wall_points;
+	
+	if (clipped_min > min_angle)
 	{
-		Line negative_line = Line(position, position + negative_ray);
-		Vector2D<float> intersection_point = get_line_segment_line_intersection(wall_points[0], wall_points[1], negative_line);
+		Line line = Line(position, position + min_ray);
+		Vector2D<float> intersection_point = get_line_segment_line_intersection(wall_points[0], wall_points[1], line);
 		new_wall_points.push_back(intersection_point);
 	}
 	
-	if((max_ray_is_f_point_inside <= 0) != (max_ray_is_s_point_inside <= 0))
+	if (clipped_max < max_angle)
 	{
-		Line positive_line = Line(position, position + positive_ray);
-		Vector2D<float> intersection_point = get_line_segment_line_intersection(wall_points[0], wall_points[1], positive_line);
+		Line line = Line(position, position + max_ray);
+		Vector2D<float> intersection_point = get_line_segment_line_intersection(wall_points[0], wall_points[1], line);
 		new_wall_points.push_back(intersection_point);
 	}
+	
+	if (clipped_min == min_angle) new_wall_points.push_back(min_angle_point);
+	if (clipped_max == max_angle) new_wall_points.push_back(max_angle_point);
 	
 	return new_wall_points;
 }
 
 float Camera::set_camera_rotation(float new_rotation)
 {
-	rotation = new_rotation;
+	rotation = normalize_angle_unsigned(new_rotation);
 	return rotation;
 }
 

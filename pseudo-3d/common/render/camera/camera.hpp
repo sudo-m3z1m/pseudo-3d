@@ -2,6 +2,7 @@
 #define CAMERA_HPP
 
 #include <stdio.h>
+#include <iostream>
 #include <vector>
 
 #include "line.hpp"

@@ -29,6 +29,25 @@ Vector2D<float> get_line_segment_line_intersection(Vector2D<float> f_line_point,
 	return intersection_point;
 }
 
+std::optional<Vector2D<float>> clip_line_segment_by_ray(Vector2D<float> ray, Vector2D<float> ray_pos, std::vector<Vector2D<float>> segment_points)
+{
+	Vector2D<float> segment_vector = segment_points[1] - segment_points[0];
+	float denom = segment_vector.x * ray.y - segment_vector.y * ray.x;
+	
+	if (std::abs(denom) < 1e-6f) return std::nullopt; // параллельно
+	
+	float t = ((segment_points[0].x - ray_pos.x) * segment_vector.y - (segment_points[0].y - ray_pos.y) * segment_vector.x) / denom;
+	float s = ((segment_points[0].x - ray_pos.x) * ray.y - (segment_points[0].y - ray_pos.y) * ray.x) / denom;
+	
+	if (t >= 0.0f && s >= 0.0f && s <= 1.0f) {
+		return Vector2D<float>{
+			ray_pos.x + t * ray.x,
+			ray_pos.y + t * ray.y
+		};
+	}
+	return std::nullopt;
+}
+
 float is_point_on_line(Vector2D<float> point, Line line)
 {
 	return (line.a * point.x) + (line.b * point.y) + line.c;
@@ -55,10 +74,13 @@ std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> point
 
 float normalize_angle(float angle)
 {
-	while (angle > PI) angle -= 2 * PI;
-	while (angle <= -PI) angle += 2 * PI;
-	
-	return angle;
+	return fmod(angle + 3 * PI, 2 * PI) - PI;
+}
+
+float normalize_angle_unsigned(float angle_rad) {
+	angle_rad = std::fmod(angle_rad, 2 * PI);
+	if (angle_rad < 0.0f) angle_rad += 2 * PI;
+	return angle_rad;
 }
 
 Line* get_frustrum(float angle)

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <SDL3/SDL.h>
 
 #include "constants.hpp"
 
@@ -57,6 +58,22 @@ public:
 	{
 		return !((*this) == point);
 	}
+	bool operator<(Vector2D<T> point)
+	{
+		return (x < point.x) || (y < point.y);
+	}
+	bool operator>(Vector2D<T> point)
+	{
+		return (x > point.x) || (y > point.y);
+	}
+	bool operator<=(Vector2D<T> point)
+	{
+		return (x <= point.x) || (y <= point.y);
+	}
+	bool operator>=(Vector2D<T> point)
+	{
+		return (x >= point.x) || (y >= point.y);
+	}
 	
 	float calculate_vector_length()
 	{
@@ -65,11 +82,13 @@ public:
 	}
 	float get_vector_rotation()
 	{
-		float angle = PI / 2;
-		if (x == 0) return angle + PI * (int)(y < 0);
-		
-		angle = atanf(y / x);
-		angle += PI * (int)(x < 0);
+//		float angle = PI / 2;
+//		if (x == 0) return angle + PI * (int)(y < 0);
+//		
+//		angle = atanf(y / x);
+//		angle += PI * (int)(x < 0);
+//		return angle;
+		const float angle = SDL_atan2f(y, x); //FIXME: Need to learn why it need normalizing in fact and how to fix my func.
 		return angle;
 	}
 	float cross_product(Vector2D<T> vector)
