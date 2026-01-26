@@ -10,7 +10,7 @@ Renderer::Renderer()
 	SDL_CreateWindowAndRenderer(WINDOW_NAME, screen_width, screen_height, SDL_WINDOW_RESIZABLE, &application_window, &application_renderer);
 	
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
-	screen_width_buffer = std::vector<bool>(screen_width, false);
+	screen_width_buffer = std::vector<RendererColumn>(screen_width, RendererColumn(0, 0));
 	textures_buffer = std::vector<SDL_Surface*>();
 }
 
@@ -24,7 +24,7 @@ Renderer::Renderer(Camera* camera, LevelServer* level_server, int width, int hei
 	SDL_CreateWindowAndRenderer(WINDOW_NAME, screen_width, screen_height, SDL_WINDOW_RESIZABLE, &application_window, &application_renderer);
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	
-	screen_width_buffer = std::vector<bool>(width, false);
+	screen_width_buffer = std::vector<RendererColumn>(screen_width, RendererColumn(0, 0));
 	textures_buffer = std::vector<SDL_Surface*>(); //TODO: loading level textures(from level server probably)
 }
 
@@ -46,15 +46,43 @@ float Renderer::get_delta_ticks()
 	return new_delta;
 }
 
-bool Renderer::is_screen_space_free(int x_point)
+bool Renderer::is_screen_space_free(int x_point, RendererColumn new_column)
 {
 	x_point = SDL_min(screen_width, SDL_max(0, x_point));
-	bool is_point_taken = screen_width_buffer[x_point];
+	RendererColumn current_column = screen_width_buffer[x_point];
 	
-	if (is_point_taken) return false;
+	bool is_column_visible = (current_column.bottom < new_column.bottom) || (current_column.top < new_column.top);
+	return is_column_visible;
+}
+
+std::vector<RendererColumn> Renderer::get_screen_column_ranges(int x_point, RendererColumn new_column)
+{
+	x_point = SDL_min(screen_width, SDL_max(0, x_point));
 	
-	screen_width_buffer[x_point] = true;
-	return true;
+	RendererColumn current_column = screen_width_buffer[x_point];
+	std::vector<RendererColumn> column_ranges;
+	
+	if(!current_column.bottom && !current_column.top)
+	{
+		column_ranges.push_back(new_column);
+		screen_width_buffer[x_point] = new_column;
+		return column_ranges;
+	}
+	
+	const bool is_bottom_higher = current_column.bottom < new_column.bottom, is_top_higher = current_column.top < new_column.top;
+	if(is_bottom_higher) //FIXME: It can return a value beyond screen
+	{
+		column_ranges.push_back(RendererColumn(new_column.bottom, -current_column.bottom));
+		current_column.bottom = new_column.bottom;
+	}
+	if(is_top_higher)
+	{
+		column_ranges.push_back(RendererColumn(-current_column.top, new_column.top));
+		current_column.top = new_column.top;
+	}
+	
+	screen_width_buffer[x_point] = current_column;
+	return column_ranges;
 }
 
 int Renderer::get_point_on_camera_projection(Vector2D<float> point)
@@ -69,23 +97,29 @@ int Renderer::get_point_on_camera_projection(Vector2D<float> point)
 	return x_projection;
 }
 
-int Renderer::get_wall_height(Vector2D<float> point)
+RendererColumn Renderer::get_wall_column(Vector2D<float> point)
 {
 	Vector2D<float> vector_to_point = point - current_camera->position;
-//	const float relative_vector_rot = vector_to_point.get_vector_rotation() - current_camera->rotation;
 	const float vector_length = vector_to_point * Vector2D<float>(cos(current_camera->rotation), sin(current_camera->rotation));
+	const float focal_str = (screen_height / 2) / (tan(current_camera->field_of_view / 2));
+	const float sector_bottom = -2.0f;
+	const float sector_top = 2.0f;
 	
-	int height = (4 / vector_length) * (screen_height / 2) / (tan(current_camera->field_of_view / 2)); //FIXME: static height
-	height = SDL_min(screen_height, SDL_max(0, height));
+	int bottom = (fabs(sector_bottom) / vector_length) * focal_str;
+	int top = (fabs(sector_top) / vector_length) * focal_str; //FIXME: static height - isn't depend on sector now
 	
-	return height;
+	bottom = SDL_min(screen_height, SDL_max(0, bottom));
+	top = SDL_min(screen_height, SDL_max(0, top));
+	
+	return RendererColumn(bottom, top);
 }
 
 void Renderer::clear_screen_width_buffer()
 {
 	for(size_t buffer_index = 0; buffer_index < screen_width_buffer.size(); buffer_index++)
 	{
-		screen_width_buffer[buffer_index] = false;
+		RendererColumn default_column = RendererColumn(0, 0);
+		screen_width_buffer[buffer_index] = default_column;
 	}
 }
 
@@ -158,21 +192,27 @@ void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color
 	int f_edge_pos_x = get_point_on_camera_projection(wall_points[0]);
 	int s_edge_pos_x = get_point_on_camera_projection(wall_points[1]);
 	
-	int f_edge_height = get_wall_height(wall_points[0]);
-	int s_edge_height = get_wall_height(wall_points[1]);
+	RendererColumn f_edge_column = get_wall_column(wall_points[0]);
+	RendererColumn s_edge_column = get_wall_column(wall_points[1]);
 	
 	if(f_edge_pos_x > s_edge_pos_x)
 	{
 		std::swap(f_edge_pos_x, s_edge_pos_x);
-		std::swap(f_edge_height, s_edge_height);
+		std::swap(f_edge_column, s_edge_column);
 	}
 	
 	for(int wall_x = f_edge_pos_x; wall_x < s_edge_pos_x; wall_x++)
 	{
-		if(!is_screen_space_free(wall_x)) continue;
 		float height_k = float(wall_x - f_edge_pos_x) / float(s_edge_pos_x - f_edge_pos_x);
-		int wall_height = f_edge_height + height_k * (s_edge_height - f_edge_height);
-		render_column(wall_x, wall_height, color); //FIXME: Coloring is stupid shit. Broken architecture
+		
+		int wall_bottom = f_edge_column.bottom + height_k * (s_edge_column.bottom - f_edge_column.bottom);
+		int wall_top = f_edge_column.top + height_k * (s_edge_column.top - f_edge_column.top);
+		RendererColumn current_column = RendererColumn(wall_bottom, wall_top);
+		
+		if(!is_screen_space_free(wall_x, current_column)) continue;
+		std::vector<RendererColumn> ranges_to_render = get_screen_column_ranges(wall_x, current_column);
+		
+		for (RendererColumn range : ranges_to_render) render_column(wall_x, range, color); //FIXME: Coloring is stupid shit. Broken architecture
 	}
 }
 
@@ -181,12 +221,15 @@ void Renderer::render_horizontal()
 	
 }
 
-void Renderer::render_column(int pos_x, int height, Color color) //TODO: It doesn't had height. It had top and bottom
+void Renderer::render_column(int pos_x, RendererColumn range, Color color)
 {
-	for(int cur_height = 0; cur_height < height / 2; cur_height++)
+	const int height = range.bottom + range.top;
+	const int y_start_pos = (screen_height / 2) + range.bottom;
+	for(int cur_height = 0; cur_height < height; cur_height++)
 	{
-		draw_pixel_in_buffer(Vector2D<int>(pos_x, (screen_height / 2) + cur_height), color);
-		draw_pixel_in_buffer(Vector2D<int>(pos_x, (screen_height / 2) - cur_height), color);
+		int pos_y = y_start_pos - cur_height;
+		pos_y = SDL_min(screen_height, SDL_max(0, pos_y));
+		draw_pixel_in_buffer(Vector2D<int>(pos_x, pos_y), color);
 	}
 }
 

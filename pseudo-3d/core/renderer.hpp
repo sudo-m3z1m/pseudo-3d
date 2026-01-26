@@ -8,6 +8,11 @@
 #include "camera.hpp"
 #include "level-server.hpp"
 
+struct RendererColumn
+{
+	int bottom, top;
+};
+
 class Renderer
 {
 private:
@@ -18,7 +23,7 @@ private:
 	SDL_Window* application_window;
 	
 	SDL_Surface* color_buffer;
-	std::vector<bool> screen_width_buffer;
+	std::vector<RendererColumn> screen_width_buffer;
 	std::vector<SDL_Surface*> textures_buffer;
 	
 	int screen_width, screen_height;
@@ -29,9 +34,10 @@ public:
 	~Renderer();
 	
 	float get_delta_ticks();
-	bool is_screen_space_free(int x_point);
+	bool is_screen_space_free(int x_point, RendererColumn new_column);
+	std::vector<RendererColumn> get_screen_column_ranges(int x_point, RendererColumn new_column);
 	int get_point_on_camera_projection(Vector2D<float> point);
-	int get_wall_height(Vector2D<float> point);
+	RendererColumn get_wall_column(Vector2D<float> point);
 	
 	void render();
 	void clear_screen_width_buffer();
@@ -39,7 +45,7 @@ public:
 	void render_bsp_shape(BSPNode* node);
 	void render_wall(std::vector<Vector2D<float>> wall_points, Color color);
 	void render_horizontal();
-	void render_column(int pos_x, int height, Color color);
+	void render_column(int pos_x, RendererColumn range, Color color);
 	
 	void draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color);
 	void render_buffer();
