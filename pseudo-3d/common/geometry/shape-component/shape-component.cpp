@@ -2,12 +2,14 @@
 
 ShapeComponent::ShapeComponent()
 {
+	sector_index = 0;
 	type = DOT;
 	radius = 0;
 }
 
-ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls)
+ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls, int sector_index)
 {
+	this->sector_index = sector_index;
 	this->type = type;
 	this->radius = radius;
 	this->points = points;

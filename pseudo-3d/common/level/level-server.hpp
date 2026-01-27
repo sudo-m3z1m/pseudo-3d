@@ -7,11 +7,13 @@
 #include "bsp-node.hpp"
 #include "shape-component.hpp"
 #include "bsp-shape.hpp"
+#include "sector.hpp"
 
 class LevelServer
 {
 private:
 	std::vector<ShapeComponent> level_polygons;
+	std::vector<Sector> sectors;
 	
 public:
 	BSPNode* bsp_tree;
@@ -20,6 +22,8 @@ public:
 	~LevelServer();
 	
 	void add_new_polygon(ShapeComponent new_polygon);
+	void add_new_sector(Sector new_sector);
+	Sector get_sector_by_index(int index);
 	
 	void create_bsp_tree();
 	std::vector<BSPShape*> separate_shape_by_line(Line line, BSPShape shape);

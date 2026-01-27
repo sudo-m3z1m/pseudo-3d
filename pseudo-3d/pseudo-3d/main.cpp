@@ -79,13 +79,21 @@ void create_level_server()
 {
 	level_server = new LevelServer();
 	
+	Sector f_test_sector = Sector(0.0f, 4.0f);
+	Sector s_test_sector = Sector(-2.0f, 6.0f);
+	Sector t_test_sector = Sector(2.0f, 6.0f);
+	
+	level_server->add_new_sector(f_test_sector);
+	level_server->add_new_sector(s_test_sector);
+	level_server->add_new_sector(t_test_sector);
+	
 	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(7.0f, -15.0f), Vector2D<float>(16.0f, 15.0f), Vector2D<float>(17.0f, 5.0f), Vector2D<float>(17.0f, -5.0f)};
 	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
 	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
 	
-	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, std::vector<Wall>());
-	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, std::vector<Wall>());
-	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>());
+	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, std::vector<Wall>(), 1);
+	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, std::vector<Wall>(), 0);
+	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>(), 2);
 	
 	level_server->add_new_polygon(f_shape);
 	level_server->add_new_polygon(s_shape);
@@ -98,7 +106,7 @@ void create_level_server()
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
-	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0);
+	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2);
 	create_level_server();
 	renderer = new Renderer(camera, level_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
 	

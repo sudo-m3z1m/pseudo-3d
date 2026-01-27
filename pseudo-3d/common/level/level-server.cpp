@@ -17,6 +17,16 @@ void LevelServer::add_new_polygon(ShapeComponent new_polygon)
 	level_polygons.push_back(new_polygon);
 }
 
+void LevelServer::add_new_sector(Sector new_sector)
+{
+	sectors.push_back(new_sector);
+}
+
+Sector LevelServer::get_sector_by_index(int index)
+{
+	return sectors[index];
+}
+
 void LevelServer::create_bsp_tree()
 {
 	std::vector<BSPShape*> bsp_shapes = generate_bsp_shapes();
@@ -30,6 +40,9 @@ void LevelServer::create_bsp_tree()
 std::vector<BSPShape*> LevelServer::separate_shape_by_line(Line line, BSPShape shape)
 {
 	std::vector<BSPShape*> new_shapes = {new BSPShape(), new BSPShape()};
+	
+	new_shapes[0]->sector_index = shape.sector_index;
+	new_shapes[1]->sector_index = shape.sector_index;
 	
 	std::vector<Vector2D<float>> shape_points = shape.points;
 	std::vector<Wall> shape_walls = shape.walls;
@@ -120,7 +133,7 @@ void LevelServer::sort_shapes(Line line, std::vector<BSPShape*>* front, std::vec
 		
 		if(abs(points_side_count) + neutral_points_count != shape_points.size())
 		{
-			std::vector<BSPShape*> new_shapes = separate_shape_by_line(line, *current_shape); //Works only for convex shapes
+			std::vector<BSPShape*> new_shapes = separate_shape_by_line(line, *current_shape); //FIXME: Works only for convex shapes
 			
 			back->push_back(new_shapes[0]);
 			front->push_back(new_shapes[1]);

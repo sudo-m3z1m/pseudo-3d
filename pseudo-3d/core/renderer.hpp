@@ -34,16 +34,18 @@ public:
 	~Renderer();
 	
 	float get_delta_ticks();
+	
 	bool is_screen_space_free(int x_point, RendererColumn new_column);
 	std::vector<RendererColumn> get_screen_column_ranges(int x_point, RendererColumn new_column);
+	
 	int get_point_on_camera_projection(Vector2D<float> point);
-	RendererColumn get_wall_column(Vector2D<float> point);
+	RendererColumn get_wall_column(Vector2D<float> point, int sector_index);
 	
 	void render();
 	void clear_screen_width_buffer();
 	void render_node(BSPNode* node);
 	void render_bsp_shape(BSPNode* node);
-	void render_wall(std::vector<Vector2D<float>> wall_points, Color color);
+	void render_wall(std::vector<Vector2D<float>> wall_points, Color color, int sector_index);
 	void render_horizontal();
 	void render_column(int pos_x, RendererColumn range, Color color);
 	

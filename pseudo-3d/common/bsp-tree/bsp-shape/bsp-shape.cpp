@@ -10,12 +10,14 @@ BSPShape::BSPShape(ShapeComponent* shape)
 {
 	points = shape->points;
 	walls = shape->walls;
+	sector_index = shape->sector_index;
 }
 
-BSPShape::BSPShape(std::vector<Vector2D<float>> points, std::vector<Wall> walls)
+BSPShape::BSPShape(std::vector<Vector2D<float>> points, std::vector<Wall> walls, int sector_index)
 {
 	this->points = points;
 	this->walls = walls;
+	this->sector_index = sector_index;
 }
 
 void BSPShape::add_new_wall(Vector2D<float> f_point, Vector2D<float> s_point, Vector2D<float> normal)

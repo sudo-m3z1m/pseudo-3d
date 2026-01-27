@@ -15,12 +15,14 @@ private:
 	void generate_walls();
 
 public:
+	int sector_index;
+	
 	std::vector<Vector2D<float>> points;
 	std::vector<Wall> walls;
 	
 	BSPShape();
 	BSPShape(ShapeComponent* shape);
-	BSPShape(std::vector<Vector2D<float>> points, std::vector<Wall> walls);
+	BSPShape(std::vector<Vector2D<float>> points, std::vector<Wall> walls, int sector_index);
 
 	void add_new_wall(Vector2D<float> f_point, Vector2D<float> s_point, Vector2D<float> normal);
 };
