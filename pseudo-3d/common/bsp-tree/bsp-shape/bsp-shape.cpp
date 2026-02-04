@@ -20,12 +20,12 @@ BSPShape::BSPShape(std::vector<Vector2D<float>> points, std::vector<Wall> walls,
 	this->sector_index = sector_index;
 }
 
-void BSPShape::add_new_wall(Vector2D<float> f_point, Vector2D<float> s_point, Vector2D<float> normal)
-{
+void BSPShape::add_new_wall(Vector2D<float> f_point, Vector2D<float> s_point, Vector2D<float> normal, WindowComponent* window_component)
+{ //Need to remake this function and make it like copy constructor
 	if(points.size() == 0)
 	{
 		points.push_back(f_point); points.push_back(s_point);
-		Wall new_wall = Wall(0, 1, normal);
+		Wall new_wall = Wall(0, 1, normal, window_component);
 		walls.push_back(new_wall);
 		return;
 	}
@@ -42,25 +42,6 @@ void BSPShape::add_new_wall(Vector2D<float> f_point, Vector2D<float> s_point, Ve
 		s_wall_index = points.size() - 1;
 	}
 	
-	Wall new_wall = Wall(int(f_wall_index), int(s_wall_index), normal);
+	Wall new_wall = Wall(int(f_wall_index), int(s_wall_index), normal, window_component);
 	walls.push_back(new_wall);
-	
-//	std::vector<Vector2D<float>>::iterator f_point_iterator = std::find(points.begin(), points.end(), f_point);
-//	size_t f_wall_index = f_point_iterator - points.begin();
-//	if(f_point_iterator == points.end())
-//	{
-//		points.push_back(f_point);
-//		f_wall_index = points.size() - 1;
-//	}
-//	
-//	std::vector<Vector2D<float>>::iterator s_point_iterator = std::find(points.begin(), points.end(), s_point);
-//	size_t s_wall_index = s_point_iterator - points.begin();
-//	if(s_point_iterator == points.end())
-//	{
-//		points.push_back(s_point);
-//		s_wall_index = points.size() - 1;
-//	}
-//	
-//	Wall new_wall = Wall(int(f_wall_index), int(s_wall_index), normal);
-//	walls.push_back(new_wall);
 }

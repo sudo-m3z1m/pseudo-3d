@@ -6,6 +6,7 @@ Camera::Camera()
 	position = Vector2D<float>();
 	field_of_view = DEFAULT_FOV;
 	height_z = 1;
+	sector_index = 0;
 	
 	Line* temp_frustrum = get_frustrum(field_of_view);
 	frustrum = new ShapeComponent();
@@ -13,12 +14,13 @@ Camera::Camera()
 	delete[] temp_frustrum;
 }
 
-Camera::Camera(float field_of_view, Vector2D<float> position, float rotation, float height_z)
+Camera::Camera(float field_of_view, Vector2D<float> position, float rotation, float height_z, int init_sector_index)
 {
 	this->rotation = rotation;
 	this->position = position;
 	this->field_of_view = field_of_view;
 	this->height_z = height_z;
+	sector_index = init_sector_index;
 	
 	Line* temp_frustrum = get_frustrum(field_of_view);
 	

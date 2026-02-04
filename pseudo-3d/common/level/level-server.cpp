@@ -27,6 +27,18 @@ Sector LevelServer::get_sector_by_index(int index)
 	return sectors[index];
 }
 
+int LevelServer::get_sector_index_by_point(BSPNode* node, Vector2D<float> point)
+{
+	if (node->shape) return node->shape->sector_index;
+	
+	Line node_line = node->separate_line;
+	float point_side = is_point_on_line(point, node_line);
+	
+	if (point_side <= 0) return get_sector_index_by_point(node->front, point);
+	
+	return get_sector_index_by_point(node->back, point);
+}
+
 void LevelServer::create_bsp_tree()
 {
 	std::vector<BSPShape*> bsp_shapes = generate_bsp_shapes();
@@ -65,16 +77,16 @@ std::vector<BSPShape*> LevelServer::separate_shape_by_line(Line line, BSPShape s
 		
 		if(points_k[0] == 0 || points_k[1] == 0)
 		{
-			new_shapes[points_indeces[0] + points_indeces[1]]->add_new_wall(wall_points[0], wall_points[1], current_wall.normal);
+			new_shapes[points_indeces[0] + points_indeces[1]]->add_new_wall(wall_points[0], wall_points[1], current_wall.normal, current_wall.window_component);
 			continue;
 		}
 		if(points_k[0] != points_k[1])
 		{
-			new_shapes[points_indeces[0]]->add_new_wall(wall_points[0], intersection_point, current_wall.normal);
-			new_shapes[points_indeces[1]]->add_new_wall(intersection_point, wall_points[1], current_wall.normal);
+			new_shapes[points_indeces[0]]->add_new_wall(wall_points[0], intersection_point, current_wall.normal, current_wall.window_component);
+			new_shapes[points_indeces[1]]->add_new_wall(intersection_point, wall_points[1], current_wall.normal, current_wall.window_component);
 			continue;
 		}
-		new_shapes[points_indeces[0]]->add_new_wall(wall_points[0], wall_points[1], current_wall.normal);
+		new_shapes[points_indeces[0]]->add_new_wall(wall_points[0], wall_points[1], current_wall.normal, current_wall.window_component);
 	}
 	
 	return new_shapes;

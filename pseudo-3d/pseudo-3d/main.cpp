@@ -79,25 +79,40 @@ void create_level_server()
 {
 	level_server = new LevelServer();
 	
-	Sector f_test_sector = Sector(0.0f, 4.0f);
-	Sector s_test_sector = Sector(-2.0f, 6.0f);
-	Sector t_test_sector = Sector(2.0f, 6.0f);
+	Sector f_test_sector = Sector(0.0f, 6.0f);
+	Sector s_test_sector = Sector(1.0f, 5.0f);
+	Sector t_test_sector = Sector(1.5f, 4.5f);
 	
 	level_server->add_new_sector(f_test_sector);
 	level_server->add_new_sector(s_test_sector);
 	level_server->add_new_sector(t_test_sector);
 	
-	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(7.0f, -15.0f), Vector2D<float>(16.0f, 15.0f), Vector2D<float>(17.0f, 5.0f), Vector2D<float>(17.0f, -5.0f)};
-	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
-	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
+	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(6.0f, 7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(16.0f, -7.0f), Vector2D<float>(16.0f, 7.0f)};
+	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(-4.0f, 7.0f), Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-4.0f, -2.0f), Vector2D<float>(-4.0f, -7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(6.0f, 7.0f)};
+	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(6.0f, -0.5f), Vector2D<float>(6.0f, 0.5f), Vector2D<float>(11.0f, 0.5f), Vector2D<float>(11.0f, -0.5f)};
+	std::vector<Vector2D<float>> fo_shape_points = {Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-14.0f, 2.0f), Vector2D<float>(-14.0f, -2.0f), Vector2D<float>(-4.0f, -2.0f)};
 	
-	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, std::vector<Wall>(), 1);
-	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, std::vector<Wall>(), 0);
-	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>(), 2);
+//	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(7.0f, -15.0f), Vector2D<float>(16.0f, 15.0f), Vector2D<float>(17.0f, 5.0f), Vector2D<float>(17.0f, -5.0f)};
+//	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
+//	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
 	
+	WindowComponent* f_window = new WindowComponent(0, 1);
+	WindowComponent* s_window = new WindowComponent(0, 2);
+	WindowComponent* t_window = new WindowComponent(2, 0);
+	
+	std::vector<Wall> f_shape_walls = {Wall(1, 2, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(2, 3, Vector2D<float>(-1.0f, 0.0f), nullptr), Wall(3, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
+	std::vector<Wall> s_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), s_window), Wall(2, 3, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(3, 4, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(4, 5, Vector2D<float>(-1.0f, 0.0f), f_window), Wall(5, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
+	std::vector<Wall> fo_shape_walls = {Wall(0, 1, Vector2D<float>(0.0f, -1.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(2, 3, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(3, 0, Vector2D<float>(-1.0f, 0.0f), t_window)};
+	
+	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, f_shape_walls, 1);
+	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, s_shape_walls, 0);
+	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>(), 1);
+	ShapeComponent fo_shape = ShapeComponent(POLYGON, 0, fo_shape_points, fo_shape_walls, 2);
+	
+	level_server->add_new_polygon(t_shape);
 	level_server->add_new_polygon(f_shape);
 	level_server->add_new_polygon(s_shape);
-	level_server->add_new_polygon(t_shape);
+	level_server->add_new_polygon(fo_shape);
 	
 	level_server->create_bsp_tree();
 	
@@ -106,8 +121,12 @@ void create_level_server()
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
-	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2);
 	create_level_server();
+	
+	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);
+	int camera_sector_index = level_server->get_sector_index_by_point(level_server->bsp_tree, camera_position);
+	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
+	
 	renderer = new Renderer(camera, level_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
 	
 	return SDL_APP_CONTINUE;
@@ -127,7 +146,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	camera->set_camera_rotation(camera->rotation - (0.1 * delta));
 
 //	std::cout << "Position: " << camera->position.x << ',' << camera->position.y << std::endl;
-	std::cout << "Rotation: " << camera->rotation << std::endl;
+//	std::cout << "Rotation: " << camera->rotation << std::endl;
 	
 	float delta = renderer->get_delta_ticks();
 	Vector2D<float> direction = get_input_direction();
@@ -143,6 +162,8 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
 	
 	camera->set_camera_position(camera->position + velocity);
+	
+	camera->sector_index = level_server->get_sector_index_by_point(level_server->bsp_tree, camera->position);
 	
 	renderer->render();
 	

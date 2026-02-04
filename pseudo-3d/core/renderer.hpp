@@ -13,6 +13,12 @@ struct RendererColumn
 	int bottom, top;
 };
 
+struct VisPlane
+{
+	float z_height;
+	RendererColumn* plane_columns;
+};
+
 class Renderer
 {
 private:
@@ -24,6 +30,7 @@ private:
 	
 	SDL_Surface* color_buffer;
 	std::vector<RendererColumn> screen_width_buffer;
+	std::vector<VisPlane> visual_planes;
 	std::vector<SDL_Surface*> textures_buffer;
 	
 	int screen_width, screen_height;
@@ -45,7 +52,10 @@ public:
 	void clear_screen_width_buffer();
 	void render_node(BSPNode* node);
 	void render_bsp_shape(BSPNode* node);
-	void render_wall(std::vector<Vector2D<float>> wall_points, Color color, int sector_index);
+	void render_wall(std::vector<Vector2D<float>> wall_points, Wall wall, int sector_index);
+	void render_window(WindowComponent* window, std::vector<Vector2D<float>> wall_points);
+	void render_bottom_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);
+	void render_upper_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);
 	void render_horizontal();
 	void render_column(int pos_x, RendererColumn range, Color color);
 	

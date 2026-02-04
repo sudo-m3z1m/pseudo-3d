@@ -24,6 +24,7 @@ public:
 	void add_new_polygon(ShapeComponent new_polygon);
 	void add_new_sector(Sector new_sector);
 	Sector get_sector_by_index(int index);
+	int get_sector_index_by_point(BSPNode* node, Vector2D<float> point);
 	
 	void create_bsp_tree();
 	std::vector<BSPShape*> separate_shape_by_line(Line line, BSPShape shape);

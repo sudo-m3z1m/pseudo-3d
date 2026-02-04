@@ -104,16 +104,17 @@ RendererColumn Renderer::get_wall_column(Vector2D<float> point, int sector_index
 	const float focal_str = (screen_height / 2) / (tan(current_camera->field_of_view / 2));
 	
 	Sector shape_sector = level_server->get_sector_by_index(sector_index);
-	const float camera_z = current_camera->height_z;
+	Sector camera_sector = level_server->get_sector_by_index(current_camera->sector_index);
+	const float camera_z = camera_sector.floor_z + current_camera->height_z;
 	
 	const float floor = shape_sector.floor_z - camera_z;
 	const float ceiling = shape_sector.ceiling_z - camera_z;
 	
-	int bottom = (fabs(floor) / vector_length) * focal_str;
-	int top = (fabs(ceiling) / vector_length) * focal_str; //FIXME: static height - isn't depend on sector now
+	int bottom = (-floor / vector_length) * focal_str;
+	int top = (ceiling / vector_length) * focal_str; //FIXME: static height - isn't depend on sector now
 	
-	bottom = SDL_min(screen_height, SDL_max(0, bottom));
-	top = SDL_min(screen_height, SDL_max(0, top));
+//	bottom = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, bottom));
+//	top = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, top));
 	
 	return RendererColumn(bottom, top);
 }
@@ -137,6 +138,7 @@ void Renderer::render()
 	
 	SDL_LockSurface(color_buffer);
 	
+//	render_horizontal();
 	render_node(level_server->bsp_tree);
 	
 	SDL_UnlockSurface(color_buffer);
@@ -185,12 +187,14 @@ void Renderer::render_bsp_shape(BSPNode* node)
 		
 		wall_points = current_camera->clip_wall_by_frustrum(wall_points);
 		if(wall_points.size() != 2) continue;
-		render_wall(wall_points, current_wall.color, shape_sector_index);
+		render_wall(wall_points, current_wall, shape_sector_index);
 	}
 }
 
-void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color, int sector_index)
+void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Wall wall, int sector_index)
 {
+	if (wall.window_component) return render_window(wall.window_component, wall_points);
+	
 	int f_edge_pos_x = get_point_on_camera_projection(wall_points[0]);
 	int s_edge_pos_x = get_point_on_camera_projection(wall_points[1]);
 	
@@ -210,22 +214,158 @@ void Renderer::render_wall(std::vector<Vector2D<float>> wall_points, Color color
 		int wall_bottom = f_edge_column.bottom + height_k * (s_edge_column.bottom - f_edge_column.bottom);
 		int wall_top = f_edge_column.top + height_k * (s_edge_column.top - f_edge_column.top);
 		RendererColumn current_column = RendererColumn(wall_bottom, wall_top);
-		
+
 		if(!is_screen_space_free(wall_x, current_column)) continue;
 		std::vector<RendererColumn> ranges_to_render = get_screen_column_ranges(wall_x, current_column);
 		
-		for (RendererColumn range : ranges_to_render) render_column(wall_x, range, color); //FIXME: Coloring is stupid shit. Broken architecture
+		for (RendererColumn range : ranges_to_render) render_column(wall_x, range, wall.color); //FIXME: Coloring is stupid shit. Broken architecture
 	}
 }
 
-void Renderer::render_horizontal() 
+void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float>> wall_points)
 {
+	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
+	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
 	
+	float floor_delta = s_window_sector.floor_z - f_window_sector.floor_z;
+	float ceiling_delta = s_window_sector.ceiling_z - f_window_sector.ceiling_z;
+	
+	if(floor_delta > 0) render_bottom_window(wall_points, window);
+	if(ceiling_delta < 0) render_upper_window(wall_points, window);
+}
+
+void Renderer::render_bottom_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window) //FIXME: Method is stupid. Need to change logic to draw_wall method.
+{
+	Sector camera_sector = level_server->get_sector_by_index(current_camera->sector_index);
+	Sector f_sector = level_server->get_sector_by_index(window->f_sector_index);
+	Sector s_sector = level_server->get_sector_by_index(window->s_sector_index);
+	const float world_camera_z = camera_sector.floor_z + current_camera->height_z;
+	
+	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
+	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+	Vector2D<float> vector_to_f_point = wall_points[0] - current_camera->position;
+	Vector2D<float> vector_to_s_point = wall_points[1] - current_camera->position;
+	
+	if(f_pos_x > s_pos_x)
+	{
+		std::swap(f_pos_x, s_pos_x);
+		std::swap(vector_to_f_point, vector_to_s_point);
+	}
+	
+	const float f_vector_length = vector_to_f_point * Vector2D<float>(cos(current_camera->rotation), sin(current_camera->rotation));
+	const float s_vector_length = vector_to_s_point * Vector2D<float>(cos(current_camera->rotation), sin(current_camera->rotation));
+	
+	const float focal_str = (screen_height / 2) / (tan(current_camera->field_of_view / 2));
+	
+	const float f_floor = f_sector.floor_z - world_camera_z;
+	const float s_floor = s_sector.floor_z - world_camera_z;
+	
+	int f_edge_bottom_bottom = (-f_floor / f_vector_length) * focal_str;
+	int f_edge_bottom_top = (s_floor / f_vector_length) * focal_str;
+	int s_edge_bottom_bottom = (-f_floor / s_vector_length) * focal_str;
+	int s_edge_bottom_top = (s_floor / s_vector_length) * focal_str;
+	
+//	f_edge_bottom_bottom = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, f_edge_bottom_bottom));
+//	f_edge_bottom_top = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, f_edge_bottom_top));
+//	s_edge_bottom_bottom = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, s_edge_bottom_bottom));
+//	s_edge_bottom_top = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, s_edge_bottom_top));
+	
+	RendererColumn f_column = RendererColumn(f_edge_bottom_bottom, f_edge_bottom_top);
+	RendererColumn s_column = RendererColumn(s_edge_bottom_bottom, s_edge_bottom_top);
+	
+	std::cout << "First column: " << f_column.bottom << " | " << f_column.top << std::endl;
+	std::cout << "Second column: " << s_column.bottom << " | " << s_column.top << std::endl;
+	
+	for(int wall_x = f_pos_x; wall_x < s_pos_x; wall_x++)
+	{
+		float height_k = float(wall_x - f_pos_x) / float(s_pos_x - f_pos_x);
+		
+		int wall_bottom = f_column.bottom + height_k * (s_column.bottom - f_column.bottom);
+		int wall_top = f_column.top + height_k * (s_column.top - f_column.top);
+		
+		RendererColumn new_column = RendererColumn(wall_bottom, wall_top);
+		if(!is_screen_space_free(wall_x, new_column)) continue;
+		
+		render_column(wall_x, new_column, window->bottom_color);
+	}
+}
+
+void Renderer::render_upper_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window)
+{
+	Sector camera_sector = level_server->get_sector_by_index(current_camera->sector_index);
+	Sector f_sector = level_server->get_sector_by_index(window->f_sector_index);
+	Sector s_sector = level_server->get_sector_by_index(window->s_sector_index);
+	const float world_camera_z = camera_sector.floor_z + current_camera->height_z;
+	
+	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
+	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+	Vector2D<float> vector_to_f_point = wall_points[0] - current_camera->position;
+	Vector2D<float> vector_to_s_point = wall_points[1] - current_camera->position;
+	
+	if(f_pos_x > s_pos_x)
+	{
+		std::swap(f_pos_x, s_pos_x);
+		std::swap(vector_to_f_point, vector_to_s_point);
+	}
+	
+	const float f_vector_length = vector_to_f_point * Vector2D<float>(cos(current_camera->rotation), sin(current_camera->rotation));
+	const float s_vector_length = vector_to_s_point * Vector2D<float>(cos(current_camera->rotation), sin(current_camera->rotation));
+	
+	const float focal_str = (screen_height / 2) / (tan(current_camera->field_of_view / 2));
+	
+	const float f_ceiling = s_sector.ceiling_z - world_camera_z;
+	const float s_ceiling = f_sector.ceiling_z - world_camera_z;
+	
+	int f_edge_bottom_bottom = (-f_ceiling / f_vector_length) * focal_str;
+	int f_edge_bottom_top = (s_ceiling / f_vector_length) * focal_str;
+	int s_edge_bottom_bottom = (-f_ceiling / s_vector_length) * focal_str;
+	int s_edge_bottom_top = (s_ceiling / s_vector_length) * focal_str;
+	
+//	f_edge_bottom_bottom = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, f_edge_bottom_bottom));
+//	f_edge_bottom_top = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, f_edge_bottom_top));
+//	s_edge_bottom_bottom = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, s_edge_bottom_bottom));
+//	s_edge_bottom_top = SDL_min(screen_height / 2, SDL_max(-screen_height / 2, s_edge_bottom_top));
+	
+	RendererColumn f_column = RendererColumn(f_edge_bottom_bottom, f_edge_bottom_top);
+	RendererColumn s_column = RendererColumn(s_edge_bottom_bottom, s_edge_bottom_top);
+	
+	for(int wall_x = f_pos_x; wall_x < s_pos_x; wall_x++)
+	{
+		float height_k = float(wall_x - f_pos_x) / float(s_pos_x - f_pos_x);
+		
+		int wall_bottom = f_column.bottom + height_k * (s_column.bottom - f_column.bottom);
+		int wall_top = f_column.top + height_k * (s_column.top - f_column.top);
+		
+		RendererColumn new_column = RendererColumn(wall_bottom, wall_top);
+		if(!is_screen_space_free(wall_x, new_column)) continue;
+		
+		render_column(wall_x, new_column, window->upper_color);
+	}
+}
+
+void Renderer::render_horizontal()
+{
+	static Color floor_color = Color(29, 32, 163, 255);
+	static Color ceiling_color = Color(161, 0, 0, 255);
+	
+	for (int pos_x = 0; pos_x < screen_width; pos_x++)
+	{
+		for (int pos_y = screen_height; pos_y > screen_height / 2; pos_y--)
+		{
+			draw_pixel_in_buffer(Vector2D<int>(pos_x, pos_y), floor_color);
+		}
+		for (int pos_y = 0; pos_y < screen_height / 2; pos_y++)
+		{
+			draw_pixel_in_buffer(Vector2D<int>(pos_x, pos_y), ceiling_color);
+		}
+	}
 }
 
 void Renderer::render_column(int pos_x, RendererColumn range, Color color) //FIXME: Need to make column ranges renderign here. Not in wall method
 {
-	const int height = range.bottom + range.top;
+	int height = range.bottom + range.top;
 	const int y_start_pos = (screen_height / 2) + range.bottom;
 	for(int cur_height = 0; cur_height < height; cur_height++)
 	{

@@ -6,6 +6,7 @@
 
 #include "vector2D.hpp"
 #include "color.hpp"
+#include "window-component.hpp"
 
 class Wall
 {
@@ -15,9 +16,10 @@ private:
 public:
 	Vector2D<float> normal;
 	Color color;
+	WindowComponent* window_component;
 	
 	Wall();
-	Wall(int f_p_index, int s_p_index, Vector2D<float> normal);
+	Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent* window_component);
 	
 	std::vector<Vector2D<float>> get_wall_points(std::vector<Vector2D<float>> shape_points); //TODO: Maybe friendly class for shapes?
 };
