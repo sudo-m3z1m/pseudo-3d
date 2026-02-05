@@ -9,6 +9,16 @@
 #include "level-server.hpp"
 #include "visplane.hpp"
 
+//Refactoring goals:
+//TODO: Remade rendering sectors diffs function
+//TODO: Remade screen_width_buffer ranges getting.
+//TODO: Bring RendererColumns data using to global coordinates.
+//TODO: Remade visplanes generating and rendering. It concerns rendering diffs function.
+//TODO: Remade way to store and getting visplanes data
+//TODO: Remade way to store and getting sectors data
+//TODO: Fix columns clamping and lagging
+//TODO: Remade function for getting angle of vector
+
 class Renderer
 {
 private:
