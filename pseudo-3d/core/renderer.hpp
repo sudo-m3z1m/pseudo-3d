@@ -7,17 +7,7 @@
 #include "color.hpp"
 #include "camera.hpp"
 #include "level-server.hpp"
-
-struct RendererColumn
-{
-	int bottom, top;
-};
-
-struct VisPlane
-{
-	float z_height;
-	RendererColumn* plane_columns;
-};
+#include "visplane.hpp"
 
 class Renderer
 {
@@ -42,6 +32,8 @@ public:
 	
 	float get_delta_ticks();
 	
+	int get_visplane_index(float height_z, Color color);
+	
 	bool is_screen_space_free(int x_point, RendererColumn new_column);
 	std::vector<RendererColumn> get_screen_column_ranges(int x_point, RendererColumn new_column);
 	
@@ -57,6 +49,7 @@ public:
 	void render_bottom_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);
 	void render_upper_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);
 	void render_horizontal();
+	void render_plane(VisPlane plane);
 	void render_column(int pos_x, RendererColumn range, Color color);
 	
 	void draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color);

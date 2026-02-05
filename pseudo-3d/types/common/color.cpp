@@ -16,3 +16,8 @@ Color Color::get_random_color(uint8_t a)
 	
 	return Color(r, g, b, a);
 }
+
+bool Color::operator==(Color color)
+{
+	return ((r == color.r) && (g == color.g) && (b == color.b) && (a == color.a));
+}

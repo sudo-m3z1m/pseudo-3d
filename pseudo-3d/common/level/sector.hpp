@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "physics-component.hpp"
+#include "color.hpp"
 
 class Sector
 {
@@ -10,6 +11,7 @@ public:
 	std::vector<PhysicsComponent*> physics_components;
 	
 	float floor_z, ceiling_z;
+	Color floor_color, ceiling_color;
 //	float light_level;
 //	int some_textures_top_and_bottom_indeces;
 	
