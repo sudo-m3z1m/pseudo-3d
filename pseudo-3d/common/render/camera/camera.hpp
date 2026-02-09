@@ -25,6 +25,9 @@ public:
 	Camera();
 	Camera(float field_of_view, Vector2D<float> position, float rotation, float height_z, int init_sector_index);
 	
+	float get_v_focal_str(int height);
+	float get_h_focal_str(int width);
+	
 	bool is_shape_in_frustrum(std::vector<Vector2D<float>> shape_points);
 	bool is_point_in_frustrum(Vector2D<float> point);
 	std::vector<Vector2D<float>> clip_wall_by_frustrum(std::vector<Vector2D<float>> wall_points);

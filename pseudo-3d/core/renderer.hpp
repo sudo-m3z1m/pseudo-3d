@@ -15,7 +15,7 @@
 //TODO: Bring RendererColumns data using to global coordinates.
 //TODO: Remade visplanes generating and rendering. It concerns rendering diffs function.
 //TODO: Remade way to store and getting visplanes data
-//TODO: Remade way to store and getting sectors data
+//TODO: Remade way to store and getting sectors datax
 //TODO: Fix columns clamping and lagging
 //TODO: Remade function for getting angle of vector
 
@@ -48,13 +48,25 @@ public:
 	std::vector<RendererColumn> get_screen_column_ranges(int x_point, RendererColumn new_column);
 	
 	int get_point_on_camera_projection(Vector2D<float> point);
-	RendererColumn get_wall_column(Vector2D<float> point, int sector_index);
+	RendererColumn get_wall_column(Vector2D<float> point, float floor_z, float ceiling_z);
+	std::vector<RendererColumn> get_wall_projection_columns(
+		RendererColumn f_column,
+		RendererColumn s_column,
+		int f_pos_x,
+		int x_length,
+		std::vector<int> bottom_visplanes_id,
+		std::vector<int> top_visplanes_id
+	);
 	
 	void render();
 	void clear_screen_width_buffer();
 	void render_node(BSPNode* node);
 	void render_bsp_shape(BSPNode* node);
-	void render_wall(std::vector<Vector2D<float>> wall_points, Wall wall, int sector_index);
+	
+	void render_shape_wall(BSPShape* shape, Wall wall);
+	void render_wall_range(std::vector<RendererColumn> columns, int f_pos_x, int texture_index, Color color);
+	
+//	void render_screen_wall(std::vector<Vector2D<float>> wall_points, Wall wall, int sector_index);
 	void render_window(WindowComponent* window, std::vector<Vector2D<float>> wall_points);
 	void render_bottom_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);
 	void render_upper_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);

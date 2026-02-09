@@ -27,6 +27,16 @@ Camera::Camera(float field_of_view, Vector2D<float> position, float rotation, fl
 	delete[] temp_frustrum;
 }
 
+float Camera::get_v_focal_str(int height)
+{
+	return (height / 2) / (tan(field_of_view / 2));
+}
+
+float Camera::get_h_focal_str(int width)
+{
+	return (width / 2) / (tan(field_of_view / 2));
+}
+
 bool Camera::is_shape_in_frustrum(std::vector<Vector2D<float>> shape_points)
 {
 	std::vector<float> points_angles;
