@@ -19,6 +19,8 @@ public:
 	
 	VisPlane();
 	VisPlane(float height_z, Color color, int screen_width, int screen_height);
+	
+	void set_x_range(int new_x);
 };
 
 #endif

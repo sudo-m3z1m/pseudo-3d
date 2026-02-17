@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <ctime>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -80,7 +81,7 @@ void create_level_server()
 	level_server = new LevelServer();
 	
 	Sector f_test_sector = Sector(0.0f, 6.0f);
-	Sector s_test_sector = Sector(1.0f, 5.0f);
+	Sector s_test_sector = Sector(1.0f, 6.0f);
 	Sector t_test_sector = Sector(1.5f, 4.5f);
 	
 	level_server->add_new_sector(f_test_sector);
@@ -97,10 +98,11 @@ void create_level_server()
 //	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
 	
 	WindowComponent* f_window = new WindowComponent(0, 1);
+	WindowComponent* f_s_window = new WindowComponent(1, 0);
 	WindowComponent* s_window = new WindowComponent(0, 2);
 	WindowComponent* t_window = new WindowComponent(2, 0);
 	
-	std::vector<Wall> f_shape_walls = {Wall(1, 2, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(2, 3, Vector2D<float>(-1.0f, 0.0f), nullptr), Wall(3, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
+	std::vector<Wall> f_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), f_s_window), Wall(1, 2, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(2, 3, Vector2D<float>(-1.0f, 0.0f), nullptr), Wall(3, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
 	std::vector<Wall> s_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), s_window), Wall(2, 3, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(3, 4, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(4, 5, Vector2D<float>(-1.0f, 0.0f), f_window), Wall(5, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
 	std::vector<Wall> fo_shape_walls = {Wall(0, 1, Vector2D<float>(0.0f, -1.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(2, 3, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(3, 0, Vector2D<float>(-1.0f, 0.0f), t_window)};
 	
@@ -109,7 +111,7 @@ void create_level_server()
 	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>(), 1);
 	ShapeComponent fo_shape = ShapeComponent(POLYGON, 0, fo_shape_points, fo_shape_walls, 2);
 	
-	level_server->add_new_polygon(t_shape);
+//	level_server->add_new_polygon(t_shape);
 	level_server->add_new_polygon(f_shape);
 	level_server->add_new_polygon(s_shape);
 	level_server->add_new_polygon(fo_shape);
@@ -121,6 +123,9 @@ void create_level_server()
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
+	std::time_t time = std::time(nullptr);
+	std::tm* l_time = std::localtime(&time);
+	srand(l_time->tm_sec);
 	create_level_server();
 	
 	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);

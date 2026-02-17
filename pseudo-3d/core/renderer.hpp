@@ -29,7 +29,7 @@ private:
 	SDL_Window* application_window;
 	
 	SDL_Surface* color_buffer;
-	std::vector<RendererColumn> screen_width_buffer;
+	std::vector<std::vector<RendererColumn>> screen_width_buffer;
 	std::vector<VisPlane> visual_planes;
 	std::vector<SDL_Surface*> textures_buffer;
 	
@@ -53,26 +53,25 @@ public:
 		RendererColumn f_column,
 		RendererColumn s_column,
 		int f_pos_x,
-		int x_length,
-		std::vector<int> bottom_visplanes_id,
-		std::vector<int> top_visplanes_id
+		int x_length
 	);
 	
+	void paste_planes_column(std::vector<RendererColumn> column_ranges, int pos_x, std::vector<int> floor_visplanes_id, std::vector<int> ceiling_visplanes_id);
 	void render();
 	void clear_screen_width_buffer();
 	void render_node(BSPNode* node);
 	void render_bsp_shape(BSPNode* node);
 	
 	void render_shape_wall(BSPShape* shape, Wall wall);
-	void render_wall_range(std::vector<RendererColumn> columns, int f_pos_x, int texture_index, Color color);
+	void render_wall_range(std::vector<RendererColumn> columns, int f_pos_x, int texture_index, Color color, int bottom_plane_id, int top_plane_id);
 	
 //	void render_screen_wall(std::vector<Vector2D<float>> wall_points, Wall wall, int sector_index);
 	void render_window(WindowComponent* window, std::vector<Vector2D<float>> wall_points);
 	void render_bottom_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);
 	void render_upper_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window);
 	void render_horizontal();
-	void render_plane(VisPlane plane);
-	void render_column(int pos_x, RendererColumn range, Color color);
+	void render_plane(const VisPlane& plane);
+	void render_column(int pos_x, RendererColumn& range, Color color);
 	
 	void draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color);
 	void render_buffer();
