@@ -45,14 +45,13 @@ public:
 	int get_visplane_index(float height_z, Color color);
 	
 	bool is_screen_space_free(int x_point, RendererColumn new_column);
-	std::vector<RendererColumn> get_screen_column_ranges(int x_point, RendererColumn new_column);
+	std::vector<RendererColumn> get_screen_column_ranges(int x_point, RendererColumn new_column, bool is_outside);
 	
 	int get_point_on_camera_projection(Vector2D<float> point);
 	RendererColumn get_wall_column(Vector2D<float> point, float floor_z, float ceiling_z);
 	std::vector<RendererColumn> get_wall_projection_columns(
 		RendererColumn f_column,
 		RendererColumn s_column,
-		int f_pos_x,
 		int x_length
 	);
 	
@@ -63,7 +62,7 @@ public:
 	void render_bsp_shape(BSPNode* node);
 	
 	void render_shape_wall(BSPShape* shape, Wall wall);
-	void render_wall_range(std::vector<RendererColumn> columns, int f_pos_x, int texture_index, Color color, int bottom_plane_id, int top_plane_id);
+	void render_wall_range(std::vector<RendererColumn> columns, int f_pos_x, int texture_index, Color color, int bottom_plane_id, int top_plane_id, bool is_outside); //FIXME: is_outside is stupid sheet. Need to remade this
 	
 //	void render_screen_wall(std::vector<Vector2D<float>> wall_points, Wall wall, int sector_index);
 	void render_window(WindowComponent* window, std::vector<Vector2D<float>> wall_points);

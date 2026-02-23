@@ -81,7 +81,7 @@ void create_level_server()
 	level_server = new LevelServer();
 	
 	Sector f_test_sector = Sector(0.0f, 6.0f);
-	Sector s_test_sector = Sector(1.0f, 6.0f);
+	Sector s_test_sector = Sector(-1.0f, 7.0f);
 	Sector t_test_sector = Sector(1.5f, 4.5f);
 	
 	level_server->add_new_sector(f_test_sector);

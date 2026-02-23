@@ -13,7 +13,7 @@ VisPlane::VisPlane(float height_z, Color color, int screen_width, int screen_hei
 {
 	this->height_z = height_z;
 	plane_color = color;
-	plane_columns = std::vector<RendererColumn>(screen_width, RendererColumn(screen_height, 0));
+	plane_columns = std::vector<RendererColumn>(screen_width, RendererColumn(screen_height - 1, 0));
 	min_x = -1;
 	max_x = -1;
 }
