@@ -11,7 +11,7 @@ Renderer::Renderer()
 	
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
-	textures_buffer = std::vector<SDL_Surface*>();
+//	textures_buffer = std::vector<SDL_Surface*>();
 }
 
 Renderer::Renderer(Camera* camera, LevelServer* level_server, int width, int height)
@@ -25,7 +25,7 @@ Renderer::Renderer(Camera* camera, LevelServer* level_server, int width, int hei
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
-	textures_buffer = std::vector<SDL_Surface*>(); //TODO: loading level textures(from level server probably)
+//	textures_buffer = std::vector<SDL_Surface*>(); //TODO: loading level textures(from level server probably)
 }
 
 Renderer::~Renderer()

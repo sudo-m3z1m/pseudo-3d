@@ -31,7 +31,7 @@ private:
 	SDL_Surface* color_buffer;
 	std::vector<std::vector<RendererColumn>> screen_width_buffer;
 	std::vector<VisPlane> visual_planes;
-	std::vector<SDL_Surface*> textures_buffer;
+//	std::vector<SDL_Surface*> textures_buffer;
 	
 	int screen_width, screen_height;
 	
@@ -54,6 +54,7 @@ public:
 		RendererColumn s_column,
 		int x_length
 	);
+	std::vector<RendererColumn> get_wall_projection(std::vector<Vector2D<float>>& wall_points, int floor_z, int ceiling_z);
 	
 	void paste_planes_column(std::vector<RendererColumn> column_ranges, int pos_x, std::vector<int> floor_visplanes_id, std::vector<int> ceiling_visplanes_id);
 	void render();
