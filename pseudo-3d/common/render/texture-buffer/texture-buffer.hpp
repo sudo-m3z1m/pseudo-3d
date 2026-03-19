@@ -20,7 +20,7 @@ public:
 	TextureBuffer(int buffer_size);
 	~TextureBuffer();
 	
-	int load_texture(std::string& path);
+	int load_texture(char* path);
 	void remove_texture(int tid);
 	SDL_Surface* get_texture_surface(int tid);
 	Color get_texture_pixel(int tid, Vector2D<int>& pixel_pos);
