@@ -45,6 +45,7 @@ public:
 	std::vector<std::vector<RendererColumn>> get_wall_projection_columns(
 		RendererColumn f_column,
 		RendererColumn s_column,
+		WindowComponent* window,
 		Vector2D<float> wall_offsets,
 		int f_screen_pos_x,
 		int tid,

@@ -122,6 +122,7 @@ RendererColumn Renderer::get_wall_column(Vector2D<float> point, float floor_z, f
 std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 	RendererColumn f_column,
 	RendererColumn s_column,
+	WindowComponent* window,
 	Vector2D<float> wall_offsets,
 	int f_screen_pos_x, //FIXME: It's just fields in RenderWall class
 	int tid,
@@ -159,6 +160,7 @@ std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 		
 		float scaled_offset = offset / WORLD_TEXTURE_SCALE;
 		current_u = texture_w * (scaled_offset - (int)scaled_offset);
+		offset += linear_offset_step;
 		
 		int screen_wall_bottom = SDL_min(screen_height - 1, SDL_max(0, wall_bottom));
 		int screen_wall_top = SDL_min(screen_height - 1, SDL_max(0, wall_top));
@@ -175,12 +177,13 @@ std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 			wall_columns.push_back(std::vector<RendererColumn>());
 			continue;
 		}
-		std::vector<RendererColumn> ranges_to_render = get_screen_column_ranges(pos_x, column, is_outside);
+		
+		std::vector<RendererColumn> ranges_to_render = {column};
+		if(window == nullptr) ranges_to_render = get_screen_column_ranges(pos_x, column, is_outside);
+		
 		paste_planes_column(ranges_to_render, pos_x, floor_pids, ceiling_pids);
 		
 		wall_columns.push_back({column});
-		
-		offset += linear_offset_step;
 	}
 	
 	return wall_columns;
@@ -349,6 +352,7 @@ void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns( //Need to make RenderWall class or smth else
 		f_column,
 		s_column,
+		wall.window_component,
 		wall_offsets,
 		f_pos_x,
 		0,
@@ -416,6 +420,7 @@ void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float
 	std::vector<std::vector<RendererColumn>> columns = get_wall_projection_columns(
 		f_column,
 		s_column,
+		window,
 		Vector2D<float>(),
 		f_pos_x,
 		0,
@@ -461,7 +466,18 @@ void Renderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_points
 	}
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
-	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(f_column, s_column, wall_offsets, f_pos_x, 0, {f_visplane_index}, {s_visplane_index}, s_pos_x - f_pos_x, true);
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
+		f_column,
+		s_column,
+		window,
+		wall_offsets,
+		f_pos_x,
+		0,
+		{f_visplane_index},
+		{s_visplane_index},
+		s_pos_x - f_pos_x,
+		true
+	);
 
 	render_wall_range(columns_to_render, f_pos_x, 0, window->bottom_color);
 }
@@ -491,7 +507,18 @@ void Renderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_points,
 	}
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
-	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(f_column, s_column, wall_offsets, f_pos_x, 0, {s_visplane_index}, {f_visplane_index}, s_pos_x - f_pos_x, true);
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
+		f_column,
+		s_column,
+		window,
+		wall_offsets,
+		f_pos_x,
+		0,
+		{s_visplane_index},
+		{f_visplane_index},
+		s_pos_x - f_pos_x,
+		true
+	);
 
 	render_wall_range(columns_to_render, f_pos_x, 0, window->upper_color);
 }
