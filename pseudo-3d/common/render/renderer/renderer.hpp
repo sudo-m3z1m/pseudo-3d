@@ -71,7 +71,7 @@ public:
 	void render_horizontal();
 	void render_plane(const VisPlane& plane);
 	void render_color_column(int pos_x, RendererColumn& range, Color color);
-	void render_texture_column(int pos_x, RendererColumn& range, int texture_h, int u);
+	void render_texture_column(int pos_x, RendererColumn& range, int tid);
 	
 	void draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color);
 	void render_buffer();

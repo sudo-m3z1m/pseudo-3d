@@ -144,7 +144,7 @@ std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 //	float z = f_point_z;
 	
 	float linear_offset_step = (wall_offsets.y - wall_offsets.x) / (x_length - 1);
-	int texture_w = texture->w;
+	int texture_w = texture->w, texture_h = texture->h;
 	float offset = wall_offsets.x;
 	int current_u;
 	int pos_x = f_screen_pos_x;
@@ -163,7 +163,12 @@ std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 		int screen_wall_bottom = SDL_min(screen_height - 1, SDL_max(0, wall_bottom));
 		int screen_wall_top = SDL_min(screen_height - 1, SDL_max(0, wall_top));
 		
-		RendererColumn column = RendererColumn(screen_wall_bottom, screen_wall_top, current_u, 0, 0);
+		float v_top_k = (float)(screen_wall_top - wall_top) / (wall_bottom - wall_top);
+		float v_bottom_k = (float)(screen_wall_bottom - wall_top) / (wall_bottom - wall_top);
+		int v_top = texture_h * v_top_k;
+		int v_bottom = texture_h * v_bottom_k;
+		
+		RendererColumn column = RendererColumn(screen_wall_bottom, screen_wall_top, current_u, v_top, v_bottom);
 		
 		if(!is_screen_space_free(pos_x, column))
 		{
@@ -357,15 +362,12 @@ void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 
 void Renderer::render_wall_range(std::vector<std::vector<RendererColumn>> columns, int f_pos_x, int tid, Color color)
 {
-	SDL_Surface* texture = texture_buffer->get_texture_surface(tid);
-	int texture_h = texture->h;
-	
 	for (size_t column_index = 0; column_index < columns.size(); column_index++)
 	{
 		std::vector<RendererColumn> ranges = columns[column_index];
 		int pos_x = f_pos_x + (int)column_index;
 		
-		for (RendererColumn range : ranges) render_texture_column(pos_x, range, texture_h, range.u);
+		for (RendererColumn range : ranges) render_texture_column(pos_x, range, 0);
 	}
 }
 
@@ -539,15 +541,16 @@ void Renderer::render_color_column(int pos_x, RendererColumn& range, Color color
 	}
 }
 
-void Renderer::render_texture_column(int pos_x, RendererColumn& range, int texture_h, int u)
+void Renderer::render_texture_column(int pos_x, RendererColumn& range, int tid)
 {
 	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
-	Vector2D<int> texture_point = {u, 0};
+//	int texture_h = texture_buffer->get_texture_surface(tid)->h;
+	Vector2D<int> texture_point = {range.u, 0};
 	
 	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
 	{
 		float pixel_k = (float)(pos_y - range.top) / (float)(range.bottom - range.top);
-		texture_point.y = texture_h * pixel_k;
+		texture_point.y = range.v_top + (range.v_bottom - range.v_top) * pixel_k;
 		Color color = texture_buffer->get_texture_pixel(0, texture_point);
 		draw_pixel_in_buffer(Vector2D<int>(column_x, pos_y), color);
 	}
