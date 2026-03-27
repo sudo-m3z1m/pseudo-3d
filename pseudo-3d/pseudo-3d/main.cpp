@@ -81,7 +81,7 @@ void create_level_server()
 	level_server = new LevelServer();
 	
 	Sector f_test_sector = Sector(0.0f, 6.0f);
-	Sector s_test_sector = Sector(-1.0f, 7.0f);
+	Sector s_test_sector = Sector(-1.0f, 6.0f);
 	Sector t_test_sector = Sector(1.5f, 4.5f);
 	
 	level_server->add_new_sector(f_test_sector);
@@ -132,7 +132,15 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	int camera_sector_index = level_server->get_sector_index_by_point(level_server->bsp_tree, camera_position);
 	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
 	
-	renderer = new Renderer(camera, level_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
+	TextureBuffer* texture_buffer = new TextureBuffer();
+	
+	const char* base_path = SDL_GetBasePath();
+	char path[512];
+	snprintf(path, 512, "%s%s", base_path, "texture.bmp");
+	
+	texture_buffer->load_texture(path);
+	
+	renderer = new Renderer(camera, level_server, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
 	
 	return SDL_APP_CONTINUE;
 }

@@ -106,6 +106,7 @@ std::vector<Vector2D<float>> Camera::clip_wall_by_frustrum(std::vector<Vector2D<
 	
 	if (clipped_min >= clipped_max) return new_wall_points;
 	
+	if (clipped_min == min_angle) new_wall_points.push_back(min_angle_point);
 	if (clipped_min > min_angle)
 	{
 		Line line = Line(position, position + min_ray);
@@ -113,15 +114,13 @@ std::vector<Vector2D<float>> Camera::clip_wall_by_frustrum(std::vector<Vector2D<
 		new_wall_points.push_back(intersection_point);
 	}
 	
+	if (clipped_max == max_angle) new_wall_points.push_back(max_angle_point);
 	if (clipped_max < max_angle)
 	{
 		Line line = Line(position, position + max_ray);
 		Vector2D<float> intersection_point = get_line_segment_line_intersection(wall_points[0], wall_points[1], line);
 		new_wall_points.push_back(intersection_point);
 	}
-	
-	if (clipped_min == min_angle) new_wall_points.push_back(min_angle_point);
-	if (clipped_max == max_angle) new_wall_points.push_back(max_angle_point);
 	
 	return new_wall_points;
 }

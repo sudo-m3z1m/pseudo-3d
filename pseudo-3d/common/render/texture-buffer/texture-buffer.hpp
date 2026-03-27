@@ -20,10 +20,12 @@ public:
 	TextureBuffer(int buffer_size);
 	~TextureBuffer();
 	
-	int load_texture(char* path);
+	int load_texture(const char* path);
 	void remove_texture(int tid);
 	SDL_Surface* get_texture_surface(int tid);
 	Color get_texture_pixel(int tid, Vector2D<int>& pixel_pos);
+	
+	Color get_texture_pixel_by_percent(float percent);
 };
 
 #endif

@@ -12,6 +12,16 @@ RendererColumn::RendererColumn(int bottom, int top)
 	this->top = top;
 }
 
+RendererColumn::RendererColumn(int bottom, int top, int u, int v_top, int v_bottom)
+{
+	this->bottom = bottom;
+	this->top = top;
+	
+	this->u = u;
+	this->v_top = v_top;
+	this->v_bottom = v_bottom;
+}
+
 std::vector<RendererColumn> RendererColumn::subtract_columns(std::vector<RendererColumn> columns)
 {
 	std::vector<RendererColumn> ranges;

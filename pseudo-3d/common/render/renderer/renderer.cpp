@@ -11,11 +11,11 @@ Renderer::Renderer()
 	
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
-//	textures_buffer = std::vector<SDL_Surface*>();
+	texture_buffer = nullptr;
 }
 
-Renderer::Renderer(Camera* camera, LevelServer* level_server, int width, int height)
-{	
+Renderer::Renderer(Camera* camera, LevelServer* level_server, TextureBuffer* texture_buffer, int width, int height)
+{
 	screen_width = width;
 	screen_height = height;
 	
@@ -25,7 +25,7 @@ Renderer::Renderer(Camera* camera, LevelServer* level_server, int width, int hei
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
-//	textures_buffer = std::vector<SDL_Surface*>(); //TODO: loading level textures(from level server probably)
+	this->texture_buffer = texture_buffer;
 }
 
 Renderer::~Renderer()
@@ -119,30 +119,76 @@ RendererColumn Renderer::get_wall_column(Vector2D<float> point, float floor_z, f
 	return RendererColumn(bottom, top);
 }
 
-std::vector<RendererColumn> Renderer::get_wall_projection_columns(
+std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 	RendererColumn f_column,
 	RendererColumn s_column,
-	int x_length)
+	Vector2D<float> wall_offsets,
+	int f_screen_pos_x, //FIXME: It's just fields in RenderWall class
+	int tid,
+	std::vector<int> floor_pids,
+	std::vector<int> ceiling_pids,
+	int x_length,
+	bool is_outside
+)
 {
-	std::vector<RendererColumn> wall_columns;
+	SDL_Surface* texture = texture_buffer->get_texture_surface(tid);
+	std::vector<std::vector<RendererColumn>> wall_columns;
 	
 	float bottom_columns_delta = s_column.bottom - f_column.bottom;
 	float top_columns_delta = s_column.top - f_column.top;
 	
+//	float f_point_z = 1 / (wall_points[0] - current_camera->position).length;
+//	float s_point_z = 1 / (wall_points[1] - current_camera->position).length;
+	
+//	float linear_z_step = (s_point_z - f_point_z) / (columns.size() - 1);
+//	float z = f_point_z;
+	
+	float linear_offset_step = (wall_offsets.y - wall_offsets.x) / (x_length - 1);
+	int texture_w = texture->w;
+	float offset = wall_offsets.x;
+	int current_u;
+	int pos_x = f_screen_pos_x;
+	
 	for(int delta_pos_x = 0; delta_pos_x <= x_length; delta_pos_x++)
 	{
+		pos_x = f_screen_pos_x + delta_pos_x;
 		float height_k = float(delta_pos_x) / float(x_length);
 		
 		int wall_bottom = f_column.bottom + height_k * bottom_columns_delta;
 		int wall_top = f_column.top + height_k * top_columns_delta;
 		
-		wall_bottom = SDL_min(screen_height - 1, SDL_max(0, wall_bottom));
-		wall_top = SDL_min(screen_height - 1, SDL_max(0, wall_top));
+		float scaled_offset = offset / WORLD_TEXTURE_SCALE;
+		current_u = texture_w * (scaled_offset - (int)scaled_offset);
 		
-		wall_columns.push_back(RendererColumn(wall_bottom, wall_top));
+		int screen_wall_bottom = SDL_min(screen_height - 1, SDL_max(0, wall_bottom));
+		int screen_wall_top = SDL_min(screen_height - 1, SDL_max(0, wall_top));
+		
+		RendererColumn column = RendererColumn(screen_wall_bottom, screen_wall_top, current_u, 0, 0);
+		
+		if(!is_screen_space_free(pos_x, column))
+		{
+			wall_columns.push_back(std::vector<RendererColumn>());
+			continue;
+		}
+		std::vector<RendererColumn> ranges_to_render = get_screen_column_ranges(pos_x, column, is_outside);
+		paste_planes_column(ranges_to_render, pos_x, floor_pids, ceiling_pids);
+		
+		wall_columns.push_back({column});
+		
+		offset += linear_offset_step;
 	}
 	
 	return wall_columns;
+}
+
+Vector2D<float> Renderer::get_wall_offsets(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points)
+{
+	Vector2D<float> f_point_vector = wall_points[0] - raw_wall_points[0];
+	Vector2D<float> s_point_vector = wall_points[1] - raw_wall_points[0];
+	
+	Vector2D<float> offsets = {f_point_vector.length, s_point_vector.length};
+	
+	return offsets;
 }
 
 void Renderer::paste_planes_column(std::vector<RendererColumn> column_ranges, int pos_x, std::vector<int> floor_visplanes_id, std::vector<int> ceiling_visplanes_id)
@@ -244,7 +290,7 @@ void Renderer::render_bsp_shape(BSPNode* node)
 	
 	for(Wall& current_wall : shape->walls)
 	{
-		if(current_wall.window_component)
+		if(current_wall.window_component) //FIXME: If we not rendering windows here why we need this statement in render_shape_wall?
 		{
 			windows.push_back(current_wall);
 			continue;
@@ -260,15 +306,16 @@ void Renderer::render_bsp_shape(BSPNode* node)
 
 void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 {
-	std::vector<Vector2D<float>> wall_points = wall.get_wall_points(shape->points);
-	float wall_camera_dot_product = (wall_points[0] - current_camera->position) * wall.normal;
+	std::vector<Vector2D<float>> wall_points;
+	std::vector<Vector2D<float>> raw_wall_points = wall.get_wall_points(shape->points);
 	
+	float wall_camera_dot_product = (raw_wall_points[0] - current_camera->position) * wall.normal;
 	if((wall_camera_dot_product) >= 0) return;
-
-	wall_points = current_camera->clip_wall_by_frustrum(wall_points);
 	
+	wall_points = current_camera->clip_wall_by_frustrum(raw_wall_points);
 	if(wall_points.size() != 2) return;
-	if(wall.window_component) return render_window(wall.window_component, wall_points);
+	
+	if(wall.window_component) return render_window(wall.window_component, raw_wall_points, wall_points);
 	
 	Sector shape_sector = level_server->get_sector_by_index(shape->sector_index);
 	
@@ -284,36 +331,45 @@ void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 	RendererColumn f_column = get_wall_column(wall_points[0], sector_floor_z, sector_ceiling_z);
 	RendererColumn s_column = get_wall_column(wall_points[1], sector_floor_z, sector_ceiling_z);
 	
-	if(f_pos_x > s_pos_x)
+	if(f_pos_x > s_pos_x) //FIXME: It doesn't needed actually
 	{
 		std::swap(f_pos_x, s_pos_x);
 		std::swap(f_column, s_column);
+		
+		std::swap(raw_wall_points[0], raw_wall_points[1]);
+		std::swap(wall_points[0], wall_points[1]);
 	}
 	
-	std::vector<RendererColumn> columns_to_render = get_wall_projection_columns(
+	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns( //Need to make RenderWall class or smth else
 		f_column,
 		s_column,
-		s_pos_x - f_pos_x
+		wall_offsets,
+		f_pos_x,
+		0,
+		{floor_visplane_index},
+		{ceiling_visplane_index},
+		s_pos_x - f_pos_x,
+		false
 	);
-	render_wall_range(columns_to_render, f_pos_x, 0, wall.color, ceiling_visplane_index, floor_visplane_index, false);
+	render_wall_range(columns_to_render, f_pos_x, 0, wall.color);
 }
 
-void Renderer::render_wall_range(std::vector<RendererColumn> columns, int f_pos_x, int texture_index, Color color, int bottom_plane_id, int top_plane_id, bool is_outside)
+void Renderer::render_wall_range(std::vector<std::vector<RendererColumn>> columns, int f_pos_x, int tid, Color color)
 {
+	SDL_Surface* texture = texture_buffer->get_texture_surface(tid);
+	int texture_h = texture->h;
+	
 	for (size_t column_index = 0; column_index < columns.size(); column_index++)
 	{
-		RendererColumn column = columns[column_index];
+		std::vector<RendererColumn> ranges = columns[column_index];
 		int pos_x = f_pos_x + (int)column_index;
 		
-		if(!is_screen_space_free(pos_x, column)) continue;
-		
-		std::vector<RendererColumn> ranges_to_render = get_screen_column_ranges(pos_x, column, is_outside);
-		paste_planes_column(ranges_to_render, pos_x, {top_plane_id}, {bottom_plane_id});
-		for (RendererColumn range : ranges_to_render) render_column(pos_x, range, color);
+		for (RendererColumn range : ranges) render_texture_column(pos_x, range, texture_h, range.u);
 	}
 }
 
-void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float>> wall_points)
+void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points)
 {
 	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
 	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
@@ -333,12 +389,12 @@ void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float
 	if(floor_delta > 0)
 	{
 		floor_visplanes_indeces.clear();
-		render_bottom_window(wall_points, window);
+		render_bottom_window(raw_wall_points, wall_points, window);
 	}
 	if(ceiling_delta < 0)
 	{
 		ceiling_visplanes_indeces.clear();
-		render_upper_window(wall_points, window);
+		render_upper_window(raw_wall_points, wall_points, window);
 	}
 	
 	if(floor_delta > 0 && ceiling_delta < 0) return;
@@ -355,24 +411,30 @@ void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float
 		std::swap(f_column, s_column);
 	}
 	
-	std::vector<RendererColumn> columns = get_wall_projection_columns(
+	std::vector<std::vector<RendererColumn>> columns = get_wall_projection_columns(
 		f_column,
 		s_column,
-		s_pos_x - f_pos_x
+		Vector2D<float>(),
+		f_pos_x,
+		0,
+		floor_visplanes_indeces,
+		ceiling_visplanes_indeces,
+		s_pos_x - f_pos_x,
+		true
 	);
 	
-	for (size_t column_index = 0; column_index < columns.size(); column_index++)
-	{
-		RendererColumn column = columns[column_index];
-		int pos_x = f_pos_x + (int)column_index;
-		
-		if(!is_screen_space_free(pos_x, column)) continue;
-		
-		paste_planes_column({column}, pos_x, floor_visplanes_indeces, ceiling_visplanes_indeces);
-	}
+//	for (size_t column_index = 0; column_index < columns.size(); column_index++)
+//	{
+//		RendererColumn column = columns[column_index];
+//		int pos_x = f_pos_x + (int)column_index;
+//		
+//		if(!is_screen_space_free(pos_x, column)) continue;
+//		
+//		paste_planes_column({column}, pos_x, floor_visplanes_indeces, ceiling_visplanes_indeces);
+//	}
 }
 
-void Renderer::render_bottom_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window)
+void Renderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
 {
 	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
 	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
@@ -391,19 +453,18 @@ void Renderer::render_bottom_window(std::vector<Vector2D<float>> wall_points, Wi
 	{
 		std::swap(f_pos_x, s_pos_x);
 		std::swap(f_column, s_column);
+		
+		std::swap(raw_wall_points[0], raw_wall_points[1]);
+		std::swap(wall_points[0], wall_points[1]);
 	}
 	
-	std::vector<RendererColumn> columns_to_render = get_wall_projection_columns(
-		f_column,
-		s_column,
-		s_pos_x - f_pos_x
-	);
-	//THIS: need to make it another function
-	
-	render_wall_range(columns_to_render, f_pos_x, 0, window->bottom_color, s_visplane_index, f_visplane_index, true);
+	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(f_column, s_column, wall_offsets, f_pos_x, 0, {f_visplane_index}, {s_visplane_index}, s_pos_x - f_pos_x, true);
+
+	render_wall_range(columns_to_render, f_pos_x, 0, window->bottom_color);
 }
 
-void Renderer::render_upper_window(std::vector<Vector2D<float>> wall_points, WindowComponent* window)
+void Renderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
 {
 	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
 	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
@@ -422,16 +483,15 @@ void Renderer::render_upper_window(std::vector<Vector2D<float>> wall_points, Win
 	{
 		std::swap(f_pos_x, s_pos_x);
 		std::swap(f_column, s_column);
+		
+		std::swap(raw_wall_points[0], raw_wall_points[1]);
+		std::swap(wall_points[0], wall_points[1]);
 	}
 	
-	std::vector<RendererColumn> columns_to_render = get_wall_projection_columns(
-		f_column,
-		s_column,
-		s_pos_x - f_pos_x
-	);
-	//THIS: need to make it another function
-	
-	render_wall_range(columns_to_render, f_pos_x, 0, window->upper_color, f_visplane_index, s_visplane_index, true);
+	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(f_column, s_column, wall_offsets, f_pos_x, 0, {s_visplane_index}, {f_visplane_index}, s_pos_x - f_pos_x, true);
+
+	render_wall_range(columns_to_render, f_pos_x, 0, window->upper_color);
 }
 
 void Renderer::render_horizontal()
@@ -450,7 +510,7 @@ void Renderer::render_plane(const VisPlane& plane)
 	{
 		RendererColumn column = plane_columns[pos_x];
 		if(column.top >= column.bottom) continue;
-		render_column(pos_x, column, plane.plane_color);
+		render_color_column(pos_x, column, plane.plane_color);
 	}
 //FIXME: Method is lagging
 //	for (int pos_y = 0; pos_y < screen_height; pos_y++)
@@ -467,7 +527,7 @@ void Renderer::render_plane(const VisPlane& plane)
 //FIXME: Method is lagging
 }
 
-void Renderer::render_column(int pos_x, RendererColumn& range, Color color)
+void Renderer::render_color_column(int pos_x, RendererColumn& range, Color color)
 {
 //	int bottom_y = SDL_min(screen_height - 1, SDL_max(0, range.bottom));
 //	int top_y = SDL_min(screen_height - 1, SDL_max(0, range.top));
@@ -475,6 +535,20 @@ void Renderer::render_column(int pos_x, RendererColumn& range, Color color)
 	
 	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
 	{
+		draw_pixel_in_buffer(Vector2D<int>(column_x, pos_y), color);
+	}
+}
+
+void Renderer::render_texture_column(int pos_x, RendererColumn& range, int texture_h, int u)
+{
+	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
+	Vector2D<int> texture_point = {u, 0};
+	
+	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
+	{
+		float pixel_k = (float)(pos_y - range.top) / (float)(range.bottom - range.top);
+		texture_point.y = texture_h * pixel_k;
+		Color color = texture_buffer->get_texture_pixel(0, texture_point);
 		draw_pixel_in_buffer(Vector2D<int>(column_x, pos_y), color);
 	}
 }

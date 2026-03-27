@@ -9,6 +9,7 @@
 #define DEFAULT_SCREEN_WIDTH 640
 #define DEFAULT_SCREEN_HEIGHT 640 //It needs to be in config
 #define TEXTURE_SIZE 64
+#define WORLD_TEXTURE_SCALE 5
 #define DEFAULT_FOV PI / 3
 
 #endif
