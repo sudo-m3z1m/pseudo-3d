@@ -120,6 +120,7 @@ RendererColumn Renderer::get_wall_column(Vector2D<float> point, float floor_z, f
 }
 
 std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
+	std::vector<Vector2D<float>> wall_points,
 	RendererColumn f_column,
 	RendererColumn s_column,
 	WindowComponent* window,
@@ -138,15 +139,17 @@ std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 	float bottom_columns_delta = s_column.bottom - f_column.bottom;
 	float top_columns_delta = s_column.top - f_column.top;
 	
-//	float f_point_z = 1 / (wall_points[0] - current_camera->position).length;
-//	float s_point_z = 1 / (wall_points[1] - current_camera->position).length;
+	float f_point_z = 1 / (wall_points[0] - current_camera->position).length;
+	float s_point_z = 1 / (wall_points[1] - current_camera->position).length;
+	float f_offset = f_point_z * wall_offsets.x;
+	float s_offset = s_point_z * wall_offsets.y;
 	
-//	float linear_z_step = (s_point_z - f_point_z) / (columns.size() - 1);
-//	float z = f_point_z;
+	float linear_z_step = (s_point_z - f_point_z) / (x_length - 1);
+	float linear_offset_step = (s_offset - f_offset) / (x_length - 1);
 	
-	float linear_offset_step = (wall_offsets.y - wall_offsets.x) / (x_length - 1);
-	int texture_w = texture->w, texture_h = texture->h;
-	float offset = wall_offsets.x;
+	int texture_h = texture->h;
+	float offset = f_offset;
+	float z = f_point_z;
 	int current_u;
 	int pos_x = f_screen_pos_x;
 	
@@ -158,15 +161,15 @@ std::vector<std::vector<RendererColumn>> Renderer::get_wall_projection_columns(
 		int wall_bottom = f_column.bottom + height_k * bottom_columns_delta;
 		int wall_top = f_column.top + height_k * top_columns_delta;
 		
-		float scaled_offset = offset / WORLD_TEXTURE_SCALE;
-		current_u = texture_w * (scaled_offset - (int)scaled_offset);
+		current_u = (offset / z) * WORLD_TEXTURE_SCALE;
+		z += linear_z_step;
 		offset += linear_offset_step;
 		
 		int screen_wall_bottom = SDL_min(screen_height - 1, SDL_max(0, wall_bottom));
 		int screen_wall_top = SDL_min(screen_height - 1, SDL_max(0, wall_top));
 		
 		float v_top_k = (float)(screen_wall_top - wall_top) / (wall_bottom - wall_top);
-		float v_bottom_k = (float)(screen_wall_bottom - wall_top) / (wall_bottom - wall_top);
+		float v_bottom_k = (float)(screen_wall_bottom - wall_top) / (wall_bottom - wall_top); //FIXME: Need to make step instead of this
 		int v_top = texture_h * v_top_k;
 		int v_bottom = texture_h * v_bottom_k;
 		
@@ -350,6 +353,7 @@ void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
 	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns( //Need to make RenderWall class or smth else
+		wall_points,
 		f_column,
 		s_column,
 		wall.window_component,
@@ -418,6 +422,7 @@ void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float
 	}
 	
 	std::vector<std::vector<RendererColumn>> columns = get_wall_projection_columns(
+		wall_points,
 		f_column,
 		s_column,
 		window,
@@ -467,6 +472,7 @@ void Renderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_points
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
 	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
+		wall_points,
 		f_column,
 		s_column,
 		window,
@@ -508,6 +514,7 @@ void Renderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_points,
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
 	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
+		wall_points,
 		f_column,
 		s_column,
 		window,

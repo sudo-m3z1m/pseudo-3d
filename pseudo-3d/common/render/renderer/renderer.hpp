@@ -43,6 +43,7 @@ public:
 	int get_point_on_camera_projection(Vector2D<float> point);
 	RendererColumn get_wall_column(Vector2D<float> point, float floor_z, float ceiling_z);
 	std::vector<std::vector<RendererColumn>> get_wall_projection_columns(
+		std::vector<Vector2D<float>> wall_points,
 		RendererColumn f_column,
 		RendererColumn s_column,
 		WindowComponent* window,
