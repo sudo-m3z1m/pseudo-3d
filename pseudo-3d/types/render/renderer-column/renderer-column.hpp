@@ -9,11 +9,12 @@ class RendererColumn
 {
 public:
 	int bottom, top;
-	int u, v_top, v_bottom;
+	int u;
+	float v_top, v_step;
 	
 	RendererColumn();
 	RendererColumn(int bottom, int top);
-	RendererColumn(int bottom, int top, int u, int v_top, int v_bottom);
+	RendererColumn(int bottom, int top, int u, float v_top, float v_step);
 	
 	std::vector<RendererColumn> subtract_columns(std::vector<RendererColumn> columns);
 	std::vector<RendererColumn> merge_columns(std::vector<RendererColumn> columns);

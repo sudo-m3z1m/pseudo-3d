@@ -27,12 +27,7 @@ Camera::Camera(float field_of_view, Vector2D<float> position, float rotation, fl
 	delete[] temp_frustrum;
 }
 
-float Camera::get_v_focal_str(int height)
-{
-	return (height / 2) / (tan(field_of_view / 2));
-}
-
-float Camera::get_h_focal_str(int width)
+float Camera::get_focal_len(int width)
 {
 	return (width / 2) / (tan(field_of_view / 2));
 }

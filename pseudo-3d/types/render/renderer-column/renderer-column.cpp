@@ -12,14 +12,14 @@ RendererColumn::RendererColumn(int bottom, int top)
 	this->top = top;
 }
 
-RendererColumn::RendererColumn(int bottom, int top, int u, int v_top, int v_bottom)
+RendererColumn::RendererColumn(int bottom, int top, int u, float v_top, float v_step)
 {
 	this->bottom = bottom;
 	this->top = top;
 	
 	this->u = u;
 	this->v_top = v_top;
-	this->v_bottom = v_bottom;
+	this->v_step = v_step;
 }
 
 std::vector<RendererColumn> RendererColumn::subtract_columns(std::vector<RendererColumn> columns)

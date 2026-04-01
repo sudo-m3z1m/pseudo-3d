@@ -81,7 +81,7 @@ void create_level_server()
 	level_server = new LevelServer();
 	
 	Sector f_test_sector = Sector(0.0f, 6.0f);
-	Sector s_test_sector = Sector(-1.0f, 6.0f);
+	Sector s_test_sector = Sector(-1.0f, 7.0f);
 	Sector t_test_sector = Sector(1.5f, 4.5f);
 	
 	level_server->add_new_sector(f_test_sector);
@@ -136,8 +136,10 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	
 	const char* base_path = SDL_GetBasePath();
 	char path[512];
-	snprintf(path, 512, "%s%s", base_path, "texture.bmp");
 	
+	snprintf(path, 512, "%s%s", base_path, "texture.bmp");
+	texture_buffer->load_texture(path);
+	snprintf(path, 512, "%s%s", base_path, "floor.bmp");
 	texture_buffer->load_texture(path);
 	
 	renderer = new Renderer(camera, level_server, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
