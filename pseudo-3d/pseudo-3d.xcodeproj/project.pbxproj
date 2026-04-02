@@ -31,13 +31,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		0197C4592DF59EA800AB0564 /* Exceptions for "core" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 0197C4222DF459E400AB0564 /* Sources */;
-			membershipExceptions = (
-				"game-core.h",
-			);
-		};
 		01DFD00F2E32E4E1006707AA /* Exceptions for "gameplay" folder in "Compile Sources" phase from "pseudo-3d" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 0197C4222DF459E400AB0564 /* Sources */;
@@ -56,14 +49,6 @@
 		0197C4282DF459E400AB0564 /* pseudo-3d */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "pseudo-3d";
-			sourceTree = "<group>";
-		};
-		0197C4532DF5915300AB0564 /* core */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				0197C4592DF59EA800AB0564 /* Exceptions for "core" folder in "Compile Sources" phase from "pseudo-3d" target */,
-			);
-			path = core;
 			sourceTree = "<group>";
 		};
 		01A423162DFB7E4A00D7075E /* assets */ = {
@@ -105,7 +90,6 @@
 				01DFD0062E32E4D6006707AA /* gameplay */,
 				013EB2AE2E1480F200B1E178 /* types */,
 				01A423162DFB7E4A00D7075E /* assets */,
-				0197C4532DF5915300AB0564 /* core */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				0197C43C2DF45A5200AB0564 /* Frameworks */,
 				0197C4272DF459E400AB0564 /* Products */,
@@ -147,7 +131,6 @@
 			fileSystemSynchronizedGroups = (
 				013EB2AE2E1480F200B1E178 /* types */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
-				0197C4532DF5915300AB0564 /* core */,
 				01A423162DFB7E4A00D7075E /* assets */,
 				01DFD0062E32E4D6006707AA /* gameplay */,
 				01DFD0122E32E5B3006707AA /* common */,

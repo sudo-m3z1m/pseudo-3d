@@ -9,9 +9,10 @@ VisPlane::VisPlane()
 	max_x = -1;
 }
 
-VisPlane::VisPlane(float height_z, Color color, int screen_width, int screen_height)
+VisPlane::VisPlane(float height_z, Color color, int screen_width, int screen_height, int tid)
 {
 	this->height_z = height_z;
+	this->tid = tid;
 	plane_color = color;
 	plane_columns = std::vector<RendererColumn>(screen_width, RendererColumn(screen_height - 1, 0));
 	min_x = -1;

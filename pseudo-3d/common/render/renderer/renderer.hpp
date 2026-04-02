@@ -35,7 +35,7 @@ public:
 	
 	float get_delta_ticks();
 	
-	int get_visplane_index(float height_z, Color color);
+	int get_visplane_index(float height_z, Color color, int tid);
 	
 	bool is_screen_space_free(int x_point, RendererColumn new_column);
 	std::vector<RendererColumn> get_screen_column_ranges(int x_point, RendererColumn new_column, bool is_outside);

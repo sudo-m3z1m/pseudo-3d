@@ -46,16 +46,16 @@ float Renderer::get_delta_ticks()
 	return new_delta;
 }
 
-int Renderer::get_visplane_index(float height_z, Color color)
+int Renderer::get_visplane_index(float height_z, Color color, int tid)
 {
 	for (int current_plane_index = 0; current_plane_index < visual_planes.size(); current_plane_index++)
 	{
 		VisPlane current_plane = visual_planes[current_plane_index];
-		if ((current_plane.height_z == height_z) && (current_plane.plane_color == color))
+		if ((current_plane.height_z == height_z) && (current_plane.plane_color == color) && (current_plane.tid == tid))
 			return current_plane_index;
 	}
 	
-	VisPlane new_visual_plane = VisPlane(height_z, color, screen_width, screen_height);
+	VisPlane new_visual_plane = VisPlane(height_z, color, screen_width, screen_height, tid);
 	visual_planes.push_back(new_visual_plane);
 	
 	return ((int)visual_planes.size() - 1);
@@ -331,13 +331,15 @@ void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 	float sector_floor_z = shape_sector.floor_z;
 	float sector_ceiling_z = shape_sector.ceiling_z;
 	
-	int floor_visplane_index = get_visplane_index(sector_floor_z, shape_sector.floor_color);
-	int ceiling_visplane_index = get_visplane_index(sector_ceiling_z, shape_sector.ceiling_color);
+	int floor_visplane_index = get_visplane_index(sector_floor_z, shape_sector.floor_color, shape_sector.floor_tid);
+	int ceiling_visplane_index = get_visplane_index(sector_ceiling_z, shape_sector.ceiling_color, shape_sector.ceiling_tid);
 	
 	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
 	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
 	
+	//FIXME: Need to make getting texture from a wall
 	int tid = 0;
+	//FIXME: Need to make getting texture from a wall
 	
 	RendererColumn f_column = get_wall_column(wall_points[0], sector_floor_z, sector_ceiling_z);
 	RendererColumn s_column = get_wall_column(wall_points[1], sector_floor_z, sector_ceiling_z);
@@ -352,7 +354,8 @@ void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 	}
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
-	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns( //Need to make RenderWall class or smth else
+	//FIXME: Need to make RenderWall class or smth else
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
 		wall_points,
 		f_column,
 		s_column,
@@ -365,6 +368,7 @@ void Renderer::render_shape_wall(BSPShape* shape, Wall wall)
 		s_pos_x - f_pos_x,
 		false
 	);
+	//FIXME: Need to make RenderWall class or smth else
 	render_wall_range(columns_to_render, f_pos_x, tid, wall.color);
 }
 
@@ -387,11 +391,11 @@ void Renderer::render_window(WindowComponent* window, std::vector<Vector2D<float
 	float floor_delta = s_window_sector.floor_z - f_window_sector.floor_z;
 	float ceiling_delta = s_window_sector.ceiling_z - f_window_sector.ceiling_z;
 	
-	int f_floor_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color);
-	int s_floor_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color);
+	int f_floor_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color, f_window_sector.floor_tid);
+	int s_floor_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color, s_window_sector.floor_tid);
 	
-	int f_ceiling_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color);
-	int s_ceiling_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color);
+	int f_ceiling_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
+	int s_ceiling_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
 	
 	std::vector<int> floor_visplanes_indeces = {f_floor_visplane_index, s_floor_visplane_index};
 	std::vector<int> ceiling_visplanes_indeces = {f_ceiling_visplane_index, s_ceiling_visplane_index};
@@ -453,8 +457,8 @@ void Renderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_points
 	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
 	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
 	
-	int f_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color);
-	int s_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color);
+	int f_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color, f_window_sector.floor_tid);
+	int s_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color, s_window_sector.floor_tid);
 	
 	//THIS: need to make it another function
 	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
@@ -497,8 +501,8 @@ void Renderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_points,
 	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
 	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
 	
-	int f_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color);
-	int s_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color);
+	int f_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
+	int s_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
 	
 	//THIS: need to make it another function
 	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
@@ -549,6 +553,7 @@ void Renderer::render_horizontal()
 
 void Renderer::render_plane(const VisPlane& plane, float global_camera_height)
 {
+	//FIXME: Method is lagging
 	std::vector<RendererColumn> plane_columns = plane.plane_columns;
 	if(plane.min_x == -1 || plane.max_x == -1) return;
 	
@@ -558,21 +563,9 @@ void Renderer::render_plane(const VisPlane& plane, float global_camera_height)
 	{
 		RendererColumn column = plane_columns[pos_x];
 		if(column.top >= column.bottom) continue;
-		render_plane_texture_column(pos_x, column, (plane.plane_color.r % 2), height);
+		render_plane_texture_column(pos_x, column, plane.tid, height);
 	}
-//FIXME: Method is lagging
-//	for (int pos_y = 0; pos_y < screen_height; pos_y++)
-//	{
-//		for(int pos_x = plane.min_x; pos_x < plane.max_x; pos_x++)
-//		{
-//			RendererColumn current_column = plane_columns[pos_x];
-//			Vector2D<int> draw_pos = Vector2D<int>(pos_x, pos_y);
-//			
-//			if((pos_y > current_column.bottom) || (pos_y < current_column.top)) continue;
-//			draw_pixel_in_buffer(draw_pos, plane.plane_color);
-//		}
-//	}
-//FIXME: Method is lagging
+	//FIXME: Method is lagging
 }
 
 void Renderer::render_color_column(int pos_x, RendererColumn& range, Color color)

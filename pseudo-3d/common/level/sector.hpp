@@ -12,11 +12,11 @@ public:
 	
 	float floor_z, ceiling_z;
 	Color floor_color, ceiling_color;
+	int floor_tid, ceiling_tid;
 //	float light_level;
-//	int some_textures_top_and_bottom_indeces;
 	
 	Sector();
-	Sector(float floor_z, float ceiling_z);
+	Sector(float floor_z, float ceiling_z, int floor_tid, int ceiling_tid, Color floor_color, Color ceiling_color);
 	~Sector();
 	
 	void add_physics_component(PhysicsComponent* physics_component);

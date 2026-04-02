@@ -15,10 +15,10 @@ public:
 	int min_x, max_x;
 	std::vector<RendererColumn> plane_columns;
 	Color plane_color;
-		//	size_t texture_index;
+	int tid;
 	
 	VisPlane();
-	VisPlane(float height_z, Color color, int screen_width, int screen_height);
+	VisPlane(float height_z, Color color, int screen_width, int screen_height, int tid);
 	
 	void set_x_range(int new_x);
 };
