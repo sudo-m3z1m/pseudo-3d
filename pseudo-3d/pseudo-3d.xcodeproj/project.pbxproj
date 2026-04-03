@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		018D1EBB2F80769600B69244 /* imgui_impl_sdl2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018D1EB12F80769600B69244 /* imgui_impl_sdl2.cpp */; };
+		018D1EBC2F80769600B69244 /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018D1EAE2F80769600B69244 /* imgui_demo.cpp */; };
+		018D1EBD2F80769600B69244 /* imgui_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018D1EB52F80769600B69244 /* imgui_tables.cpp */; };
+		018D1EBE2F80769600B69244 /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018D1EAF2F80769600B69244 /* imgui_draw.cpp */; };
+		018D1EBF2F80769600B69244 /* imgui_widgets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018D1EB62F80769600B69244 /* imgui_widgets.cpp */; };
+		018D1EC02F80769600B69244 /* imgui_impl_sdlrenderer2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018D1EB32F80769600B69244 /* imgui_impl_sdlrenderer2.cpp */; };
+		018D1EC12F80769600B69244 /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018D1EAD2F80769600B69244 /* imgui.cpp */; };
 		0197C43E2DF45A5200AB0564 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0197C43D2DF45A5200AB0564 /* SDL3.framework */; };
 		0197C43F2DF45A5200AB0564 /* SDL3.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0197C43D2DF45A5200AB0564 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -26,6 +33,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		018D1EAC2F80769600B69244 /* imgui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imgui.h; sourceTree = "<group>"; };
+		018D1EAD2F80769600B69244 /* imgui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui.cpp; sourceTree = "<group>"; };
+		018D1EAE2F80769600B69244 /* imgui_demo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_demo.cpp; sourceTree = "<group>"; };
+		018D1EAF2F80769600B69244 /* imgui_draw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_draw.cpp; sourceTree = "<group>"; };
+		018D1EB02F80769600B69244 /* imgui_impl_sdl2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imgui_impl_sdl2.h; sourceTree = "<group>"; };
+		018D1EB12F80769600B69244 /* imgui_impl_sdl2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_impl_sdl2.cpp; sourceTree = "<group>"; };
+		018D1EB22F80769600B69244 /* imgui_impl_sdlrenderer2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imgui_impl_sdlrenderer2.h; sourceTree = "<group>"; };
+		018D1EB32F80769600B69244 /* imgui_impl_sdlrenderer2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_impl_sdlrenderer2.cpp; sourceTree = "<group>"; };
+		018D1EB42F80769600B69244 /* imgui_internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imgui_internal.h; sourceTree = "<group>"; };
+		018D1EB52F80769600B69244 /* imgui_tables.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_tables.cpp; sourceTree = "<group>"; };
+		018D1EB62F80769600B69244 /* imgui_widgets.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_widgets.cpp; sourceTree = "<group>"; };
+		018D1EB72F80769600B69244 /* imstb_rectpack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imstb_rectpack.h; sourceTree = "<group>"; };
+		018D1EB82F80769600B69244 /* imstb_textedit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imstb_textedit.h; sourceTree = "<group>"; };
+		018D1EB92F80769600B69244 /* imstb_truetype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = imstb_truetype.h; sourceTree = "<group>"; };
 		0197C4262DF459E400AB0564 /* pseudo-3d.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "pseudo-3d.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0197C43D2DF45A5200AB0564 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = "SDL3.xcframework/macos-arm64_x86_64/SDL3.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -83,9 +104,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		018D1EBA2F80769600B69244 /* imgui */ = {
+			isa = PBXGroup;
+			children = (
+				018D1EAC2F80769600B69244 /* imgui.h */,
+				018D1EAD2F80769600B69244 /* imgui.cpp */,
+				018D1EAE2F80769600B69244 /* imgui_demo.cpp */,
+				018D1EAF2F80769600B69244 /* imgui_draw.cpp */,
+				018D1EB02F80769600B69244 /* imgui_impl_sdl2.h */,
+				018D1EB12F80769600B69244 /* imgui_impl_sdl2.cpp */,
+				018D1EB22F80769600B69244 /* imgui_impl_sdlrenderer2.h */,
+				018D1EB32F80769600B69244 /* imgui_impl_sdlrenderer2.cpp */,
+				018D1EB42F80769600B69244 /* imgui_internal.h */,
+				018D1EB52F80769600B69244 /* imgui_tables.cpp */,
+				018D1EB62F80769600B69244 /* imgui_widgets.cpp */,
+				018D1EB72F80769600B69244 /* imstb_rectpack.h */,
+				018D1EB82F80769600B69244 /* imstb_textedit.h */,
+				018D1EB92F80769600B69244 /* imstb_truetype.h */,
+			);
+			path = imgui;
+			sourceTree = "<group>";
+		};
 		0197C41D2DF459E400AB0564 = {
 			isa = PBXGroup;
 			children = (
+				018D1EBA2F80769600B69244 /* imgui */,
 				01DFD0122E32E5B3006707AA /* common */,
 				01DFD0062E32E4D6006707AA /* gameplay */,
 				013EB2AE2E1480F200B1E178 /* types */,
@@ -194,6 +237,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				018D1EBB2F80769600B69244 /* imgui_impl_sdl2.cpp in Sources */,
+				018D1EBC2F80769600B69244 /* imgui_demo.cpp in Sources */,
+				018D1EBD2F80769600B69244 /* imgui_tables.cpp in Sources */,
+				018D1EBE2F80769600B69244 /* imgui_draw.cpp in Sources */,
+				018D1EBF2F80769600B69244 /* imgui_widgets.cpp in Sources */,
+				018D1EC02F80769600B69244 /* imgui_impl_sdlrenderer2.cpp in Sources */,
+				018D1EC12F80769600B69244 /* imgui.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +303,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
+				"HEADER_SEARCH_PATHS[arch=*]" = "$(SRCROOT)/imgui";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
