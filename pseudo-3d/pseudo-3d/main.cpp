@@ -14,12 +14,12 @@
 #include "physics-component.hpp"
 #include "level-server.hpp"
 #include "camera.hpp"
-#include "renderer.hpp"
+#include "game-renderer.hpp"
 #include "math.hpp"
 
 //PhysicsServer physics_server;
 LevelServer* level_server;
-Renderer* renderer;
+GameRenderer* renderer;
 Camera* camera;
 
 //PhysicsComponent* circle;
@@ -145,7 +145,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	snprintf(path, 512, "%s%s", base_path, "floor.bmp");
 	texture_buffer->load_texture(path);
 	
-	renderer = new Renderer(camera, level_server, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
+	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
 	
 	return SDL_APP_CONTINUE;
 }
