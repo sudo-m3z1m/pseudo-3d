@@ -1,7 +1,7 @@
 #include "game-renderer.hpp"
 
 GameRenderer::GameRenderer() : Renderer()
-{	
+{
 	level_server = nullptr;
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
 }
@@ -46,6 +46,16 @@ int GameRenderer::get_visplane_index(float height_z, Color color, int tid)
 	return ((int)visual_planes.size() - 1);
 }
 
+void GameRenderer::clear_screen_width_buffer()
+{
+	for(size_t buffer_index = 0; buffer_index < screen_width_buffer.size(); buffer_index++)
+	{
+		RendererColumn default_column = RendererColumn(0, 0);
+		screen_width_buffer[buffer_index] = std::vector<RendererColumn>();
+	}
+	visual_planes.clear();
+}
+
 bool GameRenderer::is_screen_space_free(int x_point, RendererColumn new_column)
 {
 	std::vector<RendererColumn> current_columns = screen_width_buffer[x_point];
@@ -67,6 +77,378 @@ std::vector<RendererColumn> GameRenderer::get_screen_column_ranges(int x_point, 
 		screen_width_buffer[x_point] = new_column.merge_columns(current_columns);
 	
 	return column_ranges;
+}
+
+void GameRenderer::render()
+{
+	SDL_SetRenderScale(application_renderer, 4, 4);
+	SDL_SetRenderDrawColor(application_renderer, 0, 0, 0, 255);
+	clear_screen_width_buffer();
+	SDL_RenderClear(application_renderer);
+	SDL_ClearSurface(color_buffer, 0, 0, 0, 255);
+	
+	SDL_LockSurface(color_buffer);
+	
+	render_node(level_server->bsp_tree);
+	render_horizontal();
+	
+	SDL_UnlockSurface(color_buffer);
+	
+	render_buffer();
+	SDL_RenderPresent(application_renderer);
+}
+
+void GameRenderer::render_node(BSPNode* node)
+{
+	if (node->shape)
+	{
+		render_bsp_shape(node);
+		return;
+	}
+	
+	Line node_separate_line = node->separate_line;
+	const float position_side = is_point_on_line(current_camera->position, node_separate_line);
+	if (position_side <= 0)
+	{
+		render_node(node->front);
+		render_node(node->back);
+		return;
+	}
+	render_node(node->back);
+	render_node(node->front);
+	return;
+}
+
+void GameRenderer::render_bsp_shape(BSPNode* node)
+{
+	BSPShape* shape = node->shape;
+	
+	bool is_shape_in_frustrum = current_camera->is_shape_in_frustrum(shape->points);
+	if(!is_shape_in_frustrum) return;
+	
+	std::vector<Wall> windows;
+	
+	for(Wall& current_wall : shape->walls)
+	{
+		if(current_wall.window_component) //FIXME: If we not rendering windows here why we need this statement in render_shape_wall?
+		{
+			windows.push_back(current_wall);
+			continue;
+		}
+		render_shape_wall(shape, current_wall);
+	}
+	
+	for(Wall& window : windows)
+	{
+		render_shape_wall(shape, window);
+	}
+}
+void GameRenderer::render_shape_wall(BSPShape* shape, Wall wall)
+{
+	std::vector<Vector2D<float>> wall_points;
+	std::vector<Vector2D<float>> raw_wall_points = wall.get_wall_points(shape->points);
+	
+	float wall_camera_dot_product = (raw_wall_points[0] - current_camera->position) * wall.normal;
+	if((wall_camera_dot_product) >= 0) return;
+	
+	wall_points = current_camera->clip_wall_by_frustrum(raw_wall_points);
+	if(wall_points.size() != 2) return;
+	
+	if(wall.window_component) return render_window(wall.window_component, raw_wall_points, wall_points);
+	
+	Sector shape_sector = level_server->get_sector_by_index(shape->sector_index);
+	
+	float sector_floor_z = shape_sector.floor_z;
+	float sector_ceiling_z = shape_sector.ceiling_z;
+	
+	int floor_visplane_index = get_visplane_index(sector_floor_z, shape_sector.floor_color, shape_sector.floor_tid);
+	int ceiling_visplane_index = get_visplane_index(sector_ceiling_z, shape_sector.ceiling_color, shape_sector.ceiling_tid);
+	
+	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
+	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+		//FIXME: Need to make getting texture from a wall
+	int tid = 0;
+		//FIXME: Need to make getting texture from a wall
+	
+	RendererColumn f_column = get_wall_column(wall_points[0], sector_floor_z, sector_ceiling_z);
+	RendererColumn s_column = get_wall_column(wall_points[1], sector_floor_z, sector_ceiling_z);
+	
+	if(f_pos_x > s_pos_x) //FIXME: It doesn't needed actually
+	{
+		std::swap(f_pos_x, s_pos_x);
+		std::swap(f_column, s_column);
+		
+		std::swap(raw_wall_points[0], raw_wall_points[1]);
+		std::swap(wall_points[0], wall_points[1]);
+	}
+	
+	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+		//FIXME: Need to make RenderWall class or smth else
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
+																							 wall_points,
+																							 f_column,
+																							 s_column,
+																							 wall.window_component,
+																							 wall_offsets,
+																							 f_pos_x,
+																							 tid,
+																							 {floor_visplane_index},
+																							 {ceiling_visplane_index},
+																							 s_pos_x - f_pos_x,
+																							 false
+																							 );
+		//FIXME: Need to make RenderWall class or smth else
+	render_wall_range(columns_to_render, f_pos_x, tid, wall.color);
+}
+
+void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points)
+{
+	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
+	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
+	
+	float floor_delta = s_window_sector.floor_z - f_window_sector.floor_z;
+	float ceiling_delta = s_window_sector.ceiling_z - f_window_sector.ceiling_z;
+	
+	int f_floor_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color, f_window_sector.floor_tid);
+	int s_floor_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color, s_window_sector.floor_tid);
+	
+	int f_ceiling_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
+	int s_ceiling_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
+	
+	std::vector<int> floor_visplanes_indeces = {f_floor_visplane_index, s_floor_visplane_index};
+	std::vector<int> ceiling_visplanes_indeces = {f_ceiling_visplane_index, s_ceiling_visplane_index};
+	
+	if(floor_delta > 0)
+	{
+		floor_visplanes_indeces.clear();
+		render_bottom_window(raw_wall_points, wall_points, window);
+	}
+	if(ceiling_delta < 0)
+	{
+		ceiling_visplanes_indeces.clear();
+		render_upper_window(raw_wall_points, wall_points, window);
+	}
+	
+	if(floor_delta > 0 && ceiling_delta < 0) return;
+	
+	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
+	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+	RendererColumn f_column = get_wall_column(wall_points[0], f_window_sector.floor_z, f_window_sector.ceiling_z);
+	RendererColumn s_column = get_wall_column(wall_points[1], f_window_sector.floor_z, f_window_sector.ceiling_z);
+	
+	int tid = 1;
+	
+	if(f_pos_x > s_pos_x)
+	{
+		std::swap(f_pos_x, s_pos_x);
+		std::swap(f_column, s_column);
+	}
+	
+	std::vector<std::vector<RendererColumn>> columns = get_wall_projection_columns(
+																				   wall_points,
+																				   f_column,
+																				   s_column,
+																				   window,
+																				   Vector2D<float>(),
+																				   f_pos_x,
+																				   tid,
+																				   floor_visplanes_indeces,
+																				   ceiling_visplanes_indeces,
+																				   s_pos_x - f_pos_x,
+																				   true
+																				   );
+}
+
+void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
+{
+	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
+	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
+	
+	int f_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color, f_window_sector.floor_tid);
+	int s_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color, s_window_sector.floor_tid);
+	
+		//THIS: need to make it another function
+	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
+	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+	RendererColumn f_column = get_wall_column(wall_points[0], f_window_sector.floor_z, s_window_sector.floor_z);
+	RendererColumn s_column = get_wall_column(wall_points[1], f_window_sector.floor_z, s_window_sector.floor_z);
+	
+	int tid = 1;
+	
+	if(f_pos_x > s_pos_x)
+	{
+		std::swap(f_pos_x, s_pos_x);
+		std::swap(f_column, s_column);
+		
+		std::swap(raw_wall_points[0], raw_wall_points[1]);
+		std::swap(wall_points[0], wall_points[1]);
+	}
+	
+	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
+																							 wall_points,
+																							 f_column,
+																							 s_column,
+																							 window,
+																							 wall_offsets,
+																							 f_pos_x,
+																							 tid,
+																							 {f_visplane_index},
+																							 {s_visplane_index},
+																							 s_pos_x - f_pos_x,
+																							 true
+																							 );
+	
+	render_wall_range(columns_to_render, f_pos_x, tid, window->bottom_color);
+}
+
+void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
+{
+	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
+	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
+	
+	int f_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
+	int s_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
+	
+		//THIS: need to make it another function
+	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
+	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
+	
+	RendererColumn f_column = get_wall_column(wall_points[0], s_window_sector.ceiling_z, f_window_sector.ceiling_z);
+	RendererColumn s_column = get_wall_column(wall_points[1], s_window_sector.ceiling_z, f_window_sector.ceiling_z);
+	
+	int tid = 1;
+	
+	if(f_pos_x > s_pos_x)
+	{
+		std::swap(f_pos_x, s_pos_x);
+		std::swap(f_column, s_column);
+		
+		std::swap(raw_wall_points[0], raw_wall_points[1]);
+		std::swap(wall_points[0], wall_points[1]);
+	}
+	
+	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
+																							 wall_points,
+																							 f_column,
+																							 s_column,
+																							 window,
+																							 wall_offsets,
+																							 f_pos_x,
+																							 tid,
+																							 {s_visplane_index},
+																							 {f_visplane_index},
+																							 s_pos_x - f_pos_x,
+																							 true
+																							 );
+	
+	render_wall_range(columns_to_render, f_pos_x, tid, window->upper_color);
+}
+
+void GameRenderer::render_wall_range(std::vector<std::vector<RendererColumn>> columns, int f_pos_x, int tid, Color color)
+{
+	for (size_t column_index = 0; column_index < columns.size(); column_index++)
+	{
+		std::vector<RendererColumn> ranges = columns[column_index];
+		int pos_x = f_pos_x + (int)column_index;
+		
+		for (RendererColumn range : ranges) render_texture_column(pos_x, range, tid);
+	}
+}
+
+void GameRenderer::render_horizontal()
+{
+	Sector camera_sector = level_server->get_sector_by_index(current_camera->sector_index);
+	const float camera_z = camera_sector.floor_z + current_camera->height_z;
+	
+	for(const VisPlane& current_plane : visual_planes)
+	{
+		render_plane(current_plane, camera_z);
+	}
+}
+
+void GameRenderer::render_plane(const VisPlane& plane, float global_camera_height)
+{
+		//FIXME: Method is lagging
+	std::vector<RendererColumn> plane_columns = plane.plane_columns;
+	if(plane.min_x == -1 || plane.max_x == -1) return;
+	
+	float height = abs(global_camera_height - plane.height_z);
+	
+	for(int pos_x = plane.min_x; pos_x <= plane.max_x; pos_x++)
+	{
+		RendererColumn column = plane_columns[pos_x];
+		if(column.top >= column.bottom) continue;
+		render_plane_texture_column(pos_x, column, plane.tid, height);
+	}
+		//FIXME: Method is lagging
+}
+
+void GameRenderer::render_color_column(int pos_x, RendererColumn& range, Color color)
+{
+	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
+	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
+	{
+		draw_pixel_in_buffer(Vector2D<int>(column_x, pos_y), color);
+	}
+}
+
+void GameRenderer::render_texture_column(int pos_x, RendererColumn& range, int tid)
+{
+	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
+	float v = range.v_top;
+	
+	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
+	{
+		Vector2D<int> texture_point = {range.u, (int)v};
+		Color color = texture_buffer->get_texture_pixel(tid, texture_point);
+		draw_pixel_in_buffer(Vector2D<int>(column_x, pos_y), color);
+		v += range.v_step;
+	}
+}
+
+void GameRenderer::render_plane_texture_column(int pos_x, RendererColumn& range, int tid, float height)
+{
+	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
+	
+	Vector2D<float> camera_pos = current_camera->position;
+	float camera_rotation = current_camera->rotation;
+	Vector2D<float> camera_plane = {-sin(camera_rotation), cos(camera_rotation)};
+	Vector2D<float> camera_direction = {cos(camera_rotation), sin(camera_rotation)};
+	SDL_Surface* texture = texture_buffer->get_texture_surface(tid);
+	
+	float half_width = screen_width * 0.5f;
+	float half_height = screen_height * 0.5f;
+	
+	float focal_len = current_camera->get_focal_len(screen_width);
+	float dx = column_x - half_width;
+	float x_dir = dx / focal_len;
+	Vector2D<float> world_dir = {camera_direction.x - camera_plane.x * x_dir, camera_direction.y - camera_plane.y * x_dir};
+	
+	float world_dist;
+	Vector2D<float> world_pos;
+	Vector2D<int> pixel_pos;
+	
+	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
+	{
+		float dy = pos_y - half_height;
+		world_dist = (height * focal_len) / abs(dy);
+		world_pos.x = camera_pos.x + world_dist * world_dir.x;
+		world_pos.y = camera_pos.y + world_dist * world_dir.y;
+		
+		pixel_pos.x = (int)(world_pos.x * WORLD_TEXTURE_SCALE) % texture->w;
+		pixel_pos.y = (int)(world_pos.y * WORLD_TEXTURE_SCALE) % texture->h;
+		
+		if (pixel_pos.x < 0) pixel_pos.x += texture->w;
+		if (pixel_pos.y < 0) pixel_pos.y += texture->h;
+		
+		Color pixel = texture_buffer->get_texture_pixel(tid, pixel_pos);
+		draw_pixel_in_buffer({column_x, pos_y}, pixel);
+	}
 }
 
 int GameRenderer::get_point_on_camera_projection(Vector2D<float> point)
@@ -105,18 +487,18 @@ RendererColumn GameRenderer::get_wall_column(Vector2D<float> point, float floor_
 }
 
 std::vector<std::vector<RendererColumn>> GameRenderer::get_wall_projection_columns(
-																			   std::vector<Vector2D<float>> wall_points,
-																			   RendererColumn f_column,
-																			   RendererColumn s_column,
-																			   WindowComponent* window,
-																			   Vector2D<float> wall_offsets,
-																			   int f_screen_pos_x, //FIXME: It's just fields in RenderWall class
-																			   int tid,
-																			   std::vector<int> floor_pids,
-																			   std::vector<int> ceiling_pids,
-																			   int x_length,
-																			   bool is_outside
-																			   )
+																				   std::vector<Vector2D<float>> wall_points,
+																				   RendererColumn f_column,
+																				   RendererColumn s_column,
+																				   WindowComponent* window,
+																				   Vector2D<float> wall_offsets,
+																				   int f_screen_pos_x, //FIXME: It's just fields in RenderWall class
+																				   int tid,
+																				   std::vector<int> floor_pids,
+																				   std::vector<int> ceiling_pids,
+																				   int x_length,
+																				   bool is_outside
+																				   )
 {
 	SDL_Surface* texture = texture_buffer->get_texture_surface(tid);
 	std::vector<std::vector<RendererColumn>> wall_columns;
@@ -220,388 +602,5 @@ void GameRenderer::paste_planes_column(std::vector<RendererColumn> column_ranges
 		
 		plane->plane_columns[pos_x].top = top;
 		plane->plane_columns[pos_x].bottom = bottom;
-	}
-}
-
-void GameRenderer::clear_screen_width_buffer()
-{
-	for(size_t buffer_index = 0; buffer_index < screen_width_buffer.size(); buffer_index++)
-	{
-		RendererColumn default_column = RendererColumn(0, 0);
-		screen_width_buffer[buffer_index] = std::vector<RendererColumn>();
-	}
-	visual_planes.clear();
-}
-
-void GameRenderer::render()
-{
-	SDL_SetRenderScale(application_renderer, 4, 4);
-	SDL_SetRenderDrawColor(application_renderer, 0, 0, 0, 255);
-	clear_screen_width_buffer();
-	SDL_RenderClear(application_renderer);
-	SDL_ClearSurface(color_buffer, 0, 0, 0, 255);
-	
-	SDL_LockSurface(color_buffer);
-	
-	render_node(level_server->bsp_tree);
-	render_horizontal();
-	
-	SDL_UnlockSurface(color_buffer);
-	
-	render_buffer();
-	SDL_RenderPresent(application_renderer);
-}
-
-void GameRenderer::render_node(BSPNode* node)
-{
-	if (node->shape)
-	{
-		render_bsp_shape(node);
-		return;
-	}
-	
-	Line node_separate_line = node->separate_line;
-	const float position_side = is_point_on_line(current_camera->position, node_separate_line);
-	if (position_side <= 0)
-	{
-		render_node(node->front);
-		render_node(node->back);
-		return;
-	}
-	render_node(node->back);
-	render_node(node->front);
-	return;
-}
-
-void GameRenderer::render_bsp_shape(BSPNode* node)
-{
-	BSPShape* shape = node->shape;
-	
-	bool is_shape_in_frustrum = current_camera->is_shape_in_frustrum(shape->points);
-	if(!is_shape_in_frustrum) return;
-	
-	std::vector<Wall> windows;
-	
-	for(Wall& current_wall : shape->walls)
-	{
-		if(current_wall.window_component) //FIXME: If we not rendering windows here why we need this statement in render_shape_wall?
-		{
-			windows.push_back(current_wall);
-			continue;
-		}
-		render_shape_wall(shape, current_wall);
-	}
-	
-	for(Wall& window : windows)
-	{
-		render_shape_wall(shape, window);
-	}
-}
-
-void GameRenderer::render_shape_wall(BSPShape* shape, Wall wall)
-{
-	std::vector<Vector2D<float>> wall_points;
-	std::vector<Vector2D<float>> raw_wall_points = wall.get_wall_points(shape->points);
-	
-	float wall_camera_dot_product = (raw_wall_points[0] - current_camera->position) * wall.normal;
-	if((wall_camera_dot_product) >= 0) return;
-	
-	wall_points = current_camera->clip_wall_by_frustrum(raw_wall_points);
-	if(wall_points.size() != 2) return;
-	
-	if(wall.window_component) return render_window(wall.window_component, raw_wall_points, wall_points);
-	
-	Sector shape_sector = level_server->get_sector_by_index(shape->sector_index);
-	
-	float sector_floor_z = shape_sector.floor_z;
-	float sector_ceiling_z = shape_sector.ceiling_z;
-	
-	int floor_visplane_index = get_visplane_index(sector_floor_z, shape_sector.floor_color, shape_sector.floor_tid);
-	int ceiling_visplane_index = get_visplane_index(sector_ceiling_z, shape_sector.ceiling_color, shape_sector.ceiling_tid);
-	
-	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
-	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
-	
-		//FIXME: Need to make getting texture from a wall
-	int tid = 0;
-		//FIXME: Need to make getting texture from a wall
-	
-	RendererColumn f_column = get_wall_column(wall_points[0], sector_floor_z, sector_ceiling_z);
-	RendererColumn s_column = get_wall_column(wall_points[1], sector_floor_z, sector_ceiling_z);
-	
-	if(f_pos_x > s_pos_x) //FIXME: It doesn't needed actually
-	{
-		std::swap(f_pos_x, s_pos_x);
-		std::swap(f_column, s_column);
-		
-		std::swap(raw_wall_points[0], raw_wall_points[1]);
-		std::swap(wall_points[0], wall_points[1]);
-	}
-	
-	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
-		//FIXME: Need to make RenderWall class or smth else
-	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
-																							 wall_points,
-																							 f_column,
-																							 s_column,
-																							 wall.window_component,
-																							 wall_offsets,
-																							 f_pos_x,
-																							 tid,
-																							 {floor_visplane_index},
-																							 {ceiling_visplane_index},
-																							 s_pos_x - f_pos_x,
-																							 false
-																							 );
-		//FIXME: Need to make RenderWall class or smth else
-	render_wall_range(columns_to_render, f_pos_x, tid, wall.color);
-}
-
-void GameRenderer::render_wall_range(std::vector<std::vector<RendererColumn>> columns, int f_pos_x, int tid, Color color)
-{
-	for (size_t column_index = 0; column_index < columns.size(); column_index++)
-	{
-		std::vector<RendererColumn> ranges = columns[column_index];
-		int pos_x = f_pos_x + (int)column_index;
-		
-		for (RendererColumn range : ranges) render_texture_column(pos_x, range, tid);
-	}
-}
-
-void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points)
-{
-	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
-	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
-	
-	float floor_delta = s_window_sector.floor_z - f_window_sector.floor_z;
-	float ceiling_delta = s_window_sector.ceiling_z - f_window_sector.ceiling_z;
-	
-	int f_floor_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color, f_window_sector.floor_tid);
-	int s_floor_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color, s_window_sector.floor_tid);
-	
-	int f_ceiling_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
-	int s_ceiling_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
-	
-	std::vector<int> floor_visplanes_indeces = {f_floor_visplane_index, s_floor_visplane_index};
-	std::vector<int> ceiling_visplanes_indeces = {f_ceiling_visplane_index, s_ceiling_visplane_index};
-	
-	if(floor_delta > 0)
-	{
-		floor_visplanes_indeces.clear();
-		render_bottom_window(raw_wall_points, wall_points, window);
-	}
-	if(ceiling_delta < 0)
-	{
-		ceiling_visplanes_indeces.clear();
-		render_upper_window(raw_wall_points, wall_points, window);
-	}
-	
-	if(floor_delta > 0 && ceiling_delta < 0) return;
-	
-	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
-	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
-	
-	RendererColumn f_column = get_wall_column(wall_points[0], f_window_sector.floor_z, f_window_sector.ceiling_z);
-	RendererColumn s_column = get_wall_column(wall_points[1], f_window_sector.floor_z, f_window_sector.ceiling_z);
-	
-	int tid = 1;
-	
-	if(f_pos_x > s_pos_x)
-	{
-		std::swap(f_pos_x, s_pos_x);
-		std::swap(f_column, s_column);
-	}
-	
-	std::vector<std::vector<RendererColumn>> columns = get_wall_projection_columns(
-		wall_points,
-		f_column,
-		s_column,
-		window,
-		Vector2D<float>(),
-		f_pos_x,
-		tid,
-		floor_visplanes_indeces,
-		ceiling_visplanes_indeces,
-		s_pos_x - f_pos_x,
-		true
-	);
-}
-
-void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
-{
-	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
-	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
-	
-	int f_visplane_index = get_visplane_index(f_window_sector.floor_z, f_window_sector.floor_color, f_window_sector.floor_tid);
-	int s_visplane_index = get_visplane_index(s_window_sector.floor_z, s_window_sector.floor_color, s_window_sector.floor_tid);
-	
-		//THIS: need to make it another function
-	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
-	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
-	
-	RendererColumn f_column = get_wall_column(wall_points[0], f_window_sector.floor_z, s_window_sector.floor_z);
-	RendererColumn s_column = get_wall_column(wall_points[1], f_window_sector.floor_z, s_window_sector.floor_z);
-	
-	int tid = 1;
-	
-	if(f_pos_x > s_pos_x)
-	{
-		std::swap(f_pos_x, s_pos_x);
-		std::swap(f_column, s_column);
-		
-		std::swap(raw_wall_points[0], raw_wall_points[1]);
-		std::swap(wall_points[0], wall_points[1]);
-	}
-	
-	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
-	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
-																							 wall_points,
-																							 f_column,
-																							 s_column,
-																							 window,
-																							 wall_offsets,
-																							 f_pos_x,
-																							 tid,
-																							 {f_visplane_index},
-																							 {s_visplane_index},
-																							 s_pos_x - f_pos_x,
-																							 true
-																							 );
-	
-	render_wall_range(columns_to_render, f_pos_x, tid, window->bottom_color);
-}
-
-void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
-{
-	Sector f_window_sector = level_server->get_sector_by_index(window->f_sector_index);
-	Sector s_window_sector = level_server->get_sector_by_index(window->s_sector_index);
-	
-	int f_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
-	int s_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
-	
-		//THIS: need to make it another function
-	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
-	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
-	
-	RendererColumn f_column = get_wall_column(wall_points[0], s_window_sector.ceiling_z, f_window_sector.ceiling_z);
-	RendererColumn s_column = get_wall_column(wall_points[1], s_window_sector.ceiling_z, f_window_sector.ceiling_z);
-	
-	int tid = 1;
-	
-	if(f_pos_x > s_pos_x)
-	{
-		std::swap(f_pos_x, s_pos_x);
-		std::swap(f_column, s_column);
-		
-		std::swap(raw_wall_points[0], raw_wall_points[1]);
-		std::swap(wall_points[0], wall_points[1]);
-	}
-	
-	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
-	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
-																							 wall_points,
-																							 f_column,
-																							 s_column,
-																							 window,
-																							 wall_offsets,
-																							 f_pos_x,
-																							 tid,
-																							 {s_visplane_index},
-																							 {f_visplane_index},
-																							 s_pos_x - f_pos_x,
-																							 true
-																							 );
-	
-	render_wall_range(columns_to_render, f_pos_x, tid, window->upper_color);
-}
-
-void GameRenderer::render_horizontal()
-{
-	Sector camera_sector = level_server->get_sector_by_index(current_camera->sector_index);
-	const float camera_z = camera_sector.floor_z + current_camera->height_z;
-	
-	for(const VisPlane& current_plane : visual_planes)
-	{
-		render_plane(current_plane, camera_z);
-	}
-}
-
-void GameRenderer::render_plane(const VisPlane& plane, float global_camera_height)
-{
-		//FIXME: Method is lagging
-	std::vector<RendererColumn> plane_columns = plane.plane_columns;
-	if(plane.min_x == -1 || plane.max_x == -1) return;
-	
-	float height = abs(global_camera_height - plane.height_z);
-	
-	for(int pos_x = plane.min_x; pos_x <= plane.max_x; pos_x++)
-	{
-		RendererColumn column = plane_columns[pos_x];
-		if(column.top >= column.bottom) continue;
-		render_plane_texture_column(pos_x, column, plane.tid, height);
-	}
-		//FIXME: Method is lagging
-}
-
-void GameRenderer::render_color_column(int pos_x, RendererColumn& range, Color color)
-{
-	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
-	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
-	{
-		draw_pixel_in_buffer(Vector2D<int>(column_x, pos_y), color);
-	}
-}
-
-void GameRenderer::render_texture_column(int pos_x, RendererColumn& range, int tid)
-{
-	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
-	float v = range.v_top;
-	
-	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
-	{
-		Vector2D<int> texture_point = {range.u, (int)v};
-		Color color = texture_buffer->get_texture_pixel(tid, texture_point);
-		draw_pixel_in_buffer(Vector2D<int>(column_x, pos_y), color);
-		v += range.v_step;
-	}
-}
-
-void GameRenderer::render_plane_texture_column(int pos_x, RendererColumn& range, int tid, float height)
-{
-	int column_x = SDL_min(screen_width - 1, SDL_max(0, pos_x));
-	
-	Vector2D<float> camera_pos = current_camera->position;
-	float camera_rotation = current_camera->rotation;
-	Vector2D<float> camera_plane = {-sin(camera_rotation), cos(camera_rotation)};
-	Vector2D<float> camera_direction = {cos(camera_rotation), sin(camera_rotation)};
-	SDL_Surface* texture = texture_buffer->get_texture_surface(tid);
-	
-	float half_width = screen_width * 0.5f;
-	float half_height = screen_height * 0.5f;
-	
-	float focal_len = current_camera->get_focal_len(screen_width);
-	float dx = column_x - half_width;
-	float x_dir = dx / focal_len;
-	Vector2D<float> world_dir = {camera_direction.x - camera_plane.x * x_dir, camera_direction.y - camera_plane.y * x_dir};
-	
-	float world_dist;
-	Vector2D<float> world_pos;
-	Vector2D<int> pixel_pos;
-	
-	for(int pos_y = range.top; pos_y < range.bottom; pos_y++)
-	{
-		float dy = pos_y - half_height;
-		world_dist = (height * focal_len) / abs(dy);
-		world_pos.x = camera_pos.x + world_dist * world_dir.x;
-		world_pos.y = camera_pos.y + world_dist * world_dir.y;
-		
-		pixel_pos.x = (int)(world_pos.x * WORLD_TEXTURE_SCALE) % texture->w;
-		pixel_pos.y = (int)(world_pos.y * WORLD_TEXTURE_SCALE) % texture->h;
-		
-		if (pixel_pos.x < 0) pixel_pos.x += texture->w;
-		if (pixel_pos.y < 0) pixel_pos.y += texture->h;
-		
-		Color pixel = texture_buffer->get_texture_pixel(tid, pixel_pos);
-		draw_pixel_in_buffer({column_x, pos_y}, pixel);
 	}
 }
