@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <vector>
 #include "renderer.hpp"
-#include "imgui.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
 
 class EditorRenderer : public Renderer
 {

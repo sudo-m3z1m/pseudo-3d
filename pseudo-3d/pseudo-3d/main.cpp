@@ -7,19 +7,18 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "imgui_impl_sdl3.h"
-#include "imgui_impl_sdlrenderer3.h"
-
 #include "physics-server.hpp"
 #include "physics-component.hpp"
 #include "level-server.hpp"
 #include "camera.hpp"
 #include "game-renderer.hpp"
+#include "editor-renderer.hpp"
 #include "math.hpp"
 
 //PhysicsServer physics_server;
 LevelServer* level_server;
-GameRenderer* renderer;
+//GameRenderer* renderer;
+EditorRenderer* renderer;
 Camera* camera;
 
 //PhysicsComponent* circle;
@@ -145,7 +144,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	snprintf(path, 512, "%s%s", base_path, "floor.bmp");
 	texture_buffer->load_texture(path);
 	
-	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
+//	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
+	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
 	
 	return SDL_APP_CONTINUE;
 }
@@ -166,7 +166,8 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	std::cout << "Position: " << camera->position.x << ',' << camera->position.y << std::endl;
 //	std::cout << "Rotation: " << camera->rotation << std::endl;
 	
-	float delta = renderer->get_delta_ticks();
+//	float delta = renderer->get_delta_ticks();
+	float delta = 1.0f;
 	Vector2D<float> direction = get_input_direction();
 	float rotation_direction = get_input_rotation();
 	
