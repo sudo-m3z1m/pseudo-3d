@@ -6,7 +6,7 @@ EditorRenderer::EditorRenderer() : Renderer()
 	grid_low_step = 0.1f;
 }
 
-EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height) :
+EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, LevelServer* level_server) :
 	Renderer(camera, texture_buffer, width, height)
 {
 	IMGUI_CHECKVERSION();
@@ -16,6 +16,7 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, in
 	
 	grid_step = 1.0f;
 	grid_low_step = 0.1f;
+	this->level_server = level_server;
 }
 
 EditorRenderer::~EditorRenderer()

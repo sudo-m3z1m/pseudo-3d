@@ -4,20 +4,20 @@
 #include <stdio.h>
 
 #include "renderer.hpp"
-#include "level-server.hpp"
+#include "bsp-level-server.hpp"
 #include "visplane.hpp"
 
 //TODO: Need to make pipeline structure
 
 class GameRenderer : public Renderer {
 protected:
-	LevelServer* level_server;
+	BSPLevelServer* level_server;
 	std::vector<std::vector<RendererColumn>> screen_width_buffer;
 	std::vector<VisPlane> visual_planes;
 	
 public:
 	GameRenderer();
-	GameRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, LevelServer* level_server);
+	GameRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, BSPLevelServer* level_server);
 	~GameRenderer() override;
 	
 	int get_visplane_index(float height_z, Color color, int tid);
