@@ -17,7 +17,7 @@
 
 //PhysicsServer physics_server;
 BSPLevelServer* bsp_level_server;
-//LevelServer* level_server;
+LevelServer* level_server;
 //GameRenderer* renderer;
 EditorRenderer* renderer;
 Camera* camera;
@@ -82,6 +82,7 @@ float get_input_rotation()
 void create_level_server()
 {
 	bsp_level_server = new BSPLevelServer();
+	level_server = new LevelServer();
 	
 	Sector f_test_sector = Sector(0.0f, 6.0f, 1, 1, Color(), Color());
 	Sector s_test_sector = Sector(-1.0f, 7.0f, 0, 0, Color(), Color());
@@ -90,6 +91,10 @@ void create_level_server()
 	bsp_level_server->add_new_sector(f_test_sector);
 	bsp_level_server->add_new_sector(s_test_sector);
 	bsp_level_server->add_new_sector(t_test_sector);
+	
+	level_server->add_new_sector(f_test_sector);
+	level_server->add_new_sector(s_test_sector);
+	level_server->add_new_sector(t_test_sector);
 	
 	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(6.0f, 7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(16.0f, -7.0f), Vector2D<float>(16.0f, 7.0f)};
 	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(-4.0f, 7.0f), Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-4.0f, -2.0f), Vector2D<float>(-4.0f, -7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(6.0f, 7.0f)};
@@ -119,6 +124,10 @@ void create_level_server()
 	bsp_level_server->add_new_polygon(s_shape);
 	bsp_level_server->add_new_polygon(fo_shape);
 	
+	level_server->add_new_polygon(f_shape);
+	level_server->add_new_polygon(s_shape);
+	level_server->add_new_polygon(fo_shape);
+	
 	bsp_level_server->create_bsp_tree();
 	
 	return;
@@ -147,7 +156,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	texture_buffer->load_texture(path);
 	
 //	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
-	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
+	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
 	
 	return SDL_APP_CONTINUE;
 }
