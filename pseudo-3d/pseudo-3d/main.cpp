@@ -132,7 +132,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	
 	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);
 	int camera_sector_index = level_server->get_sector_index_by_point(level_server->bsp_tree, camera_position);
-	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
+//	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
+	camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
 	
 	TextureBuffer* texture_buffer = new TextureBuffer();
 	
@@ -166,19 +167,20 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	std::cout << "Position: " << camera->position.x << ',' << camera->position.y << std::endl;
 //	std::cout << "Rotation: " << camera->rotation << std::endl;
 	
-//	float delta = renderer->get_delta_ticks();
-	float delta = 1.0f;
+	float delta = renderer->get_delta_ticks();
 	Vector2D<float> direction = get_input_direction();
 	float rotation_direction = get_input_rotation();
 	
-	float rotation_speed = 1;
-	float move_speed = 5;
+	float rotation_speed = 50.0f;
+	float move_speed = 5.0f;
 	
 	float new_rotation = (rotation_direction * rotation_speed) * delta;
 	
-	camera->set_camera_rotation(camera->rotation + new_rotation);
+//	camera->set_camera_rotation(camera->rotation + new_rotation);
+	camera->set_camera_fov(camera->field_of_view + new_rotation);
 	
 	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
+	velocity = {-velocity.y, velocity.x};
 	
 	camera->set_camera_position(camera->position + velocity);
 	

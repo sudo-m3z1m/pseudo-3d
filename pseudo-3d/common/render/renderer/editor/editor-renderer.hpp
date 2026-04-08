@@ -10,14 +10,21 @@
 class EditorRenderer : public Renderer
 {
 protected:
+	float grid_step, grid_low_step;
 	
 public:
 	EditorRenderer();
 	EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height);
 	~EditorRenderer() override;
 	
+	Vector2D<int> get_screen_pos(Vector2D<float> world_pos);
+	Vector2D<float> get_world_pos(Vector2D<int> screen_pos);
+	
 	void render() override;
-	void render_buffer() override;
+	void render_ui();
+	void render_grid();
+	void render_level_data();
+//	void render_buffer() override;
 };
 
 #endif

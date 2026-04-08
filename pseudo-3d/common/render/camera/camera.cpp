@@ -131,3 +131,9 @@ Vector2D<float> Camera::set_camera_position(Vector2D<float> new_position)
 	position = new_position;
 	return position;
 }
+
+float Camera::set_camera_fov(float new_field_of_view)
+{
+	field_of_view = new_field_of_view;
+	return field_of_view;
+}

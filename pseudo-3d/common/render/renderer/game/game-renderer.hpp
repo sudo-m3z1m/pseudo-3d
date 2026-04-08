@@ -11,9 +11,7 @@
 
 class GameRenderer : public Renderer {
 protected:
-	float delta, prev_ticks;
 	LevelServer* level_server;
-	
 	std::vector<std::vector<RendererColumn>> screen_width_buffer;
 	std::vector<VisPlane> visual_planes;
 	
@@ -22,7 +20,6 @@ public:
 	GameRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, LevelServer* level_server);
 	~GameRenderer() override;
 	
-	float get_delta_ticks();
 	int get_visplane_index(float height_z, Color color, int tid);
 	void clear_screen_width_buffer();
 	bool is_screen_space_free(int x_point, RendererColumn new_column);

@@ -11,6 +11,7 @@
 class Renderer
 {
 protected:
+	float delta, prev_ticks;
 	Camera* current_camera;
 	SDL_Renderer* application_renderer;
 	SDL_Window* application_window;
@@ -25,6 +26,7 @@ public:
 	Renderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height);
 	virtual ~Renderer();
 	
+	float get_delta_ticks();
 	virtual void render();
 	void draw_pixel_in_buffer(Vector2D<int> draw_pos, Color color);
 	virtual void render_buffer();

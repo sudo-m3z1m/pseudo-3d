@@ -33,6 +33,7 @@ public:
 	
 	float set_camera_rotation(float new_rotation);
 	Vector2D<float> set_camera_position(Vector2D<float> new_position);
+	float set_camera_fov(float new_field_of_view);
 };
 
 #endif

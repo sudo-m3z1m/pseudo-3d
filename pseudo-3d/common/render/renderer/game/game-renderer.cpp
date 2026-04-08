@@ -20,17 +20,6 @@ GameRenderer::~GameRenderer()
 	delete color_buffer;
 }
 
-float GameRenderer::get_delta_ticks()
-{
-	float new_ticks = SDL_GetTicks();
-	float new_delta = (new_ticks - prev_ticks) * 0.001f;
-	prev_ticks = SDL_GetTicks();
-	
-	delta = new_delta;
-	
-	return new_delta;
-}
-
 int GameRenderer::get_visplane_index(float height_z, Color color, int tid)
 {
 	for (int current_plane_index = 0; current_plane_index < visual_planes.size(); current_plane_index++)

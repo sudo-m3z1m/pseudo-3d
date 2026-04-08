@@ -30,6 +30,17 @@ Renderer::~Renderer()
 	delete color_buffer;
 }
 
+float Renderer::get_delta_ticks()
+{
+	float new_ticks = SDL_GetTicks();
+	float new_delta = (new_ticks - prev_ticks) * 0.001f;
+	prev_ticks = SDL_GetTicks();
+	
+	delta = new_delta;
+	
+	return new_delta;
+}
+
 void Renderer::render() { return; }
 
 //FIXME: Legacy method. Need to make it faster with direct record in memory
