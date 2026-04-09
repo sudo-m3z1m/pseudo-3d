@@ -3,13 +3,10 @@
 
 #include <stdio.h>
 #include <vector>
-#include <json.hpp>
 
 #include "vector2D.hpp"
 #include "wall.hpp"
 #include "math.hpp"
-
-using json = nlohmann::json;
 
 enum ShapeType
 {
@@ -37,6 +34,5 @@ public:
 	
 	float radius;
 };
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ShapeComponent, type, sector_index, points, walls);
 
 #endif

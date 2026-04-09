@@ -120,6 +120,7 @@ void create_level_server()
 	ShapeComponent fo_shape = ShapeComponent(POLYGON, 0, fo_shape_points, fo_shape_walls, 2);
 	
 //	level_server->add_new_polygon(t_shape);
+	
 	bsp_level_server->add_new_polygon(f_shape);
 	bsp_level_server->add_new_polygon(s_shape);
 	bsp_level_server->add_new_polygon(fo_shape);

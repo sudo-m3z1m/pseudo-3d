@@ -2,6 +2,7 @@
 #define SEGMENT_HPP
 
 #include <stdio.h>
+
 #include "physics-component.hpp"
 #include "color.hpp"
 
