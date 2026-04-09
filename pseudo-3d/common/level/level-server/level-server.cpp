@@ -8,6 +8,11 @@ LevelServer::LevelServer()
 
 LevelServer::~LevelServer() { return; }
 
+std::vector<ShapeComponent> LevelServer::get_levels_shapes()
+{
+	return level_polygons;
+}
+
 void LevelServer::add_new_polygon(ShapeComponent new_polygon)
 {
 	if (new_polygon.type == DOT) return;

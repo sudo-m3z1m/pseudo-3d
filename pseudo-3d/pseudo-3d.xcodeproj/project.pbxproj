@@ -63,6 +63,11 @@
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		0100D90B2F8729B200887DE7 /* json */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = json;
+			sourceTree = "<group>";
+		};
 		013EB2AE2E1480F200B1E178 /* types */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = types;
@@ -130,6 +135,7 @@
 		0197C41D2DF459E400AB0564 = {
 			isa = PBXGroup;
 			children = (
+				0100D90B2F8729B200887DE7 /* json */,
 				014EA85A2F83385000FAC1C8 /* imgui */,
 				01DFD0122E32E5B3006707AA /* common */,
 				01DFD0062E32E4D6006707AA /* gameplay */,
@@ -174,6 +180,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				0100D90B2F8729B200887DE7 /* json */,
 				013EB2AE2E1480F200B1E178 /* types */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				01A423162DFB7E4A00D7075E /* assets */,
@@ -214,6 +221,8 @@
 			);
 			mainGroup = 0197C41D2DF459E400AB0564;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0197C4272DF459E400AB0564 /* Products */;
 			projectDirPath = "";
@@ -305,7 +314,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
-				"HEADER_SEARCH_PATHS[arch=*]" = "$(SRCROOT)/imgui";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;

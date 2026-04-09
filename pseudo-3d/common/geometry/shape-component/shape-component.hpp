@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <vector>
+#include <json.hpp>
 
 #include "vector2D.hpp"
 #include "wall.hpp"

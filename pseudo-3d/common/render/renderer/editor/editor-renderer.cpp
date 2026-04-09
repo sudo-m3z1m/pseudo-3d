@@ -50,16 +50,16 @@ void EditorRenderer::render()
 	SDL_SetRenderDrawColor(application_renderer, 20, 20, 20, 255);
 	SDL_RenderClear(application_renderer);
 
-//	ImGui_ImplSDLRenderer3_NewFrame();
-//	ImGui_ImplSDL3_NewFrame();
-//	ImGui::NewFrame();
+	ImGui_ImplSDLRenderer3_NewFrame();
+	ImGui_ImplSDL3_NewFrame();
+	ImGui::NewFrame();
 	
 //	render_ui();
 	render_grid();
 	render_level_data();
 	
-//	ImGui::Render();
-//	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), application_renderer);
+	ImGui::Render();
+	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), application_renderer);
 	SDL_RenderPresent(application_renderer);
 }
 
@@ -101,5 +101,18 @@ void EditorRenderer::render_grid()
 
 void EditorRenderer::render_level_data()
 {
+	std::vector<ShapeComponent> level_shapes = level_server->get_levels_shapes();
+	SDL_SetRenderDrawColor(application_renderer, 255, 255, 255, 255);
 	
+	for (ShapeComponent shape : level_shapes)
+	{
+		for (Wall wall : shape.walls)
+		{
+			std::vector<Vector2D<float>> world_points = wall.get_wall_points(shape.points);
+			Vector2D<int> f_screen_point = get_screen_pos(world_points[0]);
+			Vector2D<int> s_screen_point = get_screen_pos(world_points[1]);
+			
+			SDL_RenderLine(application_renderer, f_screen_point.x, f_screen_point.y, s_screen_point.x, s_screen_point.y);
+		}
+	}
 }
