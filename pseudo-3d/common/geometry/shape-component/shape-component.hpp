@@ -9,6 +9,8 @@
 #include "wall.hpp"
 #include "math.hpp"
 
+using json = nlohmann::json;
+
 enum ShapeType
 {
 	DOT,
@@ -35,5 +37,6 @@ public:
 	
 	float radius;
 };
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ShapeComponent, type, sector_index, points, walls);
 
 #endif

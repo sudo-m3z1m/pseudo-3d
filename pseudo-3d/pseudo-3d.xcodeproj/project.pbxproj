@@ -63,9 +63,9 @@
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0100D90B2F8729B200887DE7 /* json */ = {
+		0100D90B2F8729B200887DE7 /* nlohmann */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = json;
+			path = nlohmann;
 			sourceTree = "<group>";
 		};
 		013EB2AE2E1480F200B1E178 /* types */ = {
@@ -135,7 +135,7 @@
 		0197C41D2DF459E400AB0564 = {
 			isa = PBXGroup;
 			children = (
-				0100D90B2F8729B200887DE7 /* json */,
+				0100D90B2F8729B200887DE7 /* nlohmann */,
 				014EA85A2F83385000FAC1C8 /* imgui */,
 				01DFD0122E32E5B3006707AA /* common */,
 				01DFD0062E32E4D6006707AA /* gameplay */,
@@ -180,7 +180,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0100D90B2F8729B200887DE7 /* json */,
+				0100D90B2F8729B200887DE7 /* nlohmann */,
 				013EB2AE2E1480F200B1E178 /* types */,
 				0197C4282DF459E400AB0564 /* pseudo-3d */,
 				01A423162DFB7E4A00D7075E /* assets */,

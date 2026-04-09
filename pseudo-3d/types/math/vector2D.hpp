@@ -4,8 +4,11 @@
 #include <stdio.h>
 #include <math.h>
 #include <SDL3/SDL.h>
+#include <json.hpp>
 
 #include "constants.hpp"
+
+using json = nlohmann::json;
 
 template <typename T>
 class Vector2D
@@ -128,6 +131,7 @@ public:
 		
 		return vector_normal.normalize_vector_2d();
 	}
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Vector2D, x, y, length);
 };
 
 #endif
