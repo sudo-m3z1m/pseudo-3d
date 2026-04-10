@@ -9,6 +9,7 @@
 
 #include "physics-server.hpp"
 #include "physics-component.hpp"
+#include "file-server.hpp"
 #include "bsp-level-server.hpp"
 #include "camera.hpp"
 #include "game-renderer.hpp"
@@ -21,6 +22,7 @@ LevelServer* level_server;
 //GameRenderer* renderer;
 EditorRenderer* renderer;
 Camera* camera;
+FileServer* file_server;
 
 //PhysicsComponent* circle;
 
@@ -136,6 +138,8 @@ void create_level_server()
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
+	file_server = new FileServer();
+	
 	std::time_t time = std::time(nullptr);
 	std::tm* l_time = std::localtime(&time);
 	srand(l_time->tm_sec);
@@ -158,6 +162,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	
 //	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
 	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
+	
+	std::vector<ShapeComponent> level_shapes = level_server->get_levels_shapes();
 	
 	return SDL_APP_CONTINUE;
 }

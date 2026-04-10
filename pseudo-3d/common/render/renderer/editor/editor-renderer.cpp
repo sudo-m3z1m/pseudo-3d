@@ -101,6 +101,11 @@ void EditorRenderer::render_grid()
 
 void EditorRenderer::render_level_data()
 {
+	render_shapes();
+}
+
+void EditorRenderer::render_shapes()
+{
 	std::vector<ShapeComponent> level_shapes = level_server->get_levels_shapes();
 	SDL_SetRenderDrawColor(application_renderer, 255, 255, 255, 255);
 	
@@ -113,6 +118,18 @@ void EditorRenderer::render_level_data()
 			Vector2D<int> s_screen_point = get_screen_pos(world_points[1]);
 			
 			SDL_RenderLine(application_renderer, f_screen_point.x, f_screen_point.y, s_screen_point.x, s_screen_point.y);
+			render_line_normal({f_screen_point, s_screen_point}, wall.normal);
 		}
 	}
+}
+
+void EditorRenderer::render_line_normal(std::vector<Vector2D<int>> line_screen_points, Vector2D<float> normal)
+{
+	Vector2D<int> f_point = line_screen_points[0] + ((line_screen_points[1] - line_screen_points[0]) / 2);
+	Vector2D<int> s_point = f_point;
+	Vector2D<float> s_point_vector = normal * current_camera->field_of_view;
+	s_point.x += (int)s_point_vector.x;
+	s_point.y -= (int)s_point_vector.y;
+	
+	SDL_RenderLine(application_renderer, f_point.x, f_point.y, s_point.x, s_point.y);
 }

@@ -4,6 +4,7 @@
 #define SAVE_CAST(x) reinterpret_cast<char*>(x)
 
 #include <stdio.h>
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -24,7 +25,7 @@ public:
 	FileServer(LevelServer* level_server, std::vector<const char*> textures_paths);
 	~FileServer();
 	
-	void write_file(const char* file_path);
+	void write_file(const char* file_path, std::vector<ShapeComponent>& shapes);
 	void read_file(const char* file_path);
 	
 //	void write_file_json(const char* file_path);

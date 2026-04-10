@@ -8,7 +8,7 @@
 #include "wall.hpp"
 #include "math.hpp"
 
-enum ShapeType
+enum ShapeType : uint32_t
 {
 	DOT,
 	CIRCLE,

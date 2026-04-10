@@ -26,7 +26,10 @@ public:
 	void render() override;
 	void render_ui();
 	void render_grid();
+	
 	void render_level_data();
+	void render_shapes();
+	void render_line_normal(std::vector<Vector2D<int>> line_screen_points, Vector2D<float> normal);
 //	void render_buffer() override;
 };
 
