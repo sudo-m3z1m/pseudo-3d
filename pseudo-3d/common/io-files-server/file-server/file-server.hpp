@@ -1,23 +1,37 @@
 #ifndef FILE_SERVER_HPP
 #define FILE_SERVER_HPP
 
+#define SAVE_CAST(x) reinterpret_cast<char*>(x)
+
 #include <stdio.h>
+#include <fstream>
+#include <vector>
 #include <string>
+
+#include "level-server.hpp"
+#include "shape-component.hpp"
+#include "sector.hpp"
 
 class FileServer
 {
 private:
-	//TODO: Just make a cast of level-server and texture buffer and save it to bin file.
-	//TODO: JSON will added soon after it
+	std::vector<ShapeComponent> file_shapes;
+	std::vector<Sector> file_sectors;
+	std::vector<const char*> file_textures_paths;
 	
 public:
 	FileServer();
+	FileServer(LevelServer* level_server, std::vector<const char*> textures_paths);
 	~FileServer();
-//	void write_package_json(std::string name, std::string json);
-//	void write_package_bin(std::string name);
 	
-//	void read_packages_json(std::string path);
-//	void read_packages_bin(std::string path);
+	void write_file(const char* file_path);
+	void read_file(const char* file_path);
+	
+//	void write_file_json(const char* file_path);
+//	void read_file_json(const char* file_path);
+	
+	void write_shapes(std::vector<ShapeComponent>& shapes, std::ofstream& file);
+	std::vector<ShapeComponent> read_shapes(std::ifstream& file);
 };
 
 #endif

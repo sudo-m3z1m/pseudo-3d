@@ -10,10 +10,9 @@
 
 class Wall
 {
-private:
-	size_t f_p_index, s_p_index;
-
 public:
+	size_t f_p_index, s_p_index;
+	int tid;
 	Vector2D<float> normal;
 	Color color;
 	WindowComponent* window_component;

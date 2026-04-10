@@ -5,6 +5,7 @@ Wall::Wall()
 	f_p_index = s_p_index = 0;
 	normal = Vector2D<float>(1, 0);
 	window_component = nullptr;
+	tid = 0;
 }
 
 Wall::Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent* window_component)
