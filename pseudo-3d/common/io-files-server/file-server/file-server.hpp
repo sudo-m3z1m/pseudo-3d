@@ -16,6 +16,7 @@
 class FileServer
 {
 private:
+	LevelServer* level_server;
 	std::vector<ShapeComponent> file_shapes;
 	std::vector<Sector> file_sectors;
 	std::vector<const char*> file_textures_paths;

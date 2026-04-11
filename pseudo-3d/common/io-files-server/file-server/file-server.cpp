@@ -7,7 +7,7 @@ FileServer::FileServer()
 
 FileServer::FileServer(LevelServer* level_server, std::vector<const char*> textures_paths)
 {
-	
+	this->level_server = level_server;
 }
 
 FileServer::~FileServer()
@@ -34,6 +34,11 @@ void FileServer::read_file(const char* file_path)
 	
 	file_shapes = read_shapes(file);
 	file.close();
+	
+	for(ShapeComponent shape : file_shapes)
+	{
+		level_server->add_new_polygon(shape);
+	}
 }
 
 void FileServer::write_shapes(std::vector<ShapeComponent>& shapes, std::ofstream& file)

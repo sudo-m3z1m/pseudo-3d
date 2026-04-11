@@ -127,10 +127,6 @@ void create_level_server()
 	bsp_level_server->add_new_polygon(s_shape);
 	bsp_level_server->add_new_polygon(fo_shape);
 	
-	level_server->add_new_polygon(f_shape);
-	level_server->add_new_polygon(s_shape);
-	level_server->add_new_polygon(fo_shape);
-	
 	bsp_level_server->create_bsp_tree();
 	
 	return;
@@ -138,12 +134,12 @@ void create_level_server()
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
-	file_server = new FileServer();
-	
 	std::time_t time = std::time(nullptr);
 	std::tm* l_time = std::localtime(&time);
 	srand(l_time->tm_sec);
+	
 	create_level_server();
+	file_server = new FileServer(level_server, {});
 	
 	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);
 	int camera_sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera_position);
@@ -163,7 +159,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 //	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
 	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
 	
-	std::vector<ShapeComponent> level_shapes = level_server->get_levels_shapes();
+	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	
 	return SDL_APP_CONTINUE;
 }
