@@ -159,6 +159,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 //	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
 	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
 	
+	std::vector<ShapeComponent> shapes = bsp_level_server->get_levels_shapes();
+	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map", shapes);
 	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	
 	return SDL_APP_CONTINUE;
@@ -209,53 +211,3 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
 	
 }
-
-
-//#include "../player/player.h"
-//#include "../player/raycast.h"
-//#include "../core/renderer.h"
-
-//Player* player = NULL;
-//Renderer* renderer = NULL;
-
-//SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
-//{	
-//	player = initialize_player(2, 2, (Vector2D){4, 4}, 0);
-//	renderer = initialize_renderer(INIT_WIN_WIDTH, INIT_WIN_HEIGHT);
-//
-//	return SDL_APP_CONTINUE;
-//}
-//
-//SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
-//{
-//	return SDL_APP_CONTINUE;
-//}
-//
-//SDL_AppResult SDL_AppIterate(void* appstate)
-//{
-//	SDL_Renderer* sdl_renderer = renderer->main_renderer;
-//	SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
-//	SDL_RenderClear(sdl_renderer);
-//	SDL_ClearSurface(renderer->color_buffer, 0, 0, 0, 255);
-//	SDL_LockSurface(renderer->color_buffer);
-//	
-//	const float delta = get_delta_ticks();
-//	
-//	player->collision_component->update(player);
-//	player->updatable_component->update(delta, player);
-//	
-//	draw_3d(*renderer, *player);
-//	SDL_UnlockSurface(renderer->color_buffer);
-//	
-//	render_buffer(*renderer);
-//	
-//	SDL_RenderPresent(sdl_renderer);
-//	
-//	return SDL_APP_CONTINUE;
-//}
-//
-//void SDL_AppQuit(void* appstate, SDL_AppResult result)
-//{
-//	SDL_DestroySurface(renderer->color_buffer);
-//	SDL_DestroySurface(renderer->textures_buffer[0]); //Need to remove it dynamicly
-//}

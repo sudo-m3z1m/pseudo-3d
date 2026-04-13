@@ -67,12 +67,14 @@ void FileServer::write_shapes(std::vector<ShapeComponent>& shapes, std::ofstream
 			uint32_t f_wall_index = static_cast<uint32_t>(wall.f_p_index);
 			uint32_t s_wall_index = static_cast<uint32_t>(wall.s_p_index);
 			uint32_t tid = static_cast<uint32_t>(wall.tid);
+			Vector2D<float> wall_normal = wall.normal;
 			bool is_window = wall.window_component != nullptr;
 			
 			file.write(SAVE_CAST(&f_wall_index), sizeof(f_wall_index));
 			file.write(SAVE_CAST(&s_wall_index), sizeof(s_wall_index));
 			file.write(SAVE_CAST(&tid), sizeof(tid));
 			file.write(SAVE_CAST(&is_window), sizeof(is_window));
+			file.write(SAVE_CAST(&wall_normal), sizeof(wall_normal));
 			
 			if (!is_window) continue;
 			file.write(reinterpret_cast<char*>(wall.window_component), sizeof(WindowComponent));
@@ -110,6 +112,7 @@ std::vector<ShapeComponent> FileServer::read_shapes(std::ifstream& file)
 			file.read(SAVE_CAST(&walls[wall_index].s_p_index), sizeof(uint32_t));
 			file.read(SAVE_CAST(&walls[wall_index].tid), sizeof(uint32_t));
 			file.read(SAVE_CAST(&is_window), sizeof(is_window));
+			file.read(SAVE_CAST(&walls[wall_index].normal), sizeof(Vector2D<float>));
 			
 			if (!is_window) continue;
 			walls[wall_index].window_component = new WindowComponent();
