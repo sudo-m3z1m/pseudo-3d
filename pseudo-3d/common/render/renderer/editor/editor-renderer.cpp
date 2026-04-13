@@ -7,7 +7,7 @@ EditorRenderer::EditorRenderer() : Renderer()
 	level_server = nullptr;
 }
 
-EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, LevelServer* level_server) :
+EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server) :
 	Renderer(camera, texture_buffer, width, height)
 {
 	IMGUI_CHECKVERSION();

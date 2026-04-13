@@ -18,7 +18,7 @@
 
 //PhysicsServer physics_server;
 BSPLevelServer* bsp_level_server;
-LevelServer* level_server;
+EditorLevelServer* editor_level_server;
 //GameRenderer* renderer;
 EditorRenderer* renderer;
 Camera* camera;
@@ -84,7 +84,7 @@ float get_input_rotation()
 void create_level_server()
 {
 	bsp_level_server = new BSPLevelServer();
-	level_server = new LevelServer();
+	editor_level_server = new EditorLevelServer();
 	
 	Sector f_test_sector = Sector(0.0f, 6.0f, 1, 1, Color(), Color());
 	Sector s_test_sector = Sector(-1.0f, 7.0f, 0, 0, Color(), Color());
@@ -94,9 +94,9 @@ void create_level_server()
 	bsp_level_server->add_new_sector(s_test_sector);
 	bsp_level_server->add_new_sector(t_test_sector);
 	
-	level_server->add_new_sector(f_test_sector);
-	level_server->add_new_sector(s_test_sector);
-	level_server->add_new_sector(t_test_sector);
+	editor_level_server->add_new_sector(f_test_sector);
+	editor_level_server->add_new_sector(s_test_sector);
+	editor_level_server->add_new_sector(t_test_sector);
 	
 	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(6.0f, 7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(16.0f, -7.0f), Vector2D<float>(16.0f, 7.0f)};
 	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(-4.0f, 7.0f), Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-4.0f, -2.0f), Vector2D<float>(-4.0f, -7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(6.0f, 7.0f)};
@@ -139,7 +139,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	srand(l_time->tm_sec);
 	
 	create_level_server();
-	file_server = new FileServer(level_server, {});
+	file_server = new FileServer(editor_level_server, {});
 	
 	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);
 	int camera_sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera_position);
@@ -157,7 +157,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	texture_buffer->load_texture(path);
 	
 //	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
-	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, level_server);
+	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server);
 	
 	std::vector<ShapeComponent> shapes = bsp_level_server->get_levels_shapes();
 	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map", shapes);

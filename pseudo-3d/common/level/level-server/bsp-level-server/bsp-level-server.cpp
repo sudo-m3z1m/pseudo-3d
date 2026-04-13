@@ -1,6 +1,6 @@
 #include "bsp-level-server.hpp"
 
-BSPLevelServer::BSPLevelServer()
+BSPLevelServer::BSPLevelServer() : LevelServer()
 {
 	bsp_tree = nullptr;
 }

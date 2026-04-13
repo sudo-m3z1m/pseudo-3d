@@ -20,19 +20,18 @@ enum ShapeType : uint32_t
 class ShapeComponent
 {
 public:
-	ShapeComponent();
-	ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls, int sector_index);
-
 	int sector_index; //TODO: Temporary probably
 	
 	ShapeType type;
 	std::vector<Vector2D<float>> points;
 	std::vector<Wall> walls;
+	float radius;
+	
+	ShapeComponent();
+	ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls, int sector_index);
 	
 	//TODO: Getting SAT projection with shape separation
 	Vector2D<float> get_line_normal(int f_point, int s_point);
-	
-	float radius;
 };
 
 #endif
