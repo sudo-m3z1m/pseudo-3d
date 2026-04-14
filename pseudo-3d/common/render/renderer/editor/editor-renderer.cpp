@@ -5,6 +5,7 @@ EditorRenderer::EditorRenderer() : Renderer()
 	grid_step = 1.0f;
 	grid_low_step = 0.1f;
 	level_server = nullptr;
+	imgui_viewport = ImGui::GetMainViewport();
 }
 
 EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server) :
@@ -18,6 +19,7 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, in
 	grid_step = 1.0f;
 	grid_low_step = 0.1f;
 	this->level_server = level_server;
+	imgui_viewport = ImGui::GetMainViewport();
 }
 
 EditorRenderer::~EditorRenderer()
@@ -54,7 +56,7 @@ void EditorRenderer::render()
 	ImGui_ImplSDL3_NewFrame();
 	ImGui::NewFrame();
 	
-//	render_ui();
+	render_ui();
 	render_grid();
 	render_level_data();
 	
@@ -65,7 +67,31 @@ void EditorRenderer::render()
 
 void EditorRenderer::render_ui()
 {
-
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse |
+	ImGuiWindowFlags_NoResize |
+	ImGuiWindowFlags_NoMove |
+	ImGuiWindowFlags_NoTitleBar |
+	ImGuiWindowFlags_NoBringToFrontOnFocus |
+	ImGuiWindowFlags_NoScrollbar |
+	ImGuiWindowFlags_NoScrollWithMouse;
+	
+	ImGui::BeginMainMenuBar();
+	if(ImGui::BeginMenu("File"))
+	{
+		if(ImGui::MenuItem("Save .map"))
+		{
+			std::cout << "Map Saved" << std::endl;
+		}
+		ImGui::EndMenu();
+	}
+	ImGui::EndMainMenuBar();
+	
+	ImGui::SetNextWindowPos(imgui_viewport->WorkPos);
+	ImGui::SetNextWindowSize(ImVec2(imgui_viewport->WorkSize.x, 10.0f));
+	
+	ImGui::Begin("Editor tools", NULL, window_flags);
+	ImGui::Button("Create new shape");
+	ImGui::End();
 }
 
 void EditorRenderer::render_grid()

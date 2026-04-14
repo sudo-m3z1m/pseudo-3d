@@ -168,6 +168,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 {
+	ImGui_ImplSDL3_ProcessEvent(event);
 	return SDL_APP_CONTINUE;
 }
 
@@ -209,5 +210,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
-	
+//	ImGui_ImplSDL3_Shutdown();
+//	ImGui_ImplSDLRenderer3_Shutdown();
+//	ImGui::DestroyContext();
 }

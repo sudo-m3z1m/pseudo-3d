@@ -14,6 +14,7 @@ class EditorRenderer : public Renderer
 protected:
 	float grid_step, grid_low_step;
 	EditorLevelServer* level_server;
+	ImGuiViewport* imgui_viewport;
 	
 public:
 	EditorRenderer();
