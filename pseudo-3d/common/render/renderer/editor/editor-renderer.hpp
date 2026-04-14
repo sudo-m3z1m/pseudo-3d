@@ -12,17 +12,21 @@
 class EditorRenderer : public Renderer
 {
 protected:
+	float min_zoom, max_zoom;
 	float grid_step, grid_low_step;
 	EditorLevelServer* level_server;
 	ImGuiViewport* imgui_viewport;
 	
 public:
 	EditorRenderer();
-	EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server);
+	EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom);
 	~EditorRenderer() override;
 	
 	Vector2D<int> get_screen_pos(Vector2D<float> world_pos);
 	Vector2D<float> get_world_pos(Vector2D<int> screen_pos);
+	Vector2D<float> get_mouse_pos();
+	
+	void add_zoom(float zoom_delta);
 	
 	void render() override;
 	void render_ui();

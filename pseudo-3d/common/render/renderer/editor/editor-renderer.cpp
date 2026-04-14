@@ -6,9 +6,11 @@ EditorRenderer::EditorRenderer() : Renderer()
 	grid_low_step = 0.1f;
 	level_server = nullptr;
 	imgui_viewport = ImGui::GetMainViewport();
+	min_zoom = EDITOR_DEFAULT_MIN_ZOOM;
+	max_zoom = EDITOR_DEFAULT_MAX_ZOOM;
 }
 
-EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server) :
+EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom) :
 	Renderer(camera, texture_buffer, width, height)
 {
 	IMGUI_CHECKVERSION();
@@ -20,6 +22,9 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, in
 	grid_low_step = 0.1f;
 	this->level_server = level_server;
 	imgui_viewport = ImGui::GetMainViewport();
+	
+	this->min_zoom = min_zoom;
+	this->max_zoom = max_zoom;
 }
 
 EditorRenderer::~EditorRenderer()
@@ -47,6 +52,14 @@ Vector2D<float> EditorRenderer::get_world_pos(Vector2D<int> screen_pos)
 	return world_pos;
 }
 
+Vector2D<float> EditorRenderer::get_mouse_pos()
+{
+	ImGuiIO& imgui_io = ImGui::GetIO();
+	Vector2D<float> mouse_pos = {imgui_io.MousePos.x, imgui_io.MousePos.y};
+	
+	return mouse_pos;
+}
+
 void EditorRenderer::render()
 {
 	SDL_SetRenderDrawColor(application_renderer, 20, 20, 20, 255);
@@ -55,6 +68,15 @@ void EditorRenderer::render()
 	ImGui_ImplSDLRenderer3_NewFrame();
 	ImGui_ImplSDL3_NewFrame();
 	ImGui::NewFrame();
+	
+	if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		Vector2D<float> mouse_pos = get_mouse_pos();
+		Vector2D<float> new_shape_pos = get_world_pos({(int)mouse_pos.x, (int)mouse_pos.y});
+		new_shape_pos.x = round(new_shape_pos.x * 10) / 10;
+		new_shape_pos.y = round(new_shape_pos.y * 10) / 10;
+		level_server->add_point_to_current_shape(new_shape_pos);
+	}
 	
 	render_ui();
 	render_grid();
@@ -87,10 +109,31 @@ void EditorRenderer::render_ui()
 	ImGui::EndMainMenuBar();
 	
 	ImGui::SetNextWindowPos(imgui_viewport->WorkPos);
-	ImGui::SetNextWindowSize(ImVec2(imgui_viewport->WorkSize.x, 10.0f));
 	
 	ImGui::Begin("Editor tools", NULL, window_flags);
-	ImGui::Button("Create new shape");
+	if(ImGui::Button("Create new point"))
+	{
+		std::cout << "Added point to the map" << std::endl;
+	}
+	ImGui::SameLine();
+	
+	if(ImGui::Button("Create new wall"))
+	{
+		std::cout << "Started wall creation" << std::endl;
+	}
+	ImGui::SameLine();
+	
+	if(ImGui::Button("Create new shape"))
+	{
+		level_server->create_new_shape();
+	}
+	ImGui::SameLine();
+	
+	if(ImGui::Button("Mark as room"))
+	{
+		std::cout << "Started room marking" << std::endl;
+	}
+	ImGui::SameLine();
 	ImGui::End();
 }
 
