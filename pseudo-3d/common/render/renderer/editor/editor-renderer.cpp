@@ -148,9 +148,24 @@ void EditorRenderer::render_grid()
 	
 	for(float world_x = world_left_up_corner.x; world_x < world_right_down_corner.x; world_x += grid_low_step)
 	{
-		SDL_SetRenderDrawColor(application_renderer, 40, 40, 40, 255);
+		SDL_SetRenderDrawColor(
+			application_renderer,
+			Color::GRID_SECONDARY_COLOR.r,
+			Color::GRID_SECONDARY_COLOR.g,
+			Color::GRID_SECONDARY_COLOR.b,
+			Color::GRID_SECONDARY_COLOR.a
+		);
+		
 		if(fmodf(fabsf(world_x) + 0.001f, grid_step) < grid_low_step)
-			SDL_SetRenderDrawColor(application_renderer, 80, 80, 80, 255);
+		{
+			SDL_SetRenderDrawColor(
+				application_renderer,
+				Color::GRID_MAIN_COLOR.r,
+				Color::GRID_MAIN_COLOR.g,
+				Color::GRID_MAIN_COLOR.b,
+				Color::GRID_MAIN_COLOR.a
+			);
+		}
 		else if (!render_low_step) continue;
 		
 		Vector2D<int> screen_pos = get_screen_pos({world_x, 0});
@@ -158,9 +173,24 @@ void EditorRenderer::render_grid()
 	}
 	for(float world_y = world_left_up_corner.y; world_y > world_right_down_corner.y; world_y -= grid_low_step)
 	{
-		SDL_SetRenderDrawColor(application_renderer, 40, 40, 40, 255);
+		SDL_SetRenderDrawColor(
+			application_renderer,
+			Color::GRID_SECONDARY_COLOR.r,
+			Color::GRID_SECONDARY_COLOR.g,
+			Color::GRID_SECONDARY_COLOR.b,
+			Color::GRID_SECONDARY_COLOR.a
+		);
+		
 		if(fmodf(fabsf(world_y) + 0.001f, grid_step) < grid_low_step)
-			SDL_SetRenderDrawColor(application_renderer, 80, 80, 80, 255);
+		{
+			SDL_SetRenderDrawColor(
+				application_renderer,
+				Color::GRID_MAIN_COLOR.r,
+				Color::GRID_MAIN_COLOR.g,
+				Color::GRID_MAIN_COLOR.b,
+				Color::GRID_MAIN_COLOR.a
+			);
+		}
 		else if (!render_low_step) continue;
 		
 		Vector2D<int> screen_pos = get_screen_pos({0, world_y});
@@ -176,12 +206,42 @@ void EditorRenderer::render_level_data()
 void EditorRenderer::render_shapes()
 {
 	std::vector<ShapeComponent> level_shapes = level_server->get_levels_shapes();
-	SDL_SetRenderDrawColor(application_renderer, 255, 255, 255, 255);
 	
-	for (ShapeComponent shape : level_shapes)
+	for (ShapeComponent& shape : level_shapes)
 	{
-		for (Wall wall : shape.walls)
+		SDL_SetRenderDrawColor(
+			application_renderer,
+			Color::VERTEX_COLOR.r,
+			Color::VERTEX_COLOR.g,
+			Color::VERTEX_COLOR.b,
+			Color::VERTEX_COLOR.a
+		);
+		for(Vector2D<float>& point : shape.points)
 		{
+			Vector2D<int> screen_space_point = get_screen_pos(point);
+			SDL_FRect rect_point = SDL_FRect();
+			rect_point.x = screen_space_point.x - VERTEX_SCREEN_SIZE / 2;
+			rect_point.y = screen_space_point.y - VERTEX_SCREEN_SIZE / 2;
+			rect_point.h = VERTEX_SCREEN_SIZE;
+			rect_point.w = VERTEX_SCREEN_SIZE;
+			
+			SDL_RenderFillRect(application_renderer, &rect_point);
+		}
+		
+		for (Wall& wall : shape.walls)
+		{
+			SDL_SetRenderDrawColor(application_renderer, Color::LINE_COLOR.r, Color::LINE_COLOR.g, Color::LINE_COLOR.b, Color::LINE_COLOR.a);
+			if(wall.window_component)
+			{
+				SDL_SetRenderDrawColor(
+					application_renderer,
+					Color::LINE_WINDOW_COLOR.r,
+					Color::LINE_WINDOW_COLOR.g,
+					Color::LINE_WINDOW_COLOR.b,
+					Color::LINE_WINDOW_COLOR.a
+				);
+			}
+			
 			std::vector<Vector2D<float>> world_points = wall.get_wall_points(shape.points);
 			Vector2D<int> f_screen_point = get_screen_pos(world_points[0]);
 			Vector2D<int> s_screen_point = get_screen_pos(world_points[1]);
