@@ -38,6 +38,10 @@ public:
 	void render_ui();
 	void render_grid();
 	
+	void render_menu();
+	void render_toolbar();
+	void render_inspector();
+	
 	void render_level_data();
 	void render_shapes();
 	void draw_point(Vector2D<float>& point);

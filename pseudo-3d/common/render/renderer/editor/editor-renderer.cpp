@@ -89,52 +89,9 @@ void EditorRenderer::render()
 
 void EditorRenderer::render_ui()
 {
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse |
-	ImGuiWindowFlags_NoResize |
-	ImGuiWindowFlags_NoMove |
-	ImGuiWindowFlags_NoTitleBar |
-	ImGuiWindowFlags_NoBringToFrontOnFocus |
-	ImGuiWindowFlags_NoScrollbar |
-	ImGuiWindowFlags_NoScrollWithMouse;
-	
-	ImGui::BeginMainMenuBar();
-	if(ImGui::BeginMenu("File"))
-	{
-		if(ImGui::MenuItem("Save .map"))
-		{
-			std::cout << "Map Saved" << std::endl;
-		}
-		ImGui::EndMenu();
-	}
-	ImGui::EndMainMenuBar();
-	
-	ImGui::SetNextWindowPos(imgui_viewport->WorkPos);
-	
-	ImGui::Begin("Editor tools", NULL, window_flags);
-	if(ImGui::Button("Create new point"))
-	{
-		std::cout << "Added point to the map" << std::endl;
-	}
-	ImGui::SameLine();
-	
-	if(ImGui::Button("Create new wall"))
-	{
-		std::cout << "Started wall creation" << std::endl;
-	}
-	ImGui::SameLine();
-	
-	if(ImGui::Button("Create new shape"))
-	{
-		level_server->create_new_shape();
-	}
-	ImGui::SameLine();
-	
-	if(ImGui::Button("Mark as room"))
-	{
-		std::cout << "Started room marking" << std::endl;
-	}
-	ImGui::SameLine();
-	ImGui::End();
+	render_menu();
+	render_toolbar();
+	render_inspector();
 }
 
 void EditorRenderer::render_grid()
@@ -196,6 +153,64 @@ void EditorRenderer::render_grid()
 		Vector2D<int> screen_pos = get_screen_pos({0, world_y});
 		SDL_RenderLine(application_renderer, 0, screen_pos.y, screen_width, screen_pos.y);
 	}
+}
+
+void EditorRenderer::render_menu()
+{
+	ImGui::BeginMainMenuBar();
+	if(ImGui::BeginMenu("File"))
+	{
+		if(ImGui::MenuItem("Save .map"))
+		{
+			std::cout << "Map Saved" << std::endl;
+		}
+		ImGui::EndMenu();
+	}
+	ImGui::EndMainMenuBar();
+}
+
+void EditorRenderer::render_toolbar()
+{
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse |
+	ImGuiWindowFlags_NoResize |
+	ImGuiWindowFlags_NoMove |
+	ImGuiWindowFlags_NoTitleBar |
+	ImGuiWindowFlags_NoBringToFrontOnFocus |
+	ImGuiWindowFlags_NoScrollbar |
+	ImGuiWindowFlags_NoScrollWithMouse;
+	
+	ImGui::SetNextWindowPos(imgui_viewport->WorkPos);
+	
+	ImGui::Begin("Editor tools", NULL, window_flags);
+	if(ImGui::Button("Create new point"))
+	{
+		std::cout << "Added point to the map" << std::endl;
+	}
+	ImGui::SameLine();
+	
+	if(ImGui::Button("Create new wall"))
+	{
+		std::cout << "Started wall creation" << std::endl;
+	}
+	ImGui::SameLine();
+	
+	if(ImGui::Button("Create new shape"))
+	{
+		level_server->create_new_shape();
+	}
+	ImGui::SameLine();
+	
+	if(ImGui::Button("Mark as room"))
+	{
+		std::cout << "Started room marking" << std::endl;
+	}
+	ImGui::SameLine();
+	ImGui::End();
+}
+
+void EditorRenderer::render_inspector()
+{
+	
 }
 
 void EditorRenderer::render_level_data()
