@@ -24,6 +24,11 @@ Camera* LevelServer::get_camera(int index)
 	return cameras[index];
 }
 
+std::vector<Camera*> LevelServer::get_cameras()
+{
+	return cameras;
+}
+
 void LevelServer::add_new_polygon(ShapeComponent new_polygon)
 {
 	if (new_polygon.type == DOT) return;

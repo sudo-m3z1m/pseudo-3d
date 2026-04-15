@@ -201,6 +201,7 @@ void EditorRenderer::render_grid()
 void EditorRenderer::render_level_data()
 {
 	render_shapes();
+	render_cameras();
 }
 
 void EditorRenderer::render_shapes()
@@ -216,17 +217,7 @@ void EditorRenderer::render_shapes()
 			Color::VERTEX_COLOR.b,
 			Color::VERTEX_COLOR.a
 		);
-		for(Vector2D<float>& point : shape.points)
-		{
-			Vector2D<int> screen_space_point = get_screen_pos(point);
-			SDL_FRect rect_point = SDL_FRect();
-			rect_point.x = screen_space_point.x - VERTEX_SCREEN_SIZE / 2;
-			rect_point.y = screen_space_point.y - VERTEX_SCREEN_SIZE / 2;
-			rect_point.h = VERTEX_SCREEN_SIZE;
-			rect_point.w = VERTEX_SCREEN_SIZE;
-			
-			SDL_RenderFillRect(application_renderer, &rect_point);
-		}
+		for(Vector2D<float>& point : shape.points) draw_point(point);
 		
 		for (Wall& wall : shape.walls)
 		{
@@ -252,6 +243,18 @@ void EditorRenderer::render_shapes()
 	}
 }
 
+void EditorRenderer::draw_point(Vector2D<float>& point)
+{
+	Vector2D<int> screen_space_point = get_screen_pos(point);
+	SDL_FRect rect_point = SDL_FRect();
+	rect_point.x = screen_space_point.x - VERTEX_SCREEN_SIZE / 2;
+	rect_point.y = screen_space_point.y - VERTEX_SCREEN_SIZE / 2;
+	rect_point.h = VERTEX_SCREEN_SIZE;
+	rect_point.w = VERTEX_SCREEN_SIZE;
+	
+	SDL_RenderFillRect(application_renderer, &rect_point);
+}
+
 void EditorRenderer::render_line_normal(std::vector<Vector2D<int>> line_screen_points, Vector2D<float> normal)
 {
 	Vector2D<int> f_point = line_screen_points[0] + ((line_screen_points[1] - line_screen_points[0]) / 2);
@@ -261,4 +264,41 @@ void EditorRenderer::render_line_normal(std::vector<Vector2D<int>> line_screen_p
 	s_point.y -= (int)s_point_vector.y;
 	
 	SDL_RenderLine(application_renderer, f_point.x, f_point.y, s_point.x, s_point.y);
+}
+
+void EditorRenderer::render_cameras()
+{
+	std::vector<Camera*> cameras = level_server->get_cameras();
+
+	SDL_SetRenderDrawColor(
+		application_renderer,
+		Color::CAMERA_COLOR.r,
+		Color::CAMERA_COLOR.g,
+		Color::CAMERA_COLOR.b,
+		Color::CAMERA_COLOR.a
+	);
+	for (Camera* camera : cameras)
+	{
+		float camera_fov = camera->field_of_view;
+		Vector2D<float> camera_pos = camera->position;
+		Vector2D<int> camera_screen_pos = get_screen_pos(camera_pos);
+		Vector2D<float> camera_direction = {-cosf(camera->rotation), sinf(camera->rotation)};
+		
+		Vector2D<float> f_frustum_point = camera_direction.rotate_vector(-camera_fov / 2);
+		Vector2D<float> s_frustum_point = camera_direction.rotate_vector(camera_fov / 2);
+		
+		f_frustum_point = f_frustum_point * current_camera->field_of_view;
+		s_frustum_point = s_frustum_point * current_camera->field_of_view;
+		
+		f_frustum_point.x += (float)camera_screen_pos.x;
+		f_frustum_point.y += (float)camera_screen_pos.y;
+		s_frustum_point.x += (float)camera_screen_pos.x;
+		s_frustum_point.y += (float)camera_screen_pos.y;
+		
+		SDL_RenderLine(application_renderer, camera_screen_pos.x, camera_screen_pos.y, f_frustum_point.x, f_frustum_point.y);
+		SDL_RenderLine(application_renderer, camera_screen_pos.x, camera_screen_pos.y, s_frustum_point.x, s_frustum_point.y);
+		SDL_RenderLine(application_renderer, f_frustum_point.x, f_frustum_point.y, s_frustum_point.x, s_frustum_point.y);
+		
+		draw_point(camera_pos);
+	}
 }

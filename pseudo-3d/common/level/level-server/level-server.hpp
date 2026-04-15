@@ -21,6 +21,7 @@ public:
 	
 	void add_camera(Camera* camera);
 	Camera* get_camera(int index);
+	std::vector<Camera*> get_cameras();
 	
 	void add_new_polygon(ShapeComponent new_polygon);
 	ShapeComponent get_levels_shape(int index);
