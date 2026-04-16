@@ -171,20 +171,13 @@ void EditorRenderer::render_menu()
 
 void EditorRenderer::render_toolbar()
 {
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse |
-	ImGuiWindowFlags_NoResize |
-	ImGuiWindowFlags_NoMove |
-	ImGuiWindowFlags_NoTitleBar |
-	ImGuiWindowFlags_NoBringToFrontOnFocus |
-	ImGuiWindowFlags_NoScrollbar |
-	ImGuiWindowFlags_NoScrollWithMouse;
-	
 	ImGui::SetNextWindowPos(imgui_viewport->WorkPos);
+	ImGui::SetNextWindowSize({500, 35});
 	
 	ImGui::Begin("Editor tools", NULL, window_flags);
 	if(ImGui::Button("Create new point"))
 	{
-		std::cout << "Added point to the map" << std::endl;
+		std::cout << "Added point to the map" << std::endl; //TODO: Probably need to make more flexible system with logic and front
 	}
 	ImGui::SameLine();
 	
@@ -210,7 +203,41 @@ void EditorRenderer::render_toolbar()
 
 void EditorRenderer::render_inspector()
 {
+	ShapeComponent test_shape = level_server->get_levels_shapes()[0];
+	Wall& test_wall = test_shape.walls[0];
 	
+	int f_point_index = (int)test_wall.f_p_index;
+	int s_point_index = (int)test_wall.s_p_index;
+	
+	ImVec2 window_pos = imgui_viewport->Size;
+	window_pos.y = 16;
+	window_pos.x = 500;
+	ImGui::SetNextWindowPos(window_pos);
+	ImGui::SetNextWindowSize({140, 400});
+	
+	ImGui::Begin("Inspector menu", NULL, window_flags);
+	ImGui::Text("Wall %i", (int)(test_wall.f_p_index + test_wall.s_p_index));
+	ImGui::Separator();
+	
+	ImGui::Text("Parameters:");
+	ImGui::InputInt("First point id", &f_point_index);
+	ImGui::InputInt("Second point id", &s_point_index);
+	ImGui::InputInt("Texture id", &test_wall.tid);
+	ImGui::Text("Normal:");
+	ImGui::InputFloat("x", &test_wall.normal.x);
+	ImGui::InputFloat("y", &test_wall.normal.y);
+	ImGui::Button("Invert normal");
+	ImGui::Separator();
+	
+	if(test_wall.window_component)
+	{
+		ImGui::Text("Window component: %p", (void*)test_wall.window_component);
+		ImGui::InputInt("Front sector id", &test_wall.window_component->f_sector_index);
+		ImGui::InputInt("Back point id", &test_wall.window_component->s_sector_index);
+		ImGui::Text("Window textures ids");
+	}
+	
+	ImGui::End();
 }
 
 void EditorRenderer::render_level_data()

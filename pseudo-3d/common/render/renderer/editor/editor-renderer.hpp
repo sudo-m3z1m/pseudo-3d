@@ -18,6 +18,14 @@ enum Sizes
 class EditorRenderer : public Renderer
 {
 protected:
+	const ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse |
+	ImGuiWindowFlags_NoResize |
+	ImGuiWindowFlags_NoMove |
+	ImGuiWindowFlags_NoTitleBar |
+	ImGuiWindowFlags_NoBringToFrontOnFocus |
+	ImGuiWindowFlags_NoScrollbar |
+	ImGuiWindowFlags_NoScrollWithMouse;
+	
 	float min_zoom, max_zoom;
 	float grid_step, grid_low_step;
 	EditorLevelServer* level_server;
