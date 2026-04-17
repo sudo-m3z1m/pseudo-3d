@@ -22,10 +22,11 @@ std::vector<InspectorItemProperty> Wall::get_inspector_item_properties()
 {
 	std::vector<InspectorItemProperty> properties = {
 		{&f_p_index, INT, "First index"},
-		{&s_p_index, INT, "First index"},
-		{&normal, VECTOR2, "Normal"}
+		{&s_p_index, INT, "Second index"},
+		{&normal, VECTOR2, "Normal"},
+		{&window_component, WINDOW_COMPONENT, "Window Component"}
 	};
-	if(window_component) properties.push_back({&window_component, WINDOW_COMPONENT, "Window component"});
+	if(!window_component) properties.pop_back();
 	
 	return properties;
 }

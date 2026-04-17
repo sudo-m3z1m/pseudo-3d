@@ -89,9 +89,12 @@ void EditorRenderer::render()
 
 void EditorRenderer::render_ui()
 {
+	InspectorItem* test_item = dynamic_cast<InspectorItem*>(level_server->current_wall);
 	render_menu();
 	render_toolbar();
-//	render_inspector();
+	
+	if(!test_item) return;
+	render_inspector(test_item);
 }
 
 void EditorRenderer::render_grid()
@@ -217,7 +220,7 @@ void EditorRenderer::render_inspector(InspectorItem* inspector_item)
 	for(InspectorItemProperty& property : item_properties)
 	{
 		Vector2D<float>* vector_ptr;
-		WindowComponent* window_component;
+		WindowComponent** window_component_ptr;
 		switch (property.type)
 		{
 			case INT:
@@ -233,12 +236,13 @@ void EditorRenderer::render_inspector(InspectorItem* inspector_item)
 				ImGui::InputFloat("y", &vector_ptr->y);
 				break;
 			case WINDOW_COMPONENT:
-				window_component = static_cast<WindowComponent*>(property.property_ptr);
+				window_component_ptr = static_cast<WindowComponent**>(property.property_ptr);
 				
 				ImGui::Text("Window component: %p", property.property_ptr);
-				ImGui::InputInt("Front sector id", &window_component->f_sector_index);
-				ImGui::InputInt("Back point id", &window_component->s_sector_index);
+				ImGui::InputInt("Front sector id", &(*window_component_ptr)->f_sector_index);
+				ImGui::InputInt("Back point id", &(*window_component_ptr)->s_sector_index);
 				ImGui::Text("Window textures ids");
+				if (ImGui::Button("Remove window component")) *window_component_ptr = nullptr;
 				break;
 			case COLOR:
 				ImGui::Text("Color");

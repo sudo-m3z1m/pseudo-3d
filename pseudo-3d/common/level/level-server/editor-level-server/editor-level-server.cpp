@@ -22,6 +22,7 @@ void EditorLevelServer::create_new_shape()
 	add_new_polygon(new_shape);
 	
 	current_shape = &level_polygons[level_polygons.size() - 1];
+	current_wall = &level_polygons[0].walls[0];
 }
 
 
