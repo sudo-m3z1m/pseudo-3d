@@ -18,6 +18,23 @@ Wall::Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent
 	this->color = Color().get_random_color(255);
 }
 
+std::vector<InspectorItemProperty> Wall::get_inspector_item_properties()
+{
+	std::vector<InspectorItemProperty> properties = {
+		{&f_p_index, INT, "First index"},
+		{&s_p_index, INT, "First index"},
+		{&normal, VECTOR2, "Normal"}
+	};
+	if(window_component) properties.push_back({&window_component, WINDOW_COMPONENT, "Window component"});
+	
+	return properties;
+}
+
+const char* Wall::get_inspector_item_name()
+{
+	return "Wall";
+}
+
 std::vector<Vector2D<float>> Wall::get_wall_points(std::vector<Vector2D<float>> shape_points)
 {
 	std::vector<Vector2D<float>> wall_points = {shape_points[f_p_index], shape_points[s_p_index]};

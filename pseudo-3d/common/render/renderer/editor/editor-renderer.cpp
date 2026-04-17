@@ -91,7 +91,7 @@ void EditorRenderer::render_ui()
 {
 	render_menu();
 	render_toolbar();
-	render_inspector();
+//	render_inspector();
 }
 
 void EditorRenderer::render_grid()
@@ -201,40 +201,50 @@ void EditorRenderer::render_toolbar()
 	ImGui::End();
 }
 
-void EditorRenderer::render_inspector()
+void EditorRenderer::render_inspector(InspectorItem* inspector_item)
 {
-	ShapeComponent test_shape = level_server->get_levels_shapes()[0];
-	Wall& test_wall = test_shape.walls[0];
-	
-	int f_point_index = (int)test_wall.f_p_index;
-	int s_point_index = (int)test_wall.s_p_index;
-	
+	std::vector<InspectorItemProperty> item_properties = inspector_item->get_inspector_item_properties();
 	ImVec2 window_pos = imgui_viewport->Size;
 	window_pos.y = 16;
-	window_pos.x = 500;
+	window_pos.x -= 140;
 	ImGui::SetNextWindowPos(window_pos);
 	ImGui::SetNextWindowSize({140, 400});
 	
 	ImGui::Begin("Inspector menu", NULL, window_flags);
-	ImGui::Text("Wall %i", (int)(test_wall.f_p_index + test_wall.s_p_index));
+	ImGui::Text(inspector_item->get_inspector_item_name(), 0);
 	ImGui::Separator();
 	
-	ImGui::Text("Parameters:");
-	ImGui::InputInt("First point id", &f_point_index);
-	ImGui::InputInt("Second point id", &s_point_index);
-	ImGui::InputInt("Texture id", &test_wall.tid);
-	ImGui::Text("Normal:");
-	ImGui::InputFloat("x", &test_wall.normal.x);
-	ImGui::InputFloat("y", &test_wall.normal.y);
-	ImGui::Button("Invert normal");
-	ImGui::Separator();
-	
-	if(test_wall.window_component)
+	for(InspectorItemProperty& property : item_properties)
 	{
-		ImGui::Text("Window component: %p", (void*)test_wall.window_component);
-		ImGui::InputInt("Front sector id", &test_wall.window_component->f_sector_index);
-		ImGui::InputInt("Back point id", &test_wall.window_component->s_sector_index);
-		ImGui::Text("Window textures ids");
+		Vector2D<float>* vector_ptr;
+		WindowComponent* window_component;
+		switch (property.type)
+		{
+			case INT:
+				ImGui::InputInt(property.property_name, static_cast<int*>(property.property_ptr));
+				break;
+			case FLOAT:
+				ImGui::InputFloat(property.property_name, static_cast<float*>(property.property_ptr));
+				break;
+			case VECTOR2:
+				vector_ptr = static_cast<Vector2D<float>*>(property.property_ptr);
+				ImGui::Text(property.property_name, 0);
+				ImGui::InputFloat("x", &vector_ptr->x);
+				ImGui::InputFloat("y", &vector_ptr->y);
+				break;
+			case WINDOW_COMPONENT:
+				window_component = static_cast<WindowComponent*>(property.property_ptr);
+				
+				ImGui::Text("Window component: %p", property.property_ptr);
+				ImGui::InputInt("Front sector id", &window_component->f_sector_index);
+				ImGui::InputInt("Back point id", &window_component->s_sector_index);
+				ImGui::Text("Window textures ids");
+				break;
+			case COLOR:
+				ImGui::Text("Color");
+			default:
+				break;
+		}
 	}
 	
 	ImGui::End();

@@ -16,6 +16,8 @@ protected:
 	Vector2D<float> player_spawn_pos;
 	
 public:
+	Wall* current_wall;
+	
 	EditorLevelServer();
 	EditorLevelServer(Vector2D<float> player_spawn_pos);
 	~EditorLevelServer() override;

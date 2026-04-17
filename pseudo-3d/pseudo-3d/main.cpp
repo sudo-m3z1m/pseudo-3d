@@ -163,8 +163,10 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map", shapes);
 	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	
+	std::vector<ShapeComponent> editor_shapes = editor_level_server->get_levels_shapes();
 	Camera* test_camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
 	editor_level_server->add_camera(test_camera);
+	editor_level_server->current_wall = &editor_shapes[0].walls[0];
 	
 	return SDL_APP_CONTINUE;
 }
