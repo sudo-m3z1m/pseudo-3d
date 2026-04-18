@@ -237,7 +237,6 @@ void EditorRenderer::render_inspector(InspectorItem* inspector_item)
 				break;
 			case WINDOW_COMPONENT:
 				window_component_ptr = static_cast<WindowComponent**>(property.property_ptr);
-				
 				ImGui::Text("Window component: %p", property.property_ptr);
 				ImGui::InputInt("Front sector id", &(*window_component_ptr)->f_sector_index);
 				ImGui::InputInt("Back point id", &(*window_component_ptr)->s_sector_index);
@@ -246,6 +245,9 @@ void EditorRenderer::render_inspector(InspectorItem* inspector_item)
 				break;
 			case COLOR:
 				ImGui::Text("Color");
+			case BUTTON:
+				if(ImGui::Button(property.property_name)) property.function_ptr();
+				break;
 			default:
 				break;
 		}

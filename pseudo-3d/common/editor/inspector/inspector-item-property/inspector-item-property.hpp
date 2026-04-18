@@ -10,14 +10,20 @@ enum PropertyType : uint8_t
 	FLOAT,
 	VECTOR2,
 	WINDOW_COMPONENT,
-	COLOR
+	COLOR,
+	BUTTON,
 };
 
 struct InspectorItemProperty
 {
-	void* property_ptr;
 	PropertyType type;
 	char property_name[32];
+	
+	union
+	{
+		void* property_ptr;
+		void (*function_ptr)();
+	};
 };
 
 #endif

@@ -91,6 +91,12 @@ public:
 		const float angle = SDL_atan2f(y, x); //FIXME: Need to learn why it need normalizing in fact and how to fix my func.
 		return angle;
 	}
+	void invert_vector()
+	{
+		x = -x;
+		y = -y;
+		return;
+	}
 	float cross_product(Vector2D<T> vector)
 	{
 		return x * vector.y - y * vector.x;

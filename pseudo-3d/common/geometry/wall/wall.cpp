@@ -18,13 +18,18 @@ Wall::Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent
 	this->color = Color().get_random_color(255);
 }
 
+void Wall::invert_wall_normal()
+{
+	normal.invert_vector();
+}
+
 std::vector<InspectorItemProperty> Wall::get_inspector_item_properties()
 {
 	std::vector<InspectorItemProperty> properties = {
-		{&f_p_index, INT, "First index"},
-		{&s_p_index, INT, "Second index"},
-		{&normal, VECTOR2, "Normal"},
-		{&window_component, WINDOW_COMPONENT, "Window Component"}
+		{INT, "First index", &f_p_index},
+		{INT, "Second index", &s_p_index},
+		{VECTOR2, "Normal", &normal},
+		{WINDOW_COMPONENT, "Window Component", &window_component}
 	};
 	if(!window_component) properties.pop_back();
 	

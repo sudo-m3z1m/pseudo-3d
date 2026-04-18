@@ -21,6 +21,8 @@ public:
 	Wall();
 	Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent* window_component);
 	
+	void invert_wall_normal();
+	
 	std::vector<InspectorItemProperty> get_inspector_item_properties() override;
 	const char* get_inspector_item_name() override;
 	
