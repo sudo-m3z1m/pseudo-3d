@@ -206,54 +206,7 @@ void EditorRenderer::render_toolbar()
 
 void EditorRenderer::render_inspector(InspectorItem* inspector_item)
 {
-	std::vector<InspectorItemProperty> item_properties = inspector_item->get_inspector_item_properties();
-	ImVec2 window_pos = imgui_viewport->Size;
-	window_pos.y = 16;
-	window_pos.x -= 140;
-	ImGui::SetNextWindowPos(window_pos);
-	ImGui::SetNextWindowSize({140, 400});
 	
-	ImGui::Begin("Inspector menu", NULL, window_flags);
-	ImGui::Text(inspector_item->get_inspector_item_name(), 0);
-	ImGui::Separator();
-	
-	for(InspectorItemProperty& property : item_properties)
-	{
-		Vector2D<float>* vector_ptr;
-		WindowComponent** window_component_ptr;
-		switch (property.type)
-		{
-			case INT:
-				ImGui::InputInt(property.property_name, static_cast<int*>(property.property_ptr));
-				break;
-			case FLOAT:
-				ImGui::InputFloat(property.property_name, static_cast<float*>(property.property_ptr));
-				break;
-			case VECTOR2:
-				vector_ptr = static_cast<Vector2D<float>*>(property.property_ptr);
-				ImGui::Text(property.property_name, 0);
-				ImGui::InputFloat("x", &vector_ptr->x);
-				ImGui::InputFloat("y", &vector_ptr->y);
-				break;
-			case WINDOW_COMPONENT:
-				window_component_ptr = static_cast<WindowComponent**>(property.property_ptr);
-				ImGui::Text("Window component: %p", property.property_ptr);
-				ImGui::InputInt("Front sector id", &(*window_component_ptr)->f_sector_index);
-				ImGui::InputInt("Back point id", &(*window_component_ptr)->s_sector_index);
-				ImGui::Text("Window textures ids");
-				if (ImGui::Button("Remove window component")) *window_component_ptr = nullptr;
-				break;
-			case COLOR:
-				ImGui::Text("Color");
-			case BUTTON:
-				if(ImGui::Button(property.property_name)) property.function_ptr();
-				break;
-			default:
-				break;
-		}
-	}
-	
-	ImGui::End();
 }
 
 void EditorRenderer::render_level_data()

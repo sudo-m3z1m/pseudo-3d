@@ -48,7 +48,6 @@ public:
 	
 	void render_menu();
 	void render_toolbar();
-	void render_inspector(InspectorItem* inspector_item);
 	
 	void render_level_data();
 	void render_shapes();

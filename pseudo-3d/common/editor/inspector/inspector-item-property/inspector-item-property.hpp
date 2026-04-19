@@ -10,6 +10,7 @@ enum PropertyType : uint8_t
 	FLOAT,
 	VECTOR2,
 	WINDOW_COMPONENT,
+	ARRAY,
 	COLOR,
 	BUTTON,
 };

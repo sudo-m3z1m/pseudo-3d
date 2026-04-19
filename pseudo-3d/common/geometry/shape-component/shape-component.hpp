@@ -17,7 +17,7 @@ enum ShapeType : uint32_t
 	POLYGON
 };
 
-class ShapeComponent
+class ShapeComponent : public InspectorItem
 {
 public:
 	int sector_index; //TODO: Temporary probably
@@ -29,6 +29,9 @@ public:
 	
 	ShapeComponent();
 	ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls, int sector_index);
+	
+	std::vector<InspectorItemProperty> get_inspector_item_properties() override;
+	const char* get_inspector_item_name() override;
 	
 	//TODO: Getting SAT projection with shape separation
 	Vector2D<float> get_line_normal(int f_point, int s_point);

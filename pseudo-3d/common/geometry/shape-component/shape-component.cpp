@@ -17,6 +17,22 @@ ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2
 	if(!walls.size()) this->walls = get_walls_from_shape_points(points); //TODO: walls will be readed from map file
 }
 
+std::vector<InspectorItemProperty> ShapeComponent::get_inspector_item_properties()
+{
+	std::vector<InspectorItemProperty> properties = {
+		{INT, "Sector index", &sector_index},
+		{ARRAY, "Points", &points},
+		{ARRAY, "Walls", &walls}
+	};
+	
+	return properties;
+}
+
+const char* ShapeComponent::get_inspector_item_name()
+{
+	return "Shape";
+}
+
 Vector2D<float> ShapeComponent::get_line_normal(int f_point_index, int s_point_index)
 {
 	if (type == DOT || type == CIRCLE)
