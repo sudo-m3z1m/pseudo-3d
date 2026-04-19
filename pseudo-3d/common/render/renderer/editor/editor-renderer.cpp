@@ -8,6 +8,7 @@ EditorRenderer::EditorRenderer() : Renderer()
 	imgui_viewport = ImGui::GetMainViewport();
 	min_zoom = EDITOR_DEFAULT_MIN_ZOOM;
 	max_zoom = EDITOR_DEFAULT_MAX_ZOOM;
+	inspector = new Inspector();
 }
 
 EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom) :
@@ -25,6 +26,8 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, in
 	
 	this->min_zoom = min_zoom;
 	this->max_zoom = max_zoom;
+	
+	inspector = new Inspector(nullptr, width, height, imgui_viewport);
 }
 
 EditorRenderer::~EditorRenderer()
@@ -94,7 +97,8 @@ void EditorRenderer::render_ui()
 	render_toolbar();
 	
 	if(!test_item) return;
-	inspector->render_inspector();
+	inspector->set_current_item(test_item);
+	inspector->render_inspector(window_flags);
 }
 
 void EditorRenderer::render_grid()

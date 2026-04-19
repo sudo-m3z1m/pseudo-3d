@@ -18,10 +18,12 @@ private:
 	
 public:
 	Inspector();
-	Inspector(InspectorItem* item);
+	Inspector(InspectorItem* item, int width, int height, ImGuiViewport*& viewport);
 	~Inspector();
 	
-	void render_inspector();
+	void set_current_item(InspectorItem* current_item);
+	
+	void render_inspector(const ImGuiWindowFlags& window_flags);
 	void render_item_property(InspectorItemProperty& property);
 	
 	void render_int_property(InspectorItemProperty& property);

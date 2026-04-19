@@ -5,9 +5,15 @@ Inspector::Inspector()
 	
 }
 
-Inspector::Inspector(InspectorItem* item)
+Inspector::Inspector(InspectorItem* item, int width, int height, ImGuiViewport*& viewport)
 {
+	current_item = item;
+	this->width = width;
+	this->height = height;
 	
+	ImVec2 viewport_size = viewport->Size;
+	screen_position.x = viewport_size.x - width;
+	screen_position.y = 0;
 }
 
 Inspector::~Inspector()
@@ -15,17 +21,19 @@ Inspector::~Inspector()
 	
 }
 
-void Inspector::render_inspector()
+void Inspector::set_current_item(InspectorItem* item)
+{
+	current_item = item;
+}
+
+void Inspector::render_inspector(const ImGuiWindowFlags& window_flags)
 {
 	std::vector<InspectorItemProperty> item_properties = current_item->get_inspector_item_properties();
 	ImVec2 window_pos = {screen_position.x, screen_position.y};
-//	window_pos.y = 16;
-//	window_pos.x -= 140;
 	ImGui::SetNextWindowPos(window_pos);
-//	ImGui::SetNextWindowSize({140, 400});
 	ImGui::SetNextWindowSize({width, height});
 	
-//	ImGui::Begin("Inspector menu", NULL, window_flags);
+	ImGui::Begin("Inspector menu", NULL, window_flags);
 	ImGui::Text(current_item->get_inspector_item_name(), 0);
 	ImGui::Separator();
 	
@@ -102,10 +110,10 @@ void Inspector::render_window_component_property(InspectorItemProperty& property
 
 void Inspector::render_array_property(InspectorItemProperty& property)
 {
-	std::vector<InspectorItemProperty>* array_ptr = static_cast<std::vector<InspectorItemProperty>*>(property.property_ptr);
-	for (int array_index = 0; array_index < array_ptr->size(); array_index++)
+	std::vector<InspectorItemProperty> array = *(static_cast<std::vector<InspectorItemProperty>*>(property.property_ptr));
+	for(InspectorItemProperty& array_property : array)
 	{
-		
+		render_item_property(array_property);
 	}
 //	ImGui::Text(property.property_name, 0);
 //	ImGui::BeginListBox("Walls");
