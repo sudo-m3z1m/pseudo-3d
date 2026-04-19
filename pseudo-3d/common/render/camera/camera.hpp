@@ -10,7 +10,7 @@
 #include "shape-component.hpp"
 #include "line.hpp"
 
-class Camera
+class Camera : public InspectorItem
 {
 private:
 	ShapeComponent* frustrum;
@@ -24,6 +24,9 @@ public:
 	
 	Camera();
 	Camera(float field_of_view, Vector2D<float> position, float rotation, float height_z, int init_sector_index);
+	
+	std::vector<InspectorItemProperty> get_inspector_item_properties() override;
+	const char* get_inspector_item_name() override;
 	
 	float get_focal_len(int width);
 	

@@ -27,6 +27,23 @@ Camera::Camera(float field_of_view, Vector2D<float> position, float rotation, fl
 	delete[] temp_frustrum;
 }
 
+std::vector<InspectorItemProperty> Camera::get_inspector_item_properties()
+{
+	std::vector<InspectorItemProperty> properties = {
+		{VECTOR2, "Position", &position},
+		{FLOAT, "Rotation", &rotation},
+		{FLOAT, "Height z", &height_z},
+		{FLOAT, "FOV", &field_of_view},
+	};
+	
+	return properties;
+}
+
+const char* Camera::get_inspector_item_name()
+{
+	return "Camera";
+}
+
 float Camera::get_focal_len(int width)
 {
 	return (width / 2) / (tan(field_of_view / 2));

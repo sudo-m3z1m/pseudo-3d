@@ -18,7 +18,7 @@ private:
 	
 public:
 	Inspector();
-	Inspector(InspectorItem* item, int width, int height, ImGuiViewport*& viewport);
+	Inspector(InspectorItem* item, int width, int height, Vector2D<float> viewport_size);
 	~Inspector();
 	
 	void set_current_item(InspectorItem* current_item);

@@ -19,13 +19,13 @@ ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2
 
 std::vector<InspectorItemProperty> ShapeComponent::get_inspector_item_properties()
 {
-	std::vector<InspectorItemProperty> points_properties = std::vector<InspectorItemProperty>();
+	points_properties = std::vector<InspectorItemProperty>();
 	for(int point_index = 0; point_index < points.size(); point_index++)
 		points_properties.push_back({VECTOR2, "Point", &points[point_index]});
 	
 	std::vector<InspectorItemProperty> properties = {
 		{INT, "Sector index", &sector_index},
-		{ARRAY, "Points", &points_properties}
+		{ARRAY, "Points", &points_properties},
 	};
 	
 	return properties;

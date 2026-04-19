@@ -5,15 +5,14 @@ Inspector::Inspector()
 	
 }
 
-Inspector::Inspector(InspectorItem* item, int width, int height, ImGuiViewport*& viewport)
+Inspector::Inspector(InspectorItem* item, int width, int height, Vector2D<float> viewport_size)
 {
 	current_item = item;
 	this->width = width;
 	this->height = height;
 	
-	ImVec2 viewport_size = viewport->Size;
 	screen_position.x = viewport_size.x - width;
-	screen_position.y = 0;
+	screen_position.y = 16;
 }
 
 Inspector::~Inspector()
@@ -39,7 +38,7 @@ void Inspector::render_inspector(const ImGuiWindowFlags& window_flags)
 	
 	for(InspectorItemProperty& property : item_properties)
 	{
-		
+		render_item_property(property);
 	}
 	
 	ImGui::End();
@@ -110,6 +109,9 @@ void Inspector::render_window_component_property(InspectorItemProperty& property
 
 void Inspector::render_array_property(InspectorItemProperty& property)
 {
+	if(!ImGui::CollapsingHeader(property.property_name))
+		return;
+
 	std::vector<InspectorItemProperty> array = *(static_cast<std::vector<InspectorItemProperty>*>(property.property_ptr));
 	for(InspectorItemProperty& array_property : array)
 	{

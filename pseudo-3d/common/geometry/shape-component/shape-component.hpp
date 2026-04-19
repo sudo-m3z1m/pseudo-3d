@@ -21,6 +21,7 @@ class ShapeComponent : public InspectorItem
 {
 public:
 	int sector_index; //TODO: Temporary probably
+	std::vector<InspectorItemProperty> points_properties;
 	
 	ShapeType type;
 	std::vector<Vector2D<float>> points;

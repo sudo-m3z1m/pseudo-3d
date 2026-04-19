@@ -27,7 +27,7 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, in
 	this->min_zoom = min_zoom;
 	this->max_zoom = max_zoom;
 	
-	inspector = new Inspector(nullptr, width, height, imgui_viewport);
+	inspector = new Inspector(nullptr, 140.0f, 400.0f, Vector2D<float>((float)width, (float)height));
 }
 
 EditorRenderer::~EditorRenderer()
@@ -92,7 +92,7 @@ void EditorRenderer::render()
 
 void EditorRenderer::render_ui()
 {
-	InspectorItem* test_item = dynamic_cast<InspectorItem*>(level_server->current_wall);
+	InspectorItem* test_item = dynamic_cast<InspectorItem*>(level_server->get_camera(0));
 	render_menu();
 	render_toolbar();
 	
@@ -269,7 +269,7 @@ void EditorRenderer::render_line_normal(std::vector<Vector2D<int>> line_screen_p
 {
 	Vector2D<int> f_point = line_screen_points[0] + ((line_screen_points[1] - line_screen_points[0]) / 2);
 	Vector2D<int> s_point = f_point;
-	Vector2D<float> s_point_vector = normal * current_camera->field_of_view;
+	Vector2D<float> s_point_vector = normal * NORMAL_SCREEN_LENGTH;
 	s_point.x += (int)s_point_vector.x;
 	s_point.y -= (int)s_point_vector.y;
 	
