@@ -6,6 +6,7 @@
 
 #include "editor-level-server.hpp"
 #include "renderer.hpp"
+#include "inspector.hpp"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 
@@ -25,6 +26,7 @@ protected:
 	ImGuiWindowFlags_NoBringToFrontOnFocus |
 	ImGuiWindowFlags_NoScrollbar |
 	ImGuiWindowFlags_NoScrollWithMouse;
+	Inspector* inspector;
 	
 	float min_zoom, max_zoom;
 	float grid_step, grid_low_step;

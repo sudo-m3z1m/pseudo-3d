@@ -94,7 +94,7 @@ void EditorRenderer::render_ui()
 	render_toolbar();
 	
 	if(!test_item) return;
-	render_inspector(test_item);
+	inspector->render_inspector();
 }
 
 void EditorRenderer::render_grid()
@@ -202,11 +202,6 @@ void EditorRenderer::render_toolbar()
 	}
 	ImGui::SameLine();
 	ImGui::End();
-}
-
-void EditorRenderer::render_inspector(InspectorItem* inspector_item)
-{
-	
 }
 
 void EditorRenderer::render_level_data()

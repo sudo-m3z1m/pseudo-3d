@@ -102,7 +102,11 @@ void Inspector::render_window_component_property(InspectorItemProperty& property
 
 void Inspector::render_array_property(InspectorItemProperty& property)
 {
-	std::vector<InspectorItemProperty>* array_data = static_cast<std::vector<InspectorItemProperty>*>(property.property_ptr);
+	std::vector<InspectorItemProperty>* array_ptr = static_cast<std::vector<InspectorItemProperty>*>(property.property_ptr);
+	for (int array_index = 0; array_index < array_ptr->size(); array_index++)
+	{
+		
+	}
 //	ImGui::Text(property.property_name, 0);
 //	ImGui::BeginListBox("Walls");
 //	ImGui::EndListBox();
