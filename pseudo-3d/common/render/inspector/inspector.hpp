@@ -12,7 +12,7 @@
 class Inspector
 {
 private:
-	InspectorItem* current_item;
+	InspectorItem* current_item; //TODO: Instead of getting new properties every render need to save it when item is changes there
 	float width, height;
 	Vector2D<float> screen_position;
 	
@@ -21,7 +21,7 @@ public:
 	Inspector(InspectorItem* item, int width, int height, Vector2D<float> viewport_size);
 	~Inspector();
 	
-	void set_current_item(InspectorItem* current_item);
+	void set_current_item(InspectorItem* current_item); //TODO: Here
 	
 	void render_inspector(const ImGuiWindowFlags& window_flags);
 	void render_item_property(InspectorItemProperty& property);

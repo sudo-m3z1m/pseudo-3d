@@ -55,12 +55,34 @@ Vector2D<float> EditorRenderer::get_world_pos(Vector2D<int> screen_pos)
 	return world_pos;
 }
 
-Vector2D<float> EditorRenderer::get_mouse_pos()
+Vector2D<float> EditorRenderer::get_mouse_screen_pos()
 {
 	ImGuiIO& imgui_io = ImGui::GetIO();
 	Vector2D<float> mouse_pos = {imgui_io.MousePos.x, imgui_io.MousePos.y};
 	
 	return mouse_pos;
+}
+
+Vector2D<float> EditorRenderer::get_mouse_world_pos()
+{
+	Vector2D<float> mouse_screen_pos = get_mouse_screen_pos();
+	Vector2D<float> mouse_world_pos = get_world_pos({(int)mouse_screen_pos.x, (int)mouse_screen_pos.y});
+	
+	return mouse_world_pos;
+}
+
+void EditorRenderer::get_mouse_item()
+{
+	InspectorItem* item;
+	Vector2D<float> mouse_screen_position = get_mouse_world_pos();
+	current_item = item;
+}
+
+void EditorRenderer::add_zoom(float zoom_delta)
+{
+	float new_step = zoom_delta;
+	
+	current_camera->field_of_view += new_step;
 }
 
 void EditorRenderer::render()

@@ -16,6 +16,18 @@ EditorLevelServer::~EditorLevelServer()
 	//save in file probably
 }
 
+ShapeComponent* EditorLevelServer::get_closest_shape(Vector2D<float> point)
+{
+	ShapeComponent* shape = &level_polygons[0];
+	return shape;
+}
+
+Wall* EditorLevelServer::get_closest_shape_wall(Vector2D<float> point, ShapeComponent* shape)
+{
+	Wall* shape_wall = &shape->walls[0];
+	return shape_wall;
+}
+
 void EditorLevelServer::create_new_shape()
 {
 	ShapeComponent new_shape = ShapeComponent(POLYGON, 0, {}, {}, 0);

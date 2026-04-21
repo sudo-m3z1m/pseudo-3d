@@ -27,6 +27,7 @@ protected:
 	ImGuiWindowFlags_NoScrollbar |
 	ImGuiWindowFlags_NoScrollWithMouse;
 	Inspector* inspector;
+	InspectorItem* current_item;
 	
 	float min_zoom, max_zoom;
 	float grid_step, grid_low_step;
@@ -40,8 +41,10 @@ public:
 	
 	Vector2D<int> get_screen_pos(Vector2D<float> world_pos);
 	Vector2D<float> get_world_pos(Vector2D<int> screen_pos);
-	Vector2D<float> get_mouse_pos();
+	Vector2D<float> get_mouse_screen_pos();
+	Vector2D<float> get_mouse_world_pos();
 	
+	void get_mouse_item();
 	void add_zoom(float zoom_delta);
 	
 	void render() override;
