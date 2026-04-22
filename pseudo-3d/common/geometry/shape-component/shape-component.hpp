@@ -34,6 +34,8 @@ public:
 	std::vector<InspectorItemProperty> get_inspector_item_properties() override;
 	const char* get_inspector_item_name() override;
 	
+	Vector2D<float> get_center_point();
+	
 	//TODO: Getting SAT projection with shape separation
 	Vector2D<float> get_line_normal(int f_point, int s_point);
 };

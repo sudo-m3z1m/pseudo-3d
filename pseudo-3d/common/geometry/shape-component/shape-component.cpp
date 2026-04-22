@@ -36,6 +36,18 @@ const char* ShapeComponent::get_inspector_item_name()
 	return "Shape";
 }
 
+Vector2D<float> ShapeComponent::get_center_point()
+{
+	Vector2D<float> center_point;
+	for(Vector2D<float>& point : points)
+	{
+		center_point += point;
+	}
+	center_point = center_point / points.size();
+	
+	return center_point;
+}
+
 Vector2D<float> ShapeComponent::get_line_normal(int f_point_index, int s_point_index)
 {
 	if (type == DOT || type == CIRCLE)

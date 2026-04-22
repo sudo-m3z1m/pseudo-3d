@@ -73,8 +73,25 @@ Vector2D<float> EditorRenderer::get_mouse_world_pos()
 
 void EditorRenderer::get_mouse_item()
 {
-	InspectorItem* item;
+	InspectorItem* item = nullptr;
 	Vector2D<float> mouse_screen_position = get_mouse_world_pos();
+	float current_zoom = current_camera->field_of_view;
+	
+	ShapeComponent* closest_shape = level_server->get_closest_shape(mouse_screen_position);
+	Wall* closest_wall = level_server->get_closest_shape_wall(mouse_screen_position, closest_shape);
+	std::vector<Vector2D<float>> wall_points = closest_wall->get_wall_points(closest_shape->points);
+	Vector2D<float> points[] = {wall_points[0], wall_points[1]};
+	
+	Vector2D<float> shape_point = closest_shape->get_center_point();
+	Vector2D<float> wall_projection_point = get_line_projection_point(mouse_screen_position, points);
+	
+	float closest_shape_vector_len = (shape_point - mouse_screen_position).length * current_zoom;
+	float closest_wall_vector_len = (wall_projection_point - mouse_screen_position).length * current_zoom;
+	float closest_wall_shape_vector_len = (wall_projection_point - shape_point).length * current_zoom;
+	
+	if(closest_wall_vector_len <= EDITOR_SCREEN_SELECT_RADIUS) item = closest_wall;
+	if(closest_shape_vector_len <= closest_wall_shape_vector_len - EDITOR_SCREEN_SELECT_RADIUS) item = closest_shape;
+	
 	current_item = item;
 }
 
@@ -87,6 +104,7 @@ void EditorRenderer::add_zoom(float zoom_delta)
 
 void EditorRenderer::render()
 {
+	if(current_item) std::cout << current_item->get_inspector_item_name() << std::endl;
 	SDL_SetRenderDrawColor(application_renderer, 20, 20, 20, 255);
 	SDL_RenderClear(application_renderer);
 
@@ -96,11 +114,13 @@ void EditorRenderer::render()
 	
 	if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
-		Vector2D<float> mouse_pos = get_mouse_pos();
-		Vector2D<float> new_shape_pos = get_world_pos({(int)mouse_pos.x, (int)mouse_pos.y});
-		new_shape_pos.x = round(new_shape_pos.x * 10) / 10;
-		new_shape_pos.y = round(new_shape_pos.y * 10) / 10;
-		level_server->add_point_to_current_shape(new_shape_pos);
+		get_mouse_item();
+		inspector->set_current_item(current_item);
+//		Vector2D<float> mouse_pos = get_mouse_screen_pos();
+//		Vector2D<float> new_shape_pos = get_world_pos({(int)mouse_pos.x, (int)mouse_pos.y});
+//		new_shape_pos.x = round(new_shape_pos.x * 10) / 10;
+//		new_shape_pos.y = round(new_shape_pos.y * 10) / 10;
+//		level_server->add_point_to_current_shape(new_shape_pos);
 	}
 	
 	render_ui();
@@ -114,12 +134,12 @@ void EditorRenderer::render()
 
 void EditorRenderer::render_ui()
 {
-	InspectorItem* test_item = dynamic_cast<InspectorItem*>(level_server->get_camera(0));
+//	InspectorItem* test_item = dynamic_cast<InspectorItem*>(level_server->get_camera(0));
 	render_menu();
 	render_toolbar();
 	
-	if(!test_item) return;
-	inspector->set_current_item(test_item);
+//	if(!test_item) return;
+//	inspector->set_current_item(test_item);
 	inspector->render_inspector(window_flags);
 }
 

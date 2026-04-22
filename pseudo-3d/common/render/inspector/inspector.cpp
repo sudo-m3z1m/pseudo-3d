@@ -27,6 +27,8 @@ void Inspector::set_current_item(InspectorItem* item)
 
 void Inspector::render_inspector(const ImGuiWindowFlags& window_flags)
 {
+	if(!current_item) return;
+	
 	std::vector<InspectorItemProperty> item_properties = current_item->get_inspector_item_properties();
 	ImVec2 window_pos = {screen_position.x, screen_position.y};
 	ImGui::SetNextWindowPos(window_pos);

@@ -16,16 +16,53 @@ EditorLevelServer::~EditorLevelServer()
 	//save in file probably
 }
 
-ShapeComponent* EditorLevelServer::get_closest_shape(Vector2D<float> point)
+void test(int& test_int)
 {
-	ShapeComponent* shape = &level_polygons[0];
-	return shape;
+	
 }
 
-Wall* EditorLevelServer::get_closest_shape_wall(Vector2D<float> point, ShapeComponent* shape)
+ShapeComponent* EditorLevelServer::get_closest_shape(Vector2D<float>& point)
 {
-	Wall* shape_wall = &shape->walls[0];
-	return shape_wall;
+	ShapeComponent* closest_shape = &level_polygons[0];
+	Vector2D<float> shape_center_point = closest_shape->get_center_point();
+	float closest_shape_length = (shape_center_point - point).length;
+	for(ShapeComponent& shape : level_polygons)
+	{
+		shape_center_point = shape.get_center_point();
+		float to_shape_length = (shape_center_point - point).length;
+		if(to_shape_length < closest_shape_length)
+		{
+			closest_shape_length = to_shape_length;
+			closest_shape = &shape;
+		}
+	}
+	
+	return closest_shape;
+}
+
+Wall* EditorLevelServer::get_closest_shape_wall(Vector2D<float>& point, ShapeComponent* shape)
+{
+	std::vector<Vector2D<float>> shape_points = shape->points;
+	
+	Wall* closest_shape_wall = &shape->walls[0];
+	std::vector<Vector2D<float>> wall_points = closest_shape_wall->get_wall_points(shape_points);
+	float closest_wall_length = (wall_points[0] - point).length;
+	
+	for(Wall& wall : shape->walls)
+	{
+		wall_points = wall.get_wall_points(shape_points);
+		
+		Vector2D<float> points[] = {wall_points[0], wall_points[1]};
+		Vector2D<float> wall_projection_point = get_line_projection_point(point, points);
+		float to_wall_length = (wall_projection_point - point).length;
+		if(to_wall_length < closest_wall_length)
+		{
+			closest_wall_length = to_wall_length;
+			closest_shape_wall = &wall;
+		}
+	}
+	
+	return closest_shape_wall;
 }
 
 void EditorLevelServer::create_new_shape()
