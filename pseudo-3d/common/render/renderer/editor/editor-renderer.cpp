@@ -74,23 +74,27 @@ Vector2D<float> EditorRenderer::get_mouse_world_pos()
 void EditorRenderer::get_mouse_item()
 {
 	InspectorItem* item = nullptr;
-	Vector2D<float> mouse_screen_position = get_mouse_world_pos();
+	Vector2D<float> mouse_position = get_mouse_world_pos();
 	float current_zoom = current_camera->field_of_view;
 	
-	ShapeComponent* closest_shape = level_server->get_closest_shape(mouse_screen_position);
-	Wall* closest_wall = level_server->get_closest_shape_wall(mouse_screen_position, closest_shape);
+	ShapeComponent* closest_shape = level_server->get_closest_shape(mouse_position);
+	Wall* closest_wall = level_server->get_closest_shape_wall(mouse_position);
+	Camera* closest_camera = level_server->get_closest_camera(mouse_position);
 	std::vector<Vector2D<float>> wall_points = closest_wall->get_wall_points(closest_shape->points);
 	Vector2D<float> points[] = {wall_points[0], wall_points[1]};
 	
 	Vector2D<float> shape_point = closest_shape->get_center_point();
-	Vector2D<float> wall_projection_point = get_line_projection_point(mouse_screen_position, points);
+	Vector2D<float> wall_projection_point = get_line_projection_point(mouse_position, points);
+	Vector2D<float> camera_position = closest_camera->position;
 	
-	float closest_shape_vector_len = (shape_point - mouse_screen_position).length * current_zoom;
-	float closest_wall_vector_len = (wall_projection_point - mouse_screen_position).length * current_zoom;
+	float closest_shape_vector_len = (shape_point - mouse_position).length * current_zoom;
+	float closest_wall_vector_len = (wall_projection_point - mouse_position).length * current_zoom;
 	float closest_wall_shape_vector_len = (wall_projection_point - shape_point).length * current_zoom;
+	float closest_camera_vector_len = (camera_position - mouse_position).length * current_zoom;
 	
 	if(closest_wall_vector_len <= EDITOR_SCREEN_SELECT_RADIUS) item = closest_wall;
 	if(closest_shape_vector_len <= closest_wall_shape_vector_len - EDITOR_SCREEN_SELECT_RADIUS) item = closest_shape;
+	if(closest_camera_vector_len <= EDITOR_SCREEN_SELECT_RADIUS) item = closest_camera;
 	
 	current_item = item;
 }

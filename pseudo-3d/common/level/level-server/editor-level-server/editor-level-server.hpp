@@ -23,7 +23,9 @@ public:
 	~EditorLevelServer() override;
 	
 	ShapeComponent* get_closest_shape(Vector2D<float>& point);
-	Wall* get_closest_shape_wall(Vector2D<float>& point, ShapeComponent* shape);
+	Wall* get_closest_shape_wall(Vector2D<float>& point);
+//	Vector2D<float>* get_closest_shape_point(Vector2D<float>& point, ShapeComponent* shape);
+	Camera* get_closest_camera(Vector2D<float>& point);
 	
 	void create_new_shape();
 	void add_point_to_current_shape(Vector2D<float> point);

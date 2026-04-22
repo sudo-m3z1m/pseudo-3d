@@ -40,29 +40,53 @@ ShapeComponent* EditorLevelServer::get_closest_shape(Vector2D<float>& point)
 	return closest_shape;
 }
 
-Wall* EditorLevelServer::get_closest_shape_wall(Vector2D<float>& point, ShapeComponent* shape)
+Wall* EditorLevelServer::get_closest_shape_wall(Vector2D<float>& point)
 {
-	std::vector<Vector2D<float>> shape_points = shape->points;
-	
-	Wall* closest_shape_wall = &shape->walls[0];
-	std::vector<Vector2D<float>> wall_points = closest_shape_wall->get_wall_points(shape_points);
-	float closest_wall_length = (wall_points[0] - point).length;
-	
-	for(Wall& wall : shape->walls)
+	Wall* closest_shape_wall = nullptr;
+	for(ShapeComponent& shape : level_polygons)
 	{
-		wall_points = wall.get_wall_points(shape_points);
+		std::vector<Vector2D<float>> shape_points = shape.points;
 		
-		Vector2D<float> points[] = {wall_points[0], wall_points[1]};
-		Vector2D<float> wall_projection_point = get_line_projection_point(point, points);
-		float to_wall_length = (wall_projection_point - point).length;
-		if(to_wall_length < closest_wall_length)
+		closest_shape_wall = &shape.walls[0];
+		std::vector<Vector2D<float>> wall_points = closest_shape_wall->get_wall_points(shape_points);
+		float closest_wall_length = (wall_points[0] - point).length;
+		
+		for(Wall& wall : shape.walls)
 		{
-			closest_wall_length = to_wall_length;
-			closest_shape_wall = &wall;
+			wall_points = wall.get_wall_points(shape_points);
+			
+			Vector2D<float> points[] = {wall_points[0], wall_points[1]};
+			Vector2D<float> wall_projection_point = get_line_projection_point(point, points);
+			float to_wall_length = (wall_projection_point - point).length;
+			if(to_wall_length < closest_wall_length)
+			{
+				closest_wall_length = to_wall_length;
+				closest_shape_wall = &wall;
+			}
 		}
 	}
 	
 	return closest_shape_wall;
+}
+
+//Vector2D<float>* EditorLevelServerget_closest_shape_point(Vector2D<float>& point, ShapeComponent* shape);
+
+Camera* EditorLevelServer::get_closest_camera(Vector2D<float>& point)
+{
+	Camera* closest_camera = cameras[0];
+	float closest_camera_len = (closest_camera->position - point).length;
+	
+	for (Camera*& camera : cameras)
+	{
+		float to_camera_len = (camera->position - point).length;
+		if(to_camera_len < closest_camera_len)
+		{
+			closest_camera_len = to_camera_len;
+			closest_camera = camera;
+		}
+	}
+	
+	return closest_camera;
 }
 
 void EditorLevelServer::create_new_shape()
