@@ -6,7 +6,6 @@
 #include "level-server.hpp"
 
 //TODO: Need to create flexible tools.
-//TODO: Need to make adding walls with search in shape.
 //TODO: Need to make walls adding more flexible.
 
 struct PickRequest

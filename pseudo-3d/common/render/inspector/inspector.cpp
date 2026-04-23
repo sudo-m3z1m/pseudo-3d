@@ -105,6 +105,8 @@ void Inspector::render_window_component_property(InspectorItemProperty& property
 	ImGui::InputInt("Front sector id", &(*window_component_ptr)->f_sector_index);
 	ImGui::InputInt("Back point id", &(*window_component_ptr)->s_sector_index);
 	ImGui::Text("Window textures ids");
+	ImGui::InputInt("Bottom texture index", &(*window_component_ptr)->bottom_tid);
+	ImGui::InputInt("Upper texture index", &(*window_component_ptr)->upper_tid);
 	
 	if (ImGui::Button("Remove window component")) *window_component_ptr = nullptr;
 }

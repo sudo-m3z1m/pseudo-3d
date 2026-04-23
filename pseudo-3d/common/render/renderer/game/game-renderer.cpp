@@ -291,7 +291,7 @@ void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_po
 																							 true
 																							 );
 	
-	render_wall_range(columns_to_render, f_pos_x, tid, window->bottom_color);
+	render_wall_range(columns_to_render, f_pos_x, tid, Color());
 }
 
 void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
@@ -335,7 +335,7 @@ void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_poi
 																							 true
 																							 );
 	
-	render_wall_range(columns_to_render, f_pos_x, tid, window->upper_color);
+	render_wall_range(columns_to_render, f_pos_x, tid, Color());
 }
 
 void GameRenderer::render_wall_range(std::vector<std::vector<RendererColumn>> columns, int f_pos_x, int tid, Color color)

@@ -10,11 +10,13 @@ class WindowComponent
 public:
 	int f_sector_index;
 	int s_sector_index;
-	Color bottom_color;
-	Color upper_color;
+	
+	int bottom_tid, upper_tid;
+//	Color bottom_color;
+//	Color upper_color;
 	
 	WindowComponent();
-	WindowComponent(int f_sector_index, int s_sector_index);
+	WindowComponent(int f_sector_index, int s_sector_index, int bottom_tid, int upper_tid);
 };
 
 #endif

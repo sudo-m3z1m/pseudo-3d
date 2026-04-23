@@ -27,6 +27,8 @@ protected:
 	ImGuiWindowFlags_NoScrollbar |
 	ImGuiWindowFlags_NoScrollWithMouse;
 	Inspector* inspector;
+//	SectorsInspector* sectors_inspector;
+	
 	InspectorItem* current_item;
 	
 	float min_zoom, max_zoom;
@@ -47,7 +49,7 @@ public:
 	void get_mouse_item();
 	void add_zoom(float zoom_delta);
 	
-	void render() override;
+	void render() override; //TODO: Handles clicks too. Now it's OK but it's gets worse in future
 	void render_ui();
 	void render_grid();
 	
@@ -61,7 +63,7 @@ public:
 	void render_cameras();
 //	void render_buffer() override;
 	
-	void handle_mouse_click();
+	void handle_mouse_click(); //TODO: Current tool clicking and holding mouse methods!
 };
 
 #endif

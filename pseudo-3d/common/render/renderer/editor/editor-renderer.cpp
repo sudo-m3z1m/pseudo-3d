@@ -76,7 +76,7 @@ Vector2D<float> EditorRenderer::get_mouse_world_pos()
 
 void EditorRenderer::get_mouse_item()
 {
-	ImGuiIO imgui_io = ImGui::GetIO(); //TODO: Need to place it to handling input
+	ImGuiIO imgui_io = ImGui::GetIO(); //TODO: Picker tool staff
 	if(imgui_io.WantCaptureMouse) return;
 	
 	InspectorItem* item = nullptr;
@@ -219,7 +219,7 @@ void EditorRenderer::render_toolbar()
 	ImGui::Begin("Editor tools", NULL, window_flags);
 	if(ImGui::Button("Create new point"))
 	{
-		std::cout << "Added point to the map" << std::endl; //TODO: Probably need to make more flexible system with logic and front
+		std::cout << "Added point to the map" << std::endl;
 	}
 	ImGui::SameLine();
 	
@@ -353,7 +353,7 @@ void EditorRenderer::handle_mouse_click()
 	if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
 		Vector2D<float> mouse_pos = get_mouse_world_pos();
-		if(level_server->current_shape) return level_server->add_point_to_current_shape(mouse_pos); //Need to make current state to editor
+		if(level_server->current_shape) return level_server->add_point_to_current_shape(mouse_pos);
 		
 		get_mouse_item();
 		inspector->set_current_item(current_item);
