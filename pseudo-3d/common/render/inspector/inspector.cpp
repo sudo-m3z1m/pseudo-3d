@@ -85,7 +85,7 @@ void Inspector::render_int_property(InspectorItemProperty& property)
 void Inspector::render_float_property(InspectorItemProperty& property)
 {
 	float* float_ptr = static_cast<float*>(property.property_ptr);
-	ImGui::InputFloat(property.property_name, float_ptr);
+	ImGui::DragFloat(property.property_name, float_ptr, 0.01);
 }
 
 void Inspector::render_vector_property(InspectorItemProperty& property)
@@ -93,8 +93,8 @@ void Inspector::render_vector_property(InspectorItemProperty& property)
 	Vector2D<float>* vector_ptr = static_cast<Vector2D<float>*>(property.property_ptr);
 	
 	ImGui::Text(property.property_name, 0);
-	ImGui::InputFloat("x", &vector_ptr->x);
-	ImGui::InputFloat("y", &vector_ptr->y);
+	ImGui::DragFloat("x", &vector_ptr->x, 0.01);
+	ImGui::DragFloat("y", &vector_ptr->y, 0.01);
 }
 
 void Inspector::render_window_component_property(InspectorItemProperty& property)

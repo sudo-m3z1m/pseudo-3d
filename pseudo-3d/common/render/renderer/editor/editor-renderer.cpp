@@ -214,7 +214,7 @@ void EditorRenderer::render_menu()
 void EditorRenderer::render_toolbar()
 {
 	ImGui::SetNextWindowPos(imgui_viewport->WorkPos);
-	ImGui::SetNextWindowSize({500, 35});
+	ImGui::SetNextWindowSize({500, 60});
 	
 	ImGui::Begin("Editor tools", NULL, window_flags);
 	if(ImGui::Button("Create new point"))
@@ -238,6 +238,11 @@ void EditorRenderer::render_toolbar()
 	if(ImGui::Button("Mark as room"))
 	{
 		std::cout << "Started room marking" << std::endl;
+	}
+	if(ImGui::Button("Create new camera"))
+	{
+		Camera* new_camera = new Camera();
+		level_server->add_camera(new_camera);
 	}
 	ImGui::SameLine();
 	ImGui::End();
@@ -327,7 +332,7 @@ void EditorRenderer::render_cameras()
 		float camera_fov = camera->field_of_view;
 		Vector2D<float> camera_pos = camera->position;
 		Vector2D<int> camera_screen_pos = get_screen_pos(camera_pos);
-		Vector2D<float> camera_direction = {-cosf(camera->rotation), sinf(camera->rotation)};
+		Vector2D<float> camera_direction = {cosf(camera->rotation), sinf(camera->rotation)};
 		
 		Vector2D<float> f_frustum_point = camera_direction.rotate_vector(-camera_fov / 2);
 		Vector2D<float> s_frustum_point = camera_direction.rotate_vector(camera_fov / 2);

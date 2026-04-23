@@ -8,10 +8,7 @@ Camera::Camera()
 	height_z = 1;
 	sector_index = 0;
 	
-	Line* temp_frustrum = get_frustrum(field_of_view);
-	frustrum = new ShapeComponent();
-	
-	delete[] temp_frustrum;
+//	frustrum = new ShapeComponent();
 }
 
 Camera::Camera(float field_of_view, Vector2D<float> position, float rotation, float height_z, int init_sector_index)
@@ -21,10 +18,6 @@ Camera::Camera(float field_of_view, Vector2D<float> position, float rotation, fl
 	this->field_of_view = field_of_view;
 	this->height_z = height_z;
 	sector_index = init_sector_index;
-	
-	Line* temp_frustrum = get_frustrum(field_of_view);
-	
-	delete[] temp_frustrum;
 }
 
 std::vector<InspectorItemProperty> Camera::get_inspector_item_properties()
