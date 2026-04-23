@@ -24,7 +24,8 @@ std::vector<InspectorItemProperty> Wall::get_inspector_item_properties()
 		{INT, "First index", &f_p_index},
 		{INT, "Second index", &s_p_index},
 		{VECTOR2, "Normal", &normal},
-		{WINDOW_COMPONENT, "Window Component", &window_component}
+		{INT, "Texture index", &tid},
+		{WINDOW_COMPONENT, "Window Component", &window_component},
 	};
 	if(!window_component) properties.pop_back();
 	

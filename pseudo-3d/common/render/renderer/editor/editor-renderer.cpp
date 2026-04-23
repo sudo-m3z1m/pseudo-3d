@@ -68,33 +68,28 @@ Vector2D<float> EditorRenderer::get_mouse_world_pos()
 	Vector2D<float> mouse_screen_pos = get_mouse_screen_pos();
 	Vector2D<float> mouse_world_pos = get_world_pos({(int)mouse_screen_pos.x, (int)mouse_screen_pos.y});
 	
+	mouse_world_pos.x = round(mouse_world_pos.x * 10) / 10;
+	mouse_world_pos.y = round(mouse_world_pos.y * 10) / 10;
+	
 	return mouse_world_pos;
 }
 
 void EditorRenderer::get_mouse_item()
 {
+	ImGuiIO imgui_io = ImGui::GetIO(); //TODO: Need to place it to handling input
+	if(imgui_io.WantCaptureMouse) return;
+	
 	InspectorItem* item = nullptr;
 	Vector2D<float> mouse_position = get_mouse_world_pos();
 	float current_zoom = current_camera->field_of_view;
 	
-//	ShapeComponent* closest_shape = level_server->get_closest_shape(mouse_position);
-//	Camera* closest_camera = level_server->get_closest_camera(mouse_position);
-//	Wall* closest_wall = level_server->get_closest_shape_wall(mouse_position);
-//	std::vector<Vector2D<float>> wall_points = closest_wall->get_wall_points(closest_shape->points); //Closest shape is broken here
-//	Vector2D<float> points[] = {wall_points[0], wall_points[1]};
+	PickRequest shape_request = level_server->get_closest_shape(mouse_position);
+	PickRequest camera_request = level_server->get_closest_camera(mouse_position);
+	PickRequest wall_request = level_server->get_closest_shape_wall(mouse_position);
 	
-//	Vector2D<float> shape_point = closest_shape->get_center_point();
-//	Vector2D<float> wall_projection_point = get_line_projection_point(mouse_position, points);
-//	Vector2D<float> camera_position = closest_camera->position;
-//	
-//	float closest_shape_vector_len = (shape_point - mouse_position).length * current_zoom;
-//	float closest_wall_vector_len = (wall_projection_point - mouse_position).length * current_zoom;
-//	float closest_wall_shape_vector_len = (wall_projection_point - shape_point).length * current_zoom;
-//	float closest_camera_vector_len = (camera_position - mouse_position).length * current_zoom;
-	
-	if(closest_wall_vector_len <= EDITOR_SCREEN_SELECT_RADIUS) item = closest_wall;
-	if(closest_shape_vector_len <= closest_wall_shape_vector_len - EDITOR_SCREEN_SELECT_RADIUS) item = closest_shape;
-	if(closest_camera_vector_len <= EDITOR_SCREEN_SELECT_RADIUS) item = closest_camera;
+	if(shape_request.item) item = shape_request.item;
+	if(wall_request.distance * current_zoom <= EDITOR_SCREEN_SELECT_RADIUS) item = wall_request.item;
+	if(camera_request.distance * current_zoom <= EDITOR_SCREEN_SELECT_RADIUS) item = camera_request.item;
 	
 	current_item = item;
 }
@@ -108,7 +103,6 @@ void EditorRenderer::add_zoom(float zoom_delta)
 
 void EditorRenderer::render()
 {
-	if(current_item) std::cout << current_item->get_inspector_item_name() << std::endl;
 	SDL_SetRenderDrawColor(application_renderer, 20, 20, 20, 255);
 	SDL_RenderClear(application_renderer);
 
@@ -116,16 +110,7 @@ void EditorRenderer::render()
 	ImGui_ImplSDL3_NewFrame();
 	ImGui::NewFrame();
 	
-	if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		get_mouse_item();
-		inspector->set_current_item(current_item);
-//		Vector2D<float> mouse_pos = get_mouse_screen_pos();
-//		Vector2D<float> new_shape_pos = get_world_pos({(int)mouse_pos.x, (int)mouse_pos.y});
-//		new_shape_pos.x = round(new_shape_pos.x * 10) / 10;
-//		new_shape_pos.y = round(new_shape_pos.y * 10) / 10;
-//		level_server->add_point_to_current_shape(new_shape_pos);
-	}
+	handle_mouse_click();
 	
 	render_ui();
 	render_grid();
@@ -138,13 +123,9 @@ void EditorRenderer::render()
 
 void EditorRenderer::render_ui()
 {
-//	InspectorItem* test_item = dynamic_cast<InspectorItem*>(level_server->get_camera(0));
 	render_menu();
 	render_toolbar();
-	
-//	if(!test_item) return;
-//	inspector->set_current_item(test_item);
-	inspector->render_inspector(window_flags);
+	inspector->render_inspector();
 }
 
 void EditorRenderer::render_grid()
@@ -216,6 +197,14 @@ void EditorRenderer::render_menu()
 		if(ImGui::MenuItem("Save .map"))
 		{
 			std::cout << "Map Saved" << std::endl;
+		}
+		ImGui::EndMenu();
+	}
+	if(ImGui::BeginMenu("Edit"))
+	{
+		if(ImGui::MenuItem("Load Texture bmp"))
+		{
+			std::cout << "Texture Loaded" << std::endl;
 		}
 		ImGui::EndMenu();
 	}
@@ -356,5 +345,17 @@ void EditorRenderer::render_cameras()
 		SDL_RenderLine(application_renderer, f_frustum_point.x, f_frustum_point.y, s_frustum_point.x, s_frustum_point.y);
 		
 		draw_point(camera_pos);
+	}
+}
+
+void EditorRenderer::handle_mouse_click()
+{
+	if(ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		Vector2D<float> mouse_pos = get_mouse_world_pos();
+		if(level_server->current_shape) return level_server->add_point_to_current_shape(mouse_pos); //Need to make current state to editor
+		
+		get_mouse_item();
+		inspector->set_current_item(current_item);
 	}
 }

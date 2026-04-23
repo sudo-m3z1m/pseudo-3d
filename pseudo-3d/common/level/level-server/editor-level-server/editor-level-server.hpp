@@ -18,11 +18,10 @@ struct PickRequest
 class EditorLevelServer : public LevelServer
 {
 protected:
-	ShapeComponent* current_shape;
 	Vector2D<float> player_spawn_pos;
 	
 public:
-	Wall* current_wall;
+	ShapeComponent* current_shape;
 	
 	EditorLevelServer();
 	EditorLevelServer(Vector2D<float> player_spawn_pos);

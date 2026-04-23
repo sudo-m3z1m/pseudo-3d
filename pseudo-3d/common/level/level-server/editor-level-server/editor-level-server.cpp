@@ -23,22 +23,29 @@ void test(int& test_int)
 
 PickRequest EditorLevelServer::get_closest_shape(Vector2D<float>& point)
 {
-	ShapeComponent* closest_shape = &level_polygons[0];
-	Vector2D<float> shape_center_point = closest_shape->get_center_point();
-	float closest_shape_length = (shape_center_point - point).length;
+	PickRequest shape_request = {nullptr, 0};
 	for(ShapeComponent& shape : level_polygons)
 	{
-		shape_center_point = shape.get_center_point();
-		float to_shape_length = (shape_center_point - point).length;
-		if(to_shape_length < closest_shape_length)
+		bool inside = false;
+		std::vector<Vector2D<float>> shape_points = shape.points;
+		
+		for(Wall& wall : shape.walls)
 		{
-			closest_shape_length = to_shape_length;
-			closest_shape = &shape;
+			std::vector<Vector2D<float>> vertices = wall.get_wall_points(shape_points);
+			if (((vertices[1].y > point.y) != (vertices[0].y > point.y)) &&
+				(point.x < (vertices[0].x - vertices[1].x) * (point.y - vertices[1].y) /
+				 (vertices[0].y - vertices[1].y) + vertices[1].x))
+			{
+				inside = !inside;
+			}
+		}
+
+		if(inside)
+		{
+			InspectorItem* closest_item = dynamic_cast<InspectorItem*>(&shape);
+			shape_request = {closest_item, 0};
 		}
 	}
-	
-	InspectorItem* closest_item = closest_shape;
-	PickRequest shape_request = {closest_item, closest_shape_length};
 	
 	return shape_request;
 }
@@ -104,15 +111,12 @@ void EditorLevelServer::create_new_shape()
 	add_new_polygon(new_shape);
 	
 	current_shape = &level_polygons[level_polygons.size() - 1];
-	current_wall = &level_polygons[0].walls[0];
 }
 
 
 //FIXME: Algorithm is: 1. Find point in shape. 2. If already have - get index. 3. Create wall with index. 4. If point isn't new - deselect tool.
 void EditorLevelServer::add_point_to_current_shape(Vector2D<float> point)
-{
-	if (current_shape == nullptr) return;
-	
+{	
 	std::vector<Vector2D<float>>& shape_points = current_shape->points;
 	if (shape_points.size() == 0) return shape_points.push_back(point);
 	

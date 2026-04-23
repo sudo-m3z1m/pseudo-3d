@@ -60,6 +60,8 @@ public:
 	void render_line_normal(std::vector<Vector2D<int>> line_screen_points, Vector2D<float> normal);
 	void render_cameras();
 //	void render_buffer() override;
+	
+	void handle_mouse_click();
 };
 
 #endif

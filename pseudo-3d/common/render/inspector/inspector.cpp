@@ -25,7 +25,7 @@ void Inspector::set_current_item(InspectorItem* item)
 	current_item = item;
 }
 
-void Inspector::render_inspector(const ImGuiWindowFlags& window_flags)
+void Inspector::render_inspector()
 {
 	if(!current_item) return;
 	
@@ -115,13 +115,12 @@ void Inspector::render_array_property(InspectorItemProperty& property)
 		return;
 
 	std::vector<InspectorItemProperty> array = *(static_cast<std::vector<InspectorItemProperty>*>(property.property_ptr));
-	for(InspectorItemProperty& array_property : array)
+	for(int property_index = 0; property_index < array.size(); property_index++)
 	{
-		render_item_property(array_property);
+		ImGui::PushID(property_index);
+		render_item_property(array[property_index]);
+		ImGui::PopID();
 	}
-//	ImGui::Text(property.property_name, 0);
-//	ImGui::BeginListBox("Walls");
-//	ImGui::EndListBox();
 }
 
 void Inspector::render_color_property(InspectorItemProperty& property)

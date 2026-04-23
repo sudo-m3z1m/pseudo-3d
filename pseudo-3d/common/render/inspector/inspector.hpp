@@ -12,9 +12,16 @@
 class Inspector
 {
 private:
+	const ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse |
+	ImGuiWindowFlags_NoResize |
+	ImGuiWindowFlags_NoMove |
+	ImGuiWindowFlags_NoTitleBar |
+	ImGuiWindowFlags_NoBringToFrontOnFocus;
+	
 	InspectorItem* current_item; //TODO: Instead of getting new properties every render need to save it when item is changes there
 	float width, height;
 	Vector2D<float> screen_position;
+	
 	
 public:
 	Inspector();
@@ -23,7 +30,7 @@ public:
 	
 	void set_current_item(InspectorItem* current_item); //TODO: Here
 	
-	void render_inspector(const ImGuiWindowFlags& window_flags);
+	void render_inspector();
 	void render_item_property(InspectorItemProperty& property);
 	
 	void render_int_property(InspectorItemProperty& property);
