@@ -31,6 +31,7 @@ public:
 //	Vector2D<float>* get_closest_shape_point(Vector2D<float>& point, ShapeComponent* shape);
 	PickRequest get_closest_camera(Vector2D<float>& point);
 	
+	Camera* create_new_camera();
 	void create_new_shape();
 	void add_point_to_current_shape(Vector2D<float> point);
 	void add_wall_to_current_shape(int last_point_index, int new_point_index);

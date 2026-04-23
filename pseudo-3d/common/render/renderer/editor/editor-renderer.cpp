@@ -241,8 +241,8 @@ void EditorRenderer::render_toolbar()
 	}
 	if(ImGui::Button("Create new camera"))
 	{
-		Camera* new_camera = new Camera();
-		level_server->add_camera(new_camera);
+		current_item = level_server->create_new_camera();
+		inspector->set_current_item(current_item);
 	}
 	ImGui::SameLine();
 	ImGui::End();

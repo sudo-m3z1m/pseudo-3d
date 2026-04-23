@@ -105,6 +105,14 @@ PickRequest EditorLevelServer::get_closest_camera(Vector2D<float>& point)
 	return shape_request;
 }
 
+Camera* EditorLevelServer::create_new_camera()
+{
+	Camera* new_camera = new Camera();
+	add_camera(new_camera);
+	
+	return new_camera;
+}
+
 void EditorLevelServer::create_new_shape()
 {
 	ShapeComponent new_shape = ShapeComponent(POLYGON, 0, {}, {}, 0);
