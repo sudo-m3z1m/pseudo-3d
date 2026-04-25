@@ -13,9 +13,10 @@ class LevelServer
 protected:
 	std::vector<ShapeComponent> level_polygons;
 	std::vector<Camera*> cameras;
-	std::vector<Sector> sectors;
 	
 public:
+	std::vector<Sector> sectors;
+	
 	LevelServer();
 	virtual ~LevelServer();
 	

@@ -53,10 +53,11 @@ void SectorsInspector::render()
 	
 	for(int sector_index = 0; sector_index < sectors->size(); sector_index++)
 	{
-		if(ImGui::Button(std::to_string(sector_index).c_str()))
-		{
-			pick_sector(sector_index);
-		}
+		ImGui::PushID(sector_index);
+		if(ImGui::Button(std::to_string(sector_index).c_str())) pick_sector(sector_index);
+		ImGui::SameLine();
+		if(ImGui::Button("Remove")) remove_sector(sector_index);
+		ImGui::PopID();
 	}
 	
 	ImGui::End();
