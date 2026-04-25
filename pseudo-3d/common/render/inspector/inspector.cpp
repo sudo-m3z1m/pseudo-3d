@@ -5,7 +5,7 @@ Inspector::Inspector()
 	
 }
 
-Inspector::Inspector(InspectorItem*& item, int width, int height, Vector2D<float> viewport_size)
+Inspector::Inspector(InspectorItem** item, int width, int height, Vector2D<float> viewport_size)
 {
 	current_item = item;
 	this->width = width;
@@ -22,15 +22,15 @@ Inspector::~Inspector()
 
 void Inspector::render_inspector()
 {
-	if(!current_item) return;
+	if(!(*current_item)) return;
 	
-	std::vector<InspectorItemProperty> item_properties = current_item->get_inspector_item_properties();
+	std::vector<InspectorItemProperty> item_properties = (*current_item)->get_inspector_item_properties();
 	ImVec2 window_pos = {screen_position.x, screen_position.y};
 	ImGui::SetNextWindowPos(window_pos);
 	ImGui::SetNextWindowSize({width, height});
 	
 	ImGui::Begin("Inspector menu", NULL, window_flags);
-	ImGui::Text(current_item->get_inspector_item_name(), 0);
+	ImGui::Text((*current_item)->get_inspector_item_name(), 0);
 	ImGui::Separator();
 	
 	for(InspectorItemProperty& property : item_properties)

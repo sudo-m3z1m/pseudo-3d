@@ -17,13 +17,13 @@ private:
 	ImGuiWindowFlags_NoTitleBar |
 	ImGuiWindowFlags_NoBringToFrontOnFocus;
 	
-	InspectorItem* current_item; //TODO: Instead of getting new properties every render need to save it when item is changes there
+	InspectorItem** current_item; //TODO: Instead of getting new properties every render need to save it when item is changes there
 	float width, height;
 	Vector2D<float> screen_position;
 	
 public:
 	Inspector();
-	Inspector(InspectorItem*& item, int width, int height, Vector2D<float> viewport_size);
+	Inspector(InspectorItem** item, int width, int height, Vector2D<float> viewport_size);
 	~Inspector();
 	
 	void render_inspector();

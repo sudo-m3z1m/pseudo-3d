@@ -6,7 +6,7 @@ SectorsInspector::SectorsInspector()
 	current_item = nullptr;
 }
 
-SectorsInspector::SectorsInspector(std::vector<Sector>* sectors, InspectorItem* item, int width, int height, Vector2D<float> viewport_size)
+SectorsInspector::SectorsInspector(std::vector<Sector>* sectors, InspectorItem** item, int width, int height, Vector2D<float> viewport_size)
 {
 	this->sectors = sectors;
 	this->current_item = item;
@@ -47,8 +47,8 @@ void SectorsInspector::render()
 	ImGui::SetNextWindowPos(window_pos);
 	ImGui::SetNextWindowSize({width, height});
 	
-	ImGui::Begin("Inspector menu", NULL, window_flags);
-	ImGui::Text(current_item->get_inspector_item_name(), 0);
+	ImGui::Begin("Sectors inspector", NULL, window_flags);
+	ImGui::Text("Sectors");
 	ImGui::Separator();
 	
 	for(int sector_index = 0; sector_index < sectors->size(); sector_index++)

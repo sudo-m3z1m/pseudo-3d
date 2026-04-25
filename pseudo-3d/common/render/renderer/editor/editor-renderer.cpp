@@ -30,8 +30,8 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, in
 	
 	Vector2D<float> viewport_size = Vector2D<float>((float)width, (float)height);
 	
-	inspector = new Inspector(current_item, 140.0f, 400.0f, viewport_size);
-	sectors_inspector = new SectorsInspector(nullptr, current_item, 150.0f, 200.0f, viewport_size);
+	inspector = new Inspector(&current_item, 140.0f, 400.0f, viewport_size);
+	sectors_inspector = new SectorsInspector(&level_server->sectors, &current_item, 150.0f, 200.0f, viewport_size);
 }
 
 EditorRenderer::~EditorRenderer()
@@ -130,7 +130,7 @@ void EditorRenderer::render_ui()
 	render_menu();
 	render_toolbar();
 	inspector->render_inspector();
-//	sectors_inspector->render();
+	sectors_inspector->render();
 }
 
 void EditorRenderer::render_grid()

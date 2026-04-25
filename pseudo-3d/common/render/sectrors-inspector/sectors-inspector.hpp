@@ -17,13 +17,13 @@ protected:
 	ImGuiWindowFlags_NoBringToFrontOnFocus;
 	
 	std::vector<Sector>* sectors;
-	InspectorItem* current_item;
+	InspectorItem** current_item;
 	float width, height;
 	Vector2D<float> screen_position;
 	
 public:
 	SectorsInspector();
-	SectorsInspector(std::vector<Sector>* sectors, InspectorItem* item, int width, int height, Vector2D<float> viewport_size);
+	SectorsInspector(std::vector<Sector>* sectors, InspectorItem** item, int width, int height, Vector2D<float> viewport_size);
 	~SectorsInspector();
 	
 	int add_new_sector();
