@@ -23,7 +23,7 @@ struct InspectorItemProperty
 	union
 	{
 		void* property_ptr;
-		void (*function_ptr)();
+		void (*function_ptr)(void* instance);
 	};
 };
 

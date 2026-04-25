@@ -7,6 +7,7 @@
 #include "editor-level-server.hpp"
 #include "renderer.hpp"
 #include "inspector.hpp"
+#include "sectors-inspector.hpp"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 
@@ -27,7 +28,7 @@ protected:
 	ImGuiWindowFlags_NoScrollbar |
 	ImGuiWindowFlags_NoScrollWithMouse;
 	Inspector* inspector;
-//	SectorsInspector* sectors_inspector;
+	SectorsInspector* sectors_inspector;
 	
 	InspectorItem* current_item;
 	

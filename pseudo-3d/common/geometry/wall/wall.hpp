@@ -24,7 +24,8 @@ public:
 	std::vector<InspectorItemProperty> get_inspector_item_properties() override;
 	const char* get_inspector_item_name() override;
 	
-	void invert_wall_normal();
+	static void invert_wall_normal(void* instance);
+	static void handle_window_component(void* instance);
 	
 	std::vector<Vector2D<float>> get_wall_points(std::vector<Vector2D<float>> shape_points); //TODO: Maybe friendly class for shapes?
 };

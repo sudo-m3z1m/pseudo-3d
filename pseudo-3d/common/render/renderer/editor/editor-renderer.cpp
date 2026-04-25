@@ -9,6 +9,7 @@ EditorRenderer::EditorRenderer() : Renderer()
 	min_zoom = EDITOR_DEFAULT_MIN_ZOOM;
 	max_zoom = EDITOR_DEFAULT_MAX_ZOOM;
 	inspector = new Inspector();
+	sectors_inspector = new SectorsInspector();
 }
 
 EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom) :
@@ -27,7 +28,10 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, in
 	this->min_zoom = min_zoom;
 	this->max_zoom = max_zoom;
 	
-	inspector = new Inspector(nullptr, 140.0f, 400.0f, Vector2D<float>((float)width, (float)height));
+	Vector2D<float> viewport_size = Vector2D<float>((float)width, (float)height);
+	
+	inspector = new Inspector(current_item, 140.0f, 400.0f, viewport_size);
+	sectors_inspector = new SectorsInspector(nullptr, current_item, 150.0f, 200.0f, viewport_size);
 }
 
 EditorRenderer::~EditorRenderer()
@@ -126,6 +130,7 @@ void EditorRenderer::render_ui()
 	render_menu();
 	render_toolbar();
 	inspector->render_inspector();
+//	sectors_inspector->render();
 }
 
 void EditorRenderer::render_grid()
@@ -242,7 +247,6 @@ void EditorRenderer::render_toolbar()
 	if(ImGui::Button("Create new camera"))
 	{
 		current_item = level_server->create_new_camera();
-		inspector->set_current_item(current_item);
 	}
 	ImGui::SameLine();
 	ImGui::End();
@@ -361,6 +365,5 @@ void EditorRenderer::handle_mouse_click()
 		if(level_server->current_shape) return level_server->add_point_to_current_shape(mouse_pos);
 		
 		get_mouse_item();
-		inspector->set_current_item(current_item);
 	}
 }

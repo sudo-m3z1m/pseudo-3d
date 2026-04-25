@@ -5,7 +5,7 @@ Inspector::Inspector()
 	
 }
 
-Inspector::Inspector(InspectorItem* item, int width, int height, Vector2D<float> viewport_size)
+Inspector::Inspector(InspectorItem*& item, int width, int height, Vector2D<float> viewport_size)
 {
 	current_item = item;
 	this->width = width;
@@ -18,11 +18,6 @@ Inspector::Inspector(InspectorItem* item, int width, int height, Vector2D<float>
 Inspector::~Inspector()
 {
 	
-}
-
-void Inspector::set_current_item(InspectorItem* item)
-{
-	current_item = item;
 }
 
 void Inspector::render_inspector()
@@ -132,6 +127,6 @@ void Inspector::render_color_property(InspectorItemProperty& property)
 
 void Inspector::render_button_property(InspectorItemProperty& property)
 {
-	if(ImGui::Button(property.property_name)) property.function_ptr();
+	if(ImGui::Button(property.property_name)) property.function_ptr(current_item);
 }
 

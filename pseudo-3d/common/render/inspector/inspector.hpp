@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "imgui_impl_sdl3.h"
-//#include "imgui_impl_sdlrenderer3.h"
 #include "vector2D.hpp"
 #include "inspector-item.hpp"
 #include "window-component.hpp"
@@ -22,13 +21,10 @@ private:
 	float width, height;
 	Vector2D<float> screen_position;
 	
-	
 public:
 	Inspector();
-	Inspector(InspectorItem* item, int width, int height, Vector2D<float> viewport_size);
+	Inspector(InspectorItem*& item, int width, int height, Vector2D<float> viewport_size);
 	~Inspector();
-	
-	void set_current_item(InspectorItem* current_item); //TODO: Here
 	
 	void render_inspector();
 	void render_item_property(InspectorItemProperty& property);

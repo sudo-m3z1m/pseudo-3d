@@ -24,10 +24,16 @@ std::vector<InspectorItemProperty> Wall::get_inspector_item_properties()
 		{INT, "First index", &f_p_index},
 		{INT, "Second index", &s_p_index},
 		{VECTOR2, "Normal", &normal},
+		{BUTTON, "Invert normal", (void*)invert_wall_normal},
 		{INT, "Texture index", &tid},
 		{WINDOW_COMPONENT, "Window Component", &window_component},
 	};
-	if(!window_component) properties.pop_back();
+	if(!window_component)
+	{
+		InspectorItemProperty button_property = {BUTTON, "Create window component", (void*)handle_window_component};
+		properties.pop_back();
+		properties.push_back(button_property);
+	}
 	
 	return properties;
 }
@@ -37,9 +43,18 @@ const char* Wall::get_inspector_item_name()
 	return "Wall";
 }
 
-void Wall::invert_wall_normal()
+void Wall::invert_wall_normal(void* instance)
 {
-	normal.invert_vector();
+	Wall* wall_instance = static_cast<Wall*>(instance);
+	wall_instance->normal.invert_vector();
+}
+
+void Wall::handle_window_component(void* instance)
+{
+	Wall* wall = static_cast<Wall*>(instance);
+	
+	WindowComponent* window_component = new WindowComponent();
+	wall->window_component = window_component;
 }
 
 std::vector<Vector2D<float>> Wall::get_wall_points(std::vector<Vector2D<float>> shape_points)
