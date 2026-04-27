@@ -127,6 +127,6 @@ void Inspector::render_color_property(InspectorItemProperty& property)
 
 void Inspector::render_button_property(InspectorItemProperty& property)
 {
-	if(ImGui::Button(property.property_name)) property.function_ptr(current_item);
+	if(ImGui::Button(property.property_name)) property.function_ptr((*current_item));
 }
 

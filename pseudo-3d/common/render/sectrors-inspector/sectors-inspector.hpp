@@ -14,7 +14,9 @@ protected:
 	ImGuiWindowFlags_NoResize |
 	ImGuiWindowFlags_NoMove |
 	ImGuiWindowFlags_NoTitleBar |
-	ImGuiWindowFlags_NoBringToFrontOnFocus;
+	ImGuiWindowFlags_NoBringToFrontOnFocus |
+	ImGuiWindowFlags_NoScrollWithMouse |
+	ImGuiWindowFlags_NoScrollbar;
 	
 	std::vector<Sector>* sectors;
 	InspectorItem** current_item;

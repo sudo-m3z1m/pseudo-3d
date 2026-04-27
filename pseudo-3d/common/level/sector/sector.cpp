@@ -26,3 +26,18 @@ Sector::~Sector()
 {
 	physics_components.clear();
 }
+
+std::vector<InspectorItemProperty> Sector::get_inspector_item_properties()
+{
+	return {
+		{FLOAT, "Floor height", &floor_z},
+		{FLOAT, "Ceiling height", &ceiling_z},
+		{INT, "Floor texture index", &floor_tid},
+		{INT, "Ceiling texture index", &ceiling_tid},
+	};
+}
+
+const char* Sector::get_inspector_item_name()
+{
+	return "Sector";
+}

@@ -37,8 +37,8 @@ void SectorsInspector::remove_sector(int sector_index)
 
 void SectorsInspector::pick_sector(int sector_index)
 {
-//	InspectorItem* sector = &sectors[sector_index];
-//	current_item = sector;
+	InspectorItem* sector = &(*sectors)[sector_index];
+	(*current_item) = sector;
 }
 
 void SectorsInspector::render()
@@ -51,6 +51,7 @@ void SectorsInspector::render()
 	ImGui::Text("Sectors");
 	ImGui::Separator();
 	
+	ImGui::BeginListBox("Sectors");
 	for(int sector_index = 0; sector_index < sectors->size(); sector_index++)
 	{
 		ImGui::PushID(sector_index);
@@ -59,6 +60,9 @@ void SectorsInspector::render()
 		if(ImGui::Button("Remove")) remove_sector(sector_index);
 		ImGui::PopID();
 	}
+	ImGui::EndListBox();
 	
+	ImGui::Separator();
+	if(ImGui::Button("Add new sector")) add_new_sector();
 	ImGui::End();
 }

@@ -107,10 +107,10 @@ void create_level_server()
 //	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
 //	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
 	
-	WindowComponent* f_window = new WindowComponent(0, 1);
-	WindowComponent* f_s_window = new WindowComponent(1, 0);
-	WindowComponent* s_window = new WindowComponent(0, 2);
-	WindowComponent* t_window = new WindowComponent(2, 0);
+	WindowComponent* f_window = new WindowComponent(0, 1, 0, 0);
+	WindowComponent* f_s_window = new WindowComponent(1, 0, 0, 0);
+	WindowComponent* s_window = new WindowComponent(0, 2, 0, 0);
+	WindowComponent* t_window = new WindowComponent(2, 0, 0, 0);
 	
 	std::vector<Wall> f_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), f_s_window), Wall(1, 2, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(2, 3, Vector2D<float>(-1.0f, 0.0f), nullptr), Wall(3, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
 	std::vector<Wall> s_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), s_window), Wall(2, 3, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(3, 4, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(4, 5, Vector2D<float>(-1.0f, 0.0f), f_window), Wall(5, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
@@ -164,7 +164,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	
 	std::vector<ShapeComponent> editor_shapes = editor_level_server->get_levels_shapes();
-	Camera* test_camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
+	Camera* test_camera = new Camera(DEFAULT_FOV, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
 	editor_level_server->add_camera(test_camera);
 	
 	return SDL_APP_CONTINUE;
