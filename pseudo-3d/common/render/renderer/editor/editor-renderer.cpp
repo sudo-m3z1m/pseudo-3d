@@ -207,9 +207,15 @@ void EditorRenderer::render_menu()
 	}
 	if(ImGui::BeginMenu("Edit"))
 	{
-		if(ImGui::MenuItem("Load Texture bmp"))
+		if(ImGui::MenuItem("Load texture"))
 		{
-			std::cout << "Texture Loaded" << std::endl;
+			NFD::Guard guard;
+			
+			NFD::UniquePath texture_path;
+			nfdfilteritem_t filter_item[1] = {{"Textures", "png,bmp,jpg"}};
+			
+			nfdresult_t pick_result = NFD::OpenDialog(texture_path, filter_item, 1);
+			if(pick_result == NFD_OKAY) std::cout << texture_path.get() << std::endl;
 		}
 		ImGui::EndMenu();
 	}

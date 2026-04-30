@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 #include <vector>
+#include <string>
 
 #include "editor-level-server.hpp"
+#include "nfd.hpp"
 #include "renderer.hpp"
 #include "inspector.hpp"
 #include "sectors-inspector.hpp"
