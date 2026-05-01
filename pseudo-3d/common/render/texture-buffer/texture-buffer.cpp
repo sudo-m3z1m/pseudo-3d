@@ -15,7 +15,7 @@ TextureBuffer::TextureBuffer(int buffer_size)
 TextureBuffer::~TextureBuffer()
 {
 	buffer.clear();
-	//free_surface
+	//TODO: free_surface
 }
 
 std::vector<std::string> TextureBuffer::get_textures_names()

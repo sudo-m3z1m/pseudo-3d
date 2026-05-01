@@ -50,7 +50,7 @@ void SectorsInspector::render()
 	ImGui::Text("Sectors");
 	ImGui::Separator();
 	
-	ImGui::BeginListBox("Sectors");
+	ImGui::BeginListBox("##Sectors", {-FLT_MIN, 0.0f});
 	for(int sector_index = 0; sector_index < sectors->size(); sector_index++)
 	{
 		ImGui::PushID(sector_index);

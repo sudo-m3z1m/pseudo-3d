@@ -27,7 +27,7 @@ void TexturesInspector::render(TextureBuffer*& buffer)
 	ImGui::Text("Textures");
 	ImGui::Separator();
 	
-	ImGui::BeginListBox("bmp");
+	ImGui::BeginListBox("##Textures", {-FLT_MIN, -FLT_MIN});
 	for(int texture_index = 0; texture_index < textures_names.size(); texture_index++)
 	{
 		ImGui::PushID(texture_index);

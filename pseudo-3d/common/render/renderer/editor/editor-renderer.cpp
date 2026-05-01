@@ -212,7 +212,7 @@ void EditorRenderer::render_menu()
 	{
 		if(ImGui::MenuItem("Load texture"))
 		{
-			std::string texture_path = file_server->get_texture_path();
+			std::string texture_path = file_server->get_texture_path(); //FIXME: Broken stuff. Need to move back logic to level server or etc.
 			texture_buffer->load_texture(texture_path);
 		}
 		ImGui::EndMenu();
