@@ -10,6 +10,7 @@ EditorRenderer::EditorRenderer() : Renderer()
 	max_zoom = EDITOR_DEFAULT_MAX_ZOOM;
 	inspector = new Inspector();
 	sectors_inspector = new SectorsInspector();
+	textures_inspector = new TexturesInspector();
 }
 
 EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom) :
@@ -32,6 +33,7 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, Fi
 	
 	inspector = new Inspector(&current_item, 140.0f, 400.0f, viewport_size);
 	sectors_inspector = new SectorsInspector(&level_server->sectors, &current_item, 150.0f, 200.0f, viewport_size);
+	textures_inspector = new TexturesInspector(150.0f, 200.0f, viewport_size);
 }
 
 EditorRenderer::~EditorRenderer()
@@ -131,6 +133,7 @@ void EditorRenderer::render_ui()
 	render_toolbar();
 	inspector->render_inspector();
 	sectors_inspector->render();
+	textures_inspector->render(texture_buffer);
 }
 
 void EditorRenderer::render_grid()

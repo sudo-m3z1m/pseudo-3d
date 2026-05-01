@@ -18,6 +18,11 @@ TextureBuffer::~TextureBuffer()
 	//free_surface
 }
 
+std::vector<std::string> TextureBuffer::get_textures_names()
+{
+	return names;
+}
+
 int TextureBuffer::load_texture(std::string path)
 {
 	SDL_Surface* new_surface = SDL_LoadBMP(path.c_str());

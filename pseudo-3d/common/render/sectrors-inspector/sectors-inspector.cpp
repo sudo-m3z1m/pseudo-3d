@@ -43,8 +43,7 @@ void SectorsInspector::pick_sector(int sector_index)
 
 void SectorsInspector::render()
 {
-	ImVec2 window_pos = {screen_position.x, screen_position.y};
-	ImGui::SetNextWindowPos(window_pos);
+	ImGui::SetNextWindowPos({screen_position.x, screen_position.y});
 	ImGui::SetNextWindowSize({width, height});
 	
 	ImGui::Begin("Sectors inspector", NULL, window_flags);

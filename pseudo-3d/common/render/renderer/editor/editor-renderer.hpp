@@ -9,6 +9,7 @@
 #include "renderer.hpp"
 #include "inspector.hpp"
 #include "sectors-inspector.hpp"
+#include "textures-inspector.hpp"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 
@@ -31,6 +32,7 @@ protected:
 	ImGuiWindowFlags_NoScrollWithMouse;
 	Inspector* inspector;
 	SectorsInspector* sectors_inspector;
+	TexturesInspector* textures_inspector;
 	
 	InspectorItem* current_item;
 	
