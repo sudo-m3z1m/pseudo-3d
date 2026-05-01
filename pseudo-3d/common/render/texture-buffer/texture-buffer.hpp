@@ -13,6 +13,7 @@ class TextureBuffer
 {
 private:
 	std::vector<SDL_Surface*> buffer;
+	std::vector<std::string> names;
 	int buffer_size;
 	
 public:
@@ -20,7 +21,8 @@ public:
 	TextureBuffer(int buffer_size);
 	~TextureBuffer();
 	
-	int load_texture(const char* path);
+	std::vector<std::string> get_textures_names();
+	int load_texture(std::string path);
 	void remove_texture(int tid);
 	SDL_Surface* get_texture_surface(int tid);
 	Color get_texture_pixel(int tid, Vector2D<int>& pixel_pos);

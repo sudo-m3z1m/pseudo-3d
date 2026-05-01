@@ -156,8 +156,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	snprintf(path, 512, "%s%s", base_path, "floor.bmp");
 	texture_buffer->load_texture(path);
 	
-//	renderer = new GameRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
-	renderer = new EditorRenderer(camera, texture_buffer, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
+//	renderer = new GameRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
+	renderer = new EditorRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
 	
 	std::vector<ShapeComponent> shapes = bsp_level_server->get_levels_shapes();
 	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map", shapes);

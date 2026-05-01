@@ -17,7 +17,7 @@ protected:
 	
 public:
 	GameRenderer();
-	GameRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, BSPLevelServer* level_server);
+	GameRenderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height, BSPLevelServer* level_server);
 	~GameRenderer() override;
 	
 	int get_visplane_index(float height_z, Color color, int tid);

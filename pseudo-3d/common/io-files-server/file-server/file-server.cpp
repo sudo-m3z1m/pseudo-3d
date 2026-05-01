@@ -15,6 +15,20 @@ FileServer::~FileServer()
 	
 }
 
+std::string FileServer::get_texture_path()
+{
+	NFD::Guard guard;
+	
+	NFD::UniquePath texture_path;
+	nfdfilteritem_t filter_item[1] = {{"Textures", "bmp"}};
+	
+	nfdresult_t pick_result = NFD::OpenDialog(texture_path, filter_item, 1);
+	std::string path = texture_path.get();
+	if(pick_result != NFD_OKAY) return nullptr;
+	
+	return path;
+}
+
 void FileServer::write_file(const char* file_path, std::vector<ShapeComponent>& shapes)
 {
 	std::ofstream file(file_path, std::ios::binary);

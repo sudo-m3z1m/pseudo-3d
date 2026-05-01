@@ -15,12 +15,14 @@ TextureBuffer::TextureBuffer(int buffer_size)
 TextureBuffer::~TextureBuffer()
 {
 	buffer.clear();
+	//free_surface
 }
 
-int TextureBuffer::load_texture(const char* path)
+int TextureBuffer::load_texture(std::string path)
 {
-	SDL_Surface* new_surface = SDL_LoadBMP(path);
+	SDL_Surface* new_surface = SDL_LoadBMP(path.c_str());
 	buffer.push_back(new_surface);
+	names.push_back(path);
 	
 	int new_tid = (int)buffer.size() - 1;
 	buffer_size = (int)buffer.size();
@@ -31,6 +33,7 @@ int TextureBuffer::load_texture(const char* path)
 void TextureBuffer::remove_texture(int tid)
 {
 	buffer.erase(buffer.begin() + tid);
+//	free_surface
 }
 
 SDL_Surface* TextureBuffer::get_texture_surface(int tid)

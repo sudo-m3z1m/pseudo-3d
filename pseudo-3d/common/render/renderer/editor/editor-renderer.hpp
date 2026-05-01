@@ -6,7 +6,6 @@
 #include <string>
 
 #include "editor-level-server.hpp"
-#include "nfd.hpp"
 #include "renderer.hpp"
 #include "inspector.hpp"
 #include "sectors-inspector.hpp"
@@ -15,7 +14,8 @@
 
 enum Sizes
 {
-	VERTEX_SCREEN_SIZE = 8
+	VERTEX_SCREEN_SIZE = 8,
+	NORMAL_SCREEN_LENGTH = 16
 };
 
 
@@ -41,7 +41,7 @@ protected:
 	
 public:
 	EditorRenderer();
-	EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom);
+	EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom);
 	~EditorRenderer() override;
 	
 	Vector2D<int> get_screen_pos(Vector2D<float> world_pos);

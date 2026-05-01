@@ -6,8 +6,8 @@ GameRenderer::GameRenderer() : Renderer()
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
 }
 
-GameRenderer::GameRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, BSPLevelServer* level_server) :
-	Renderer(camera, texture_buffer, width, height)
+GameRenderer::GameRenderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height, BSPLevelServer* level_server) :
+	Renderer(camera, texture_buffer, file_server, width, height)
 {
 	this->level_server = level_server;
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());

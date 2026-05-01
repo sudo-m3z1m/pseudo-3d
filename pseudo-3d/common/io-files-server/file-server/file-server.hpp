@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 
+#include "nfd.hpp"
 #include "level-server.hpp"
 #include "shape-component.hpp"
 #include "sector.hpp"
@@ -25,6 +26,8 @@ public:
 	FileServer();
 	FileServer(LevelServer* level_server, std::vector<const char*> textures_paths);
 	~FileServer();
+	
+	std::string get_texture_path();
 	
 	void write_file(const char* file_path, std::vector<ShapeComponent>& shapes);
 	void read_file(const char* file_path);

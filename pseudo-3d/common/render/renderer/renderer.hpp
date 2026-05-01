@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 
 #include "color.hpp"
+#include "file-server.hpp"
 #include "camera.hpp"
 #include "texture-buffer.hpp"
 
@@ -15,6 +16,7 @@ protected:
 	Camera* current_camera;
 	SDL_Renderer* application_renderer;
 	SDL_Window* application_window;
+	FileServer* file_server;
 	
 	SDL_Surface* color_buffer;
 	TextureBuffer* texture_buffer;
@@ -23,7 +25,7 @@ protected:
 	
 public:
 	Renderer();
-	Renderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height);
+	Renderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_sever, int width, int height);
 	virtual ~Renderer();
 	
 	float get_delta_ticks();

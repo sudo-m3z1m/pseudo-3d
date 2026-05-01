@@ -12,8 +12,8 @@ EditorRenderer::EditorRenderer() : Renderer()
 	sectors_inspector = new SectorsInspector();
 }
 
-EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom) :
-	Renderer(camera, texture_buffer, width, height)
+EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height, EditorLevelServer* level_server, float min_zoom, float max_zoom) :
+	Renderer(camera, texture_buffer, file_server, width, height)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -209,13 +209,8 @@ void EditorRenderer::render_menu()
 	{
 		if(ImGui::MenuItem("Load texture"))
 		{
-			NFD::Guard guard;
-			
-			NFD::UniquePath texture_path;
-			nfdfilteritem_t filter_item[1] = {{"Textures", "png,bmp,jpg"}};
-			
-			nfdresult_t pick_result = NFD::OpenDialog(texture_path, filter_item, 1);
-			if(pick_result == NFD_OKAY) std::cout << texture_path.get() << std::endl;
+			std::string texture_path = file_server->get_texture_path();
+			texture_buffer->load_texture(texture_path);
 		}
 		ImGui::EndMenu();
 	}

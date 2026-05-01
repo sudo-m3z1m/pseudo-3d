@@ -12,7 +12,7 @@ Renderer::Renderer()
 	texture_buffer = nullptr;
 }
 
-Renderer::Renderer(Camera* camera, TextureBuffer* texture_buffer, int width, int height)
+Renderer::Renderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height)
 {
 	screen_width = width;
 	screen_height = height;
@@ -22,6 +22,7 @@ Renderer::Renderer(Camera* camera, TextureBuffer* texture_buffer, int width, int
 	color_buffer = SDL_CreateSurface(screen_width, screen_height, SDL_PIXELFORMAT_RGBA32);
 	
 	this->texture_buffer = texture_buffer;
+	this->file_server = file_server;
 }
 
 Renderer::~Renderer()
