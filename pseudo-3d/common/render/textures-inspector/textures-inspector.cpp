@@ -7,7 +7,7 @@ TexturesInspector::TexturesInspector()
 	screen_position = {0, 0};
 }
 
-TexturesInspector::TexturesInspector(int width, int height, Vector2D<float> viewport_size)
+TexturesInspector::TexturesInspector(int width, int height, Vector2D<float>& viewport_size)
 {
 	this->width = width;
 	this->height = height;
@@ -28,12 +28,21 @@ void TexturesInspector::render(TextureBuffer*& buffer)
 	ImGui::Separator();
 	
 	ImGui::BeginListBox("##Textures", {-FLT_MIN, -FLT_MIN});
-	for(int texture_index = 0; texture_index < textures_names.size(); texture_index++)
+	for(int tid = 0; tid < textures_names.size(); tid++)
 	{
-		ImGui::PushID(texture_index);
-		ImGui::Text(std::to_string(texture_index).c_str(), 0);
+		std::filesystem::path path = textures_names[tid];
+		ImGui::PushID(tid);
+		ImGui::Text(std::to_string(tid).c_str(), 0);
+		
 		ImGui::SameLine();
-		ImGui::Text(textures_names[texture_index].c_str(), 0);
+		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+		
+		ImGui::Text(path.filename().string().c_str(), 0);
+		
+		ImGui::SameLine();
+
+		if(ImGui::Button("Remove")) buffer->remove_texture(tid);
 		ImGui::PopID();
 	}
 	ImGui::EndListBox();

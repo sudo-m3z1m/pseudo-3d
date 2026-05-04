@@ -11,31 +11,36 @@
 
 #include "nfd.hpp"
 #include "level-server.hpp"
+#include "texture-buffer.hpp"
 #include "shape-component.hpp"
 #include "sector.hpp"
 
 class FileServer
 {
 private:
-	LevelServer* level_server;
-	std::vector<ShapeComponent> file_shapes;
-	std::vector<Sector> file_sectors;
-	std::vector<const char*> file_textures_paths;
+	LevelServer* level_server_ptr;
+	TextureBuffer* buffer_ptr;
 	
 public:
 	FileServer();
-	FileServer(LevelServer* level_server, std::vector<const char*> textures_paths);
+	FileServer(LevelServer* level_server, TextureBuffer* buffer);
 	~FileServer();
 	
-	std::string get_texture_path();
+	static std::string get_texture_path();
 	
-	void write_file(const char* file_path, std::vector<ShapeComponent>& shapes);
+	void write_file(const char* file_path);
 	void read_file(const char* file_path);
 	
 //	void write_file_json(const char* file_path);
 //	void read_file_json(const char* file_path);
 	
-	void write_shapes(std::vector<ShapeComponent>& shapes, std::ofstream& file);
+	void write_textures_names(std::ofstream& file);
+	std::vector<std::string> read_textures_names(std::ofstream& file);
+	void write_sectors(std::ofstream& file);
+	std::vector<Sector> read_sectors(std::ofstream& file);
+	void write_cameras(std::ofstream& file);
+	std::vector<Camera*> read_cameras(std::ofstream& path);
+	void write_shapes(std::ofstream& file);
 	std::vector<ShapeComponent> read_shapes(std::ifstream& file);
 };
 

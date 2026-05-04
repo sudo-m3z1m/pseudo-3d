@@ -33,7 +33,7 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, Fi
 	
 	inspector = new Inspector(&current_item, 140.0f, 400.0f, viewport_size);
 	sectors_inspector = new SectorsInspector(&level_server->sectors, &current_item, 150.0f, 200.0f, viewport_size);
-	textures_inspector = new TexturesInspector(150.0f, 200.0f, viewport_size);
+	textures_inspector = new TexturesInspector(200.0f, 200.0f, viewport_size);
 }
 
 EditorRenderer::~EditorRenderer()
@@ -212,7 +212,7 @@ void EditorRenderer::render_menu()
 	{
 		if(ImGui::MenuItem("Load texture"))
 		{
-			std::string texture_path = file_server->get_texture_path(); //FIXME: Broken stuff. Need to move back logic to level server or etc.
+			std::string texture_path = FileServer::get_texture_path(); //FIXME: Broken stuff. Need to move back logic to level server or etc.
 			texture_buffer->load_texture(texture_path);
 		}
 		ImGui::EndMenu();

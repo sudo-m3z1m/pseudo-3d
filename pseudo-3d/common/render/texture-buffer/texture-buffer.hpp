@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #include "vector2D.hpp"
 #include "color.hpp"

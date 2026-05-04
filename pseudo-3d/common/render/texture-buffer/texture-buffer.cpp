@@ -38,6 +38,7 @@ int TextureBuffer::load_texture(std::string path)
 void TextureBuffer::remove_texture(int tid)
 {
 	buffer.erase(buffer.begin() + tid);
+	names.erase(names.begin() + tid);
 //	free_surface
 }
 

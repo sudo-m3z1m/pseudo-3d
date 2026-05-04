@@ -25,7 +25,7 @@ protected:
 	
 public:
 	SectorsInspector();
-	SectorsInspector(std::vector<Sector>* sectors, InspectorItem** item, int width, int height, Vector2D<float> viewport_size);
+	SectorsInspector(std::vector<Sector>* sectors, InspectorItem** item, int width, int height, Vector2D<float>& viewport_size);
 	~SectorsInspector();
 	
 	int add_new_sector();

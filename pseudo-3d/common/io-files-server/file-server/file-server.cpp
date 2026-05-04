@@ -2,17 +2,20 @@
 
 FileServer::FileServer()
 {
-	
+	level_server_ptr = nullptr;
+	buffer_ptr = nullptr;
 }
 
-FileServer::FileServer(LevelServer* level_server, std::vector<const char*> textures_paths)
+FileServer::FileServer(LevelServer* level_server, TextureBuffer* buffer)
 {
-	this->level_server = level_server;
+	level_server_ptr = level_server;
+	buffer_ptr = buffer;
 }
 
 FileServer::~FileServer()
 {
-	
+	level_server_ptr = nullptr;
+	buffer_ptr = nullptr;
 }
 
 std::string FileServer::get_texture_path()
@@ -29,7 +32,7 @@ std::string FileServer::get_texture_path()
 	return path;
 }
 
-void FileServer::write_file(const char* file_path, std::vector<ShapeComponent>& shapes)
+void FileServer::write_file(const char* file_path)
 {
 	std::ofstream file(file_path, std::ios::binary);
 	if(!file)
@@ -37,7 +40,10 @@ void FileServer::write_file(const char* file_path, std::vector<ShapeComponent>& 
 		std::cerr << "SYSTEM ERROR: " << strerror(errno) << std::endl;
 		return;
 	}
-	write_shapes(shapes, file);
+	write_textures_names(file);
+	write_sectors(file);
+	write_cameras(file);
+	write_shapes(file);
 	file.close();
 }
 
@@ -46,18 +52,51 @@ void FileServer::read_file(const char* file_path)
 	std::ifstream file(file_path, std::ios::binary);
 	if (!file) return;
 	
-	file_shapes = read_shapes(file);
+	std::vector<ShapeComponent> file_shapes = read_shapes(file);
 	file.close();
 	
 	for(ShapeComponent shape : file_shapes)
 	{
-		level_server->add_new_polygon(shape);
+		level_server_ptr->add_new_polygon(shape);
 	}
 }
 
-void FileServer::write_shapes(std::vector<ShapeComponent>& shapes, std::ofstream& file)
+void FileServer::write_textures_names(std::ofstream& file)
 {
-	file_shapes = shapes;
+	
+}
+
+std::vector<std::string> FileServer::read_textures_names(std::ofstream& file)
+{
+	std::vector<std::string> textures_names;
+	return textures_names;
+}
+
+void FileServer::write_sectors(std::ofstream& file)
+{
+	
+}
+
+std::vector<Sector> FileServer::read_sectors(std::ofstream& file)
+{
+	std::vector<Sector> file_sectors;
+	return file_sectors;
+}
+
+void FileServer::write_cameras(std::ofstream& file)
+{
+	
+}
+
+std::vector<Camera*> FileServer::read_cameras(std::ofstream& path)
+{
+	std::vector<Camera*> file_cameras;
+	return file_cameras;
+}
+
+void FileServer::write_shapes(std::ofstream& file)
+{
+	std::vector<ShapeComponent> shapes = level_server_ptr->get_levels_shapes();
 	
 	uint32_t points_size;
 	uint32_t walls_size;

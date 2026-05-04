@@ -5,6 +5,7 @@
 
 #include "texture-buffer.hpp"
 #include "imgui_impl_sdl3.h"
+#include "imgui_internal.h"
 
 class TexturesInspector
 {
@@ -22,7 +23,7 @@ protected:
 	
 public:
 	TexturesInspector();
-	TexturesInspector(int width, int height, Vector2D<float> viewport_size);
+	TexturesInspector(int width, int height, Vector2D<float>& viewport_size);
 	~TexturesInspector();
 	
 	void render(TextureBuffer*& buffer);

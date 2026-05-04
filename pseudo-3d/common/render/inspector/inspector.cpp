@@ -5,7 +5,7 @@ Inspector::Inspector()
 	
 }
 
-Inspector::Inspector(InspectorItem** item, int width, int height, Vector2D<float> viewport_size)
+Inspector::Inspector(InspectorItem** item, int width, int height, Vector2D<float>& viewport_size)
 {
 	current_item = item;
 	this->width = width;

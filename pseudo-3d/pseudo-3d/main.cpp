@@ -160,7 +160,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	renderer = new EditorRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
 	
 	std::vector<ShapeComponent> shapes = bsp_level_server->get_levels_shapes();
-	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map", shapes);
+	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	
 	std::vector<ShapeComponent> editor_shapes = editor_level_server->get_levels_shapes();

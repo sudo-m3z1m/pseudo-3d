@@ -6,7 +6,7 @@ SectorsInspector::SectorsInspector()
 	current_item = nullptr;
 }
 
-SectorsInspector::SectorsInspector(std::vector<Sector>* sectors, InspectorItem** item, int width, int height, Vector2D<float> viewport_size)
+SectorsInspector::SectorsInspector(std::vector<Sector>* sectors, InspectorItem** item, int width, int height, Vector2D<float>& viewport_size)
 {
 	this->sectors = sectors;
 	this->current_item = item;
