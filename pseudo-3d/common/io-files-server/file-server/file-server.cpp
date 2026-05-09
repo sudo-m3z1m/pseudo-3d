@@ -109,6 +109,7 @@ void FileServer::write_sectors(std::ofstream& file)
 	std::vector<Sector> sectors = level_server_ptr->sectors;
 	uint32_t sectors_size = static_cast<uint32_t>(sectors.size());
 	file.write(SAVE_CAST(&sectors_size), sizeof(sectors_size));
+	//file.write(SAVE_CAST(sectors.data()), sectors.size() * sizeof(Sector));
 	
 	for(Sector& sector : sectors)
 	{
@@ -128,6 +129,7 @@ std::vector<Sector> FileServer::read_sectors(std::ifstream& file)
 	uint32_t sectors_size;
 	file.read(SAVE_CAST(&sectors_size), sizeof(sectors_size));
 	sectors.resize(sectors_size);
+	//file.read(SAVE_CAST(sectors.data()), sectors_size * sizeof(Sector));
 	
 	for(uint32_t sector_index = 0; sector_index < sectors_size; sector_index++)
 	{
@@ -142,17 +144,45 @@ std::vector<Sector> FileServer::read_sectors(std::ifstream& file)
 		sectors[sector_index].floor_tid = floor_tid;
 		sectors[sector_index].ceiling_tid = ceiling_tid;
 	}
+	
 	return sectors;
 }
 
 void FileServer::write_cameras(std::ofstream& file)
 {
+	std::vector<Camera*> cameras = level_server_ptr->get_cameras();
+	uint32_t cameras_size = static_cast<uint32_t>(cameras.size());
 	
+	file.write(SAVE_CAST(&cameras_size), sizeof(cameras_size));
+	for(Camera* camera : cameras)
+	{
+		file.write(SAVE_CAST(&camera->position), sizeof(camera->position));
+		file.write(SAVE_CAST(&camera->rotation), sizeof(camera->rotation));
+		file.write(SAVE_CAST(&camera->height_z), sizeof(camera->height_z));
+		file.write(SAVE_CAST(&camera->field_of_view), sizeof(camera->field_of_view));
+	}
 }
 
-std::vector<Camera*> FileServer::read_cameras(std::ifstream& path)
+std::vector<Camera*> FileServer::read_cameras(std::ifstream& file)
 {
 	std::vector<Camera*> file_cameras;
+	uint32_t cameras_size;
+	
+	file.read(SAVE_CAST(&cameras_size), sizeof(cameras_size));
+	file_cameras.resize(cameras_size);
+	
+	for(uint32_t camera_index = 0; camera_index < cameras_size; camera_index++)
+	{
+		Vector2D<float> camera_position;
+		float camera_rotation, camera_height, camera_fov;
+		
+		file.read(SAVE_CAST(&camera_position), sizeof(camera_position));
+		file.read(SAVE_CAST(&camera_rotation), sizeof(camera_rotation));
+		file.read(SAVE_CAST(&camera_height), sizeof(camera_height));
+		file.read(SAVE_CAST(&camera_fov), sizeof(camera_fov));
+		
+		file_cameras[camera_index] = new Camera(camera_fov, camera_position, camera_rotation, camera_height, 0);
+	}
 	return file_cameras;
 }
 

@@ -41,7 +41,7 @@ public:
 	void write_sectors(std::ofstream& file);
 	std::vector<Sector> read_sectors(std::ifstream& file);
 	void write_cameras(std::ofstream& file);
-	std::vector<Camera*> read_cameras(std::ifstream& path);
+	std::vector<Camera*> read_cameras(std::ifstream& file);
 	void write_shapes(std::ofstream& file);
 	std::vector<ShapeComponent> read_shapes(std::ifstream& file);
 };
