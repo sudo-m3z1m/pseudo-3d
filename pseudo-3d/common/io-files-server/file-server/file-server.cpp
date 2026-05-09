@@ -106,13 +106,43 @@ std::vector<std::string> FileServer::read_textures_names(std::ifstream& file)
 
 void FileServer::write_sectors(std::ofstream& file)
 {
+	std::vector<Sector> sectors = level_server_ptr->sectors;
+	uint32_t sectors_size = static_cast<uint32_t>(sectors.size());
+	file.write(SAVE_CAST(&sectors_size), sizeof(sectors_size));
 	
+	for(Sector& sector : sectors)
+	{
+		uint32_t floor_tid = static_cast<uint32_t>(sector.floor_tid);
+		uint32_t ceiling_tid = static_cast<uint32_t>(sector.ceiling_tid);
+		
+		file.write(SAVE_CAST(&sector.floor_z), sizeof(sector.floor_z));
+		file.write(SAVE_CAST(&sector.ceiling_z), sizeof(sector.ceiling_z));
+		file.write(SAVE_CAST(&floor_tid), sizeof(floor_tid));
+		file.write(SAVE_CAST(&ceiling_tid), sizeof(ceiling_tid));
+	}
 }
 
 std::vector<Sector> FileServer::read_sectors(std::ifstream& file)
 {
-	std::vector<Sector> file_sectors;
-	return file_sectors;
+	std::vector<Sector> sectors;
+	uint32_t sectors_size;
+	file.read(SAVE_CAST(&sectors_size), sizeof(sectors_size));
+	sectors.resize(sectors_size);
+	
+	for(uint32_t sector_index = 0; sector_index < sectors_size; sector_index++)
+	{
+		uint32_t floor_tid;
+		uint32_t ceiling_tid;
+		
+		file.read(SAVE_CAST(&sectors[sector_index].floor_z), sizeof(sectors[sector_index].floor_z));
+		file.read(SAVE_CAST(&sectors[sector_index].ceiling_z), sizeof(sectors[sector_index].ceiling_z));
+		
+		file.read(SAVE_CAST(&floor_tid), sizeof(floor_tid));
+		file.read(SAVE_CAST(&ceiling_tid), sizeof(ceiling_tid));
+		sectors[sector_index].floor_tid = floor_tid;
+		sectors[sector_index].ceiling_tid = ceiling_tid;
+	}
+	return sectors;
 }
 
 void FileServer::write_cameras(std::ofstream& file)
