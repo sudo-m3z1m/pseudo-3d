@@ -139,7 +139,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	srand(l_time->tm_sec);
 	
 	create_level_server();
+	//TODO: Probably need to make it inside level server or renderer.
 	file_server = new FileServer(editor_level_server, {});
+	//TODO: Probably need to make it inside level server or renderer.
 	
 	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);
 	int camera_sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera_position);

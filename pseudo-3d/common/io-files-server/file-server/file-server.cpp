@@ -61,14 +61,46 @@ void FileServer::read_file(const char* file_path)
 	}
 }
 
-void FileServer::write_textures_names(std::ofstream& file)
+void write_string(std::ofstream& file, std::string& string)
 {
+	uint32_t string_size = static_cast<uint32_t>(string.size());
+	char* string_data = string.data();
 	
+	file.write(SAVE_CAST(&string_size), sizeof(string_size));
+	file.write(string_data, string_size);
 }
 
-std::vector<std::string> FileServer::read_textures_names(std::ofstream& file)
+std::string read_string(std::ifstream& file)
+{
+	uint32_t string_size;
+	file.read(SAVE_CAST(&string_size), sizeof(string_size));
+	
+	std::string string(string_size, '\0');
+	file.read(string.data(), string_size);
+	return string;
+}
+
+void FileServer::write_textures_names(std::ofstream& file)
+{
+	std::vector<std::string> textures_names = buffer_ptr->get_textures_names();
+	uint32_t names_size = static_cast<uint32_t>(textures_names.size());
+	
+	file.write(SAVE_CAST(names_size), sizeof(names_size));
+	for(std::string& name : textures_names) write_string(file, name);
+}
+
+std::vector<std::string> FileServer::read_textures_names(std::ifstream& file)
 {
 	std::vector<std::string> textures_names;
+	uint32_t names_size;
+	file.read(SAVE_CAST(&names_size), sizeof(names_size));
+	textures_names.resize(names_size);
+	
+	for(uint32_t name_index = 0; name_index < names_size; name_index++)
+	{
+		std::string name = read_string(file);
+		textures_names[name_index] = name;
+	}
 	return textures_names;
 }
 
@@ -77,7 +109,7 @@ void FileServer::write_sectors(std::ofstream& file)
 	
 }
 
-std::vector<Sector> FileServer::read_sectors(std::ofstream& file)
+std::vector<Sector> FileServer::read_sectors(std::ifstream& file)
 {
 	std::vector<Sector> file_sectors;
 	return file_sectors;
@@ -88,7 +120,7 @@ void FileServer::write_cameras(std::ofstream& file)
 	
 }
 
-std::vector<Camera*> FileServer::read_cameras(std::ofstream& path)
+std::vector<Camera*> FileServer::read_cameras(std::ifstream& path)
 {
 	std::vector<Camera*> file_cameras;
 	return file_cameras;
