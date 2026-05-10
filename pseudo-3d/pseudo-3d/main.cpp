@@ -19,7 +19,8 @@
 //PhysicsServer physics_server;
 BSPLevelServer* bsp_level_server;
 EditorLevelServer* editor_level_server;
-GameRenderer* renderer;
+Renderer* renderer;
+//GameRenderer* renderer;
 //EditorRenderer* renderer;
 Camera* camera;
 FileServer* file_server;
@@ -58,7 +59,6 @@ float get_input_rotation()
 	return rotation;
 }
 
-
 //void create_physics_components()
 //{
 //	std::vector<Vector2D<float>> circles_points = {Vector2D<float>(0.0f, 0.0f)};
@@ -81,60 +81,121 @@ float get_input_rotation()
 //	physics_server.add_physics_component(line);
 //}
 
-void create_level_server()
+void init_game()
 {
 	bsp_level_server = new BSPLevelServer();
-	editor_level_server = new EditorLevelServer();
+	TextureBuffer* texture_buffer = new TextureBuffer();
 	
-	Sector f_test_sector = Sector(0.0f, 6.0f, 1, 1, Color(), Color());
-	Sector s_test_sector = Sector(-1.0f, 7.0f, 0, 0, Color(), Color());
-	Sector t_test_sector = Sector(1.5f, 4.5f, 0, 1, Color(), Color());
+	//TODO: Probably need to make it inside level server or renderer.
+	file_server = new FileServer(bsp_level_server, texture_buffer);
+	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+	//TODO: Probably need to make it inside level server or renderer.
 	
-//	bsp_level_server->add_new_sector(f_test_sector);
-//	bsp_level_server->add_new_sector(s_test_sector);
-//	bsp_level_server->add_new_sector(t_test_sector);
-	
-//	editor_level_server->add_new_sector(f_test_sector);
-//	editor_level_server->add_new_sector(s_test_sector);
-//	editor_level_server->add_new_sector(t_test_sector);
-	
-	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(6.0f, 7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(16.0f, -7.0f), Vector2D<float>(16.0f, 7.0f)};
-	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(-4.0f, 7.0f), Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-4.0f, -2.0f), Vector2D<float>(-4.0f, -7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(6.0f, 7.0f)};
-	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(6.0f, -0.5f), Vector2D<float>(6.0f, 0.5f), Vector2D<float>(11.0f, 0.5f), Vector2D<float>(11.0f, -0.5f)};
-	std::vector<Vector2D<float>> fo_shape_points = {Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-14.0f, 2.0f), Vector2D<float>(-14.0f, -2.0f), Vector2D<float>(-4.0f, -2.0f)};
-	
-//	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(7.0f, -15.0f), Vector2D<float>(16.0f, 15.0f), Vector2D<float>(17.0f, 5.0f), Vector2D<float>(17.0f, -5.0f)};
-//	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
-//	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
-	
-	WindowComponent* f_window = new WindowComponent(0, 1, 0, 0);
-	WindowComponent* f_s_window = new WindowComponent(1, 0, 0, 0);
-	WindowComponent* s_window = new WindowComponent(0, 2, 0, 0);
-	WindowComponent* t_window = new WindowComponent(2, 0, 0, 0);
-	
-	std::vector<Wall> f_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), f_s_window), Wall(1, 2, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(2, 3, Vector2D<float>(-1.0f, 0.0f), nullptr), Wall(3, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
-	std::vector<Wall> s_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), s_window), Wall(2, 3, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(3, 4, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(4, 5, Vector2D<float>(-1.0f, 0.0f), f_window), Wall(5, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
-	std::vector<Wall> fo_shape_walls = {Wall(0, 1, Vector2D<float>(0.0f, -1.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(2, 3, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(3, 0, Vector2D<float>(-1.0f, 0.0f), t_window)};
-	
-	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, f_shape_walls, 1);
-	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, s_shape_walls, 0);
-	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>(), 1);
-	ShapeComponent fo_shape = ShapeComponent(POLYGON, 0, fo_shape_points, fo_shape_walls, 2);
-	
-//	level_server->add_new_polygon(t_shape);
-	
-//	bsp_level_server->add_new_polygon(f_shape);
-//	bsp_level_server->add_new_polygon(s_shape);
-//	bsp_level_server->add_new_polygon(fo_shape);
-	
-//	editor_level_server->add_new_polygon(f_shape);
-//	editor_level_server->add_new_polygon(s_shape);
-//	editor_level_server->add_new_polygon(fo_shape);
-	
-//	bsp_level_server->create_bsp_tree();
-	
-	return;
+	bsp_level_server->create_bsp_tree();
+	camera = bsp_level_server->get_camera(0);
+	renderer = new GameRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
 }
+
+void update_game(float delta, Vector2D<float> direction, float rotation_direction)
+{
+	float rotation_speed = 1.0f;
+	float move_speed = 5.0f;
+	
+	float new_rotation = (rotation_direction * rotation_speed) * delta;
+	camera->set_camera_rotation(camera->rotation + new_rotation);
+	
+	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
+//	velocity = {-velocity.y, velocity.x};
+	camera->set_camera_position(camera->position + velocity);
+	
+	camera->sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera->position);
+	renderer->render();
+}
+
+void init_editor()
+{
+	editor_level_server = new EditorLevelServer();
+	TextureBuffer* texture_buffer = new TextureBuffer();
+	
+	//TODO: Probably need to make it inside level server or renderer.
+	file_server = new FileServer(editor_level_server, texture_buffer);
+	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+	//TODO: Probably need to make it inside level server or renderer.
+	
+	camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, 0);
+	
+	renderer = new EditorRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
+}
+
+void update_editor(float delta, Vector2D<float> direction, float rotation_direction)
+{
+	float rotation_speed = 50.0f;
+	float move_speed = 5.0f;
+	
+	float new_rotation = (rotation_direction * rotation_speed) * delta;
+	camera->set_camera_fov(camera->field_of_view + new_rotation);
+	
+	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
+	velocity = {-velocity.y, velocity.x};
+	camera->set_camera_position(camera->position + velocity);
+	
+	renderer->render();
+}
+
+//void create_level_server()
+//{
+//	bsp_level_server = new BSPLevelServer();
+//	editor_level_server = new EditorLevelServer();
+//	
+//	Sector f_test_sector = Sector(0.0f, 6.0f, 1, 1, Color(), Color());
+//	Sector s_test_sector = Sector(-1.0f, 7.0f, 0, 0, Color(), Color());
+//	Sector t_test_sector = Sector(1.5f, 4.5f, 0, 1, Color(), Color());
+//	
+////	bsp_level_server->add_new_sector(f_test_sector);
+////	bsp_level_server->add_new_sector(s_test_sector);
+////	bsp_level_server->add_new_sector(t_test_sector);
+//	
+////	editor_level_server->add_new_sector(f_test_sector);
+////	editor_level_server->add_new_sector(s_test_sector);
+////	editor_level_server->add_new_sector(t_test_sector);
+//	
+//	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(6.0f, 7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(16.0f, -7.0f), Vector2D<float>(16.0f, 7.0f)};
+//	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(-4.0f, 7.0f), Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-4.0f, -2.0f), Vector2D<float>(-4.0f, -7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(6.0f, 7.0f)};
+//	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(6.0f, -0.5f), Vector2D<float>(6.0f, 0.5f), Vector2D<float>(11.0f, 0.5f), Vector2D<float>(11.0f, -0.5f)};
+//	std::vector<Vector2D<float>> fo_shape_points = {Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-14.0f, 2.0f), Vector2D<float>(-14.0f, -2.0f), Vector2D<float>(-4.0f, -2.0f)};
+//	
+////	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(7.0f, -15.0f), Vector2D<float>(16.0f, 15.0f), Vector2D<float>(17.0f, 5.0f), Vector2D<float>(17.0f, -5.0f)};
+////	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(4.0f, 1.0f), Vector2D<float>(6.0f, 1.0f), Vector2D<float>(5.0f, 0.0f)};
+////	std::vector<Vector2D<float>> t_shape_points = {Vector2D<float>(2.0f, 3.0f), Vector2D<float>(3.0f, 4.0f), Vector2D<float>(4.0f, 3.0f)};
+//	
+//	WindowComponent* f_window = new WindowComponent(0, 1, 0, 0);
+//	WindowComponent* f_s_window = new WindowComponent(1, 0, 0, 0);
+//	WindowComponent* s_window = new WindowComponent(0, 2, 0, 0);
+//	WindowComponent* t_window = new WindowComponent(2, 0, 0, 0);
+//	
+//	std::vector<Wall> f_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), f_s_window), Wall(1, 2, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(2, 3, Vector2D<float>(-1.0f, 0.0f), nullptr), Wall(3, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
+//	std::vector<Wall> s_shape_walls = {Wall(0, 1, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), s_window), Wall(2, 3, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(3, 4, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(4, 5, Vector2D<float>(-1.0f, 0.0f), f_window), Wall(5, 0, Vector2D<float>(0.0f, -1.0f), nullptr)};
+//	std::vector<Wall> fo_shape_walls = {Wall(0, 1, Vector2D<float>(0.0f, -1.0f), nullptr), Wall(1, 2, Vector2D<float>(1.0f, 0.0f), nullptr), Wall(2, 3, Vector2D<float>(0.0f, 1.0f), nullptr), Wall(3, 0, Vector2D<float>(-1.0f, 0.0f), t_window)};
+//	
+//	ShapeComponent f_shape = ShapeComponent(POLYGON, 0, f_shape_points, f_shape_walls, 1);
+//	ShapeComponent s_shape = ShapeComponent(POLYGON, 0, s_shape_points, s_shape_walls, 0);
+//	ShapeComponent t_shape = ShapeComponent(POLYGON, 0, t_shape_points, std::vector<Wall>(), 1);
+//	ShapeComponent fo_shape = ShapeComponent(POLYGON, 0, fo_shape_points, fo_shape_walls, 2);
+//	
+////	level_server->add_new_polygon(t_shape);
+//	
+////	bsp_level_server->add_new_polygon(f_shape);
+////	bsp_level_server->add_new_polygon(s_shape);
+////	bsp_level_server->add_new_polygon(fo_shape);
+//	
+////	editor_level_server->add_new_polygon(f_shape);
+////	editor_level_server->add_new_polygon(s_shape);
+////	editor_level_server->add_new_polygon(fo_shape);
+//	
+////	bsp_level_server->create_bsp_tree();
+//	
+//	return;
+//}
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
@@ -142,27 +203,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	std::tm* l_time = std::localtime(&time);
 	srand(l_time->tm_sec);
 	
-	create_level_server();
-	
-	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);
-//	int camera_sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera_position);
-//	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
-//	camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
-	
-	TextureBuffer* texture_buffer = new TextureBuffer();
-	
-	//TODO: Probably need to make it inside level server or renderer.
-	file_server = new FileServer(bsp_level_server, texture_buffer);
-//	file_server = new FileServer(editor_level_server, texture_buffer);
-	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
-	bsp_level_server->create_bsp_tree();
-	camera = bsp_level_server->get_camera(0);
-	//TODO: Probably need to make it inside level server or renderer.
-	
-	renderer = new GameRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
-//	renderer = new EditorRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
-	
-//	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+	init_game();
+//	init_editor();
 	
 	return SDL_APP_CONTINUE;
 }
@@ -181,39 +223,21 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 //	physics_server.calculate_sector_colliding();
 //	const float delta = renderer->get_delta_ticks();
 //	camera->set_camera_rotation(camera->rotation - (0.1 * delta));
-
-//	std::cout << "Position: " << camera->position.x << ',' << camera->position.y << std::endl;
-//	std::cout << "Rotation: " << camera->rotation << std::endl;
 	
 	float delta = renderer->get_delta_ticks();
 	Vector2D<float> direction = get_input_direction();
 	float rotation_direction = get_input_rotation();
 	
-	float rotation_speed = 1.0f;
-//	float rotation_speed = 50.0f;
-	float move_speed = 5.0f;
-	
-	float new_rotation = (rotation_direction * rotation_speed) * delta;
-	
-	camera->set_camera_rotation(camera->rotation + new_rotation);
-//	camera->set_camera_fov(camera->field_of_view + new_rotation);
-	
-	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
-	velocity = {-velocity.y, velocity.x};
-	
-	camera->set_camera_position(camera->position + velocity);
-	
-	camera->sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera->position);
-	
-	renderer->render();
-	
+	update_game(delta, direction, rotation_direction);
+//	update_editor(delta, direction, rotation_direction);
+		
 	return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
-//	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
-//	ImGui_ImplSDL3_Shutdown();
-//	ImGui_ImplSDLRenderer3_Shutdown();
-//	ImGui::DestroyContext();
+	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+	ImGui_ImplSDL3_Shutdown();
+	ImGui_ImplSDLRenderer3_Shutdown();
+	ImGui::DestroyContext();
 }
