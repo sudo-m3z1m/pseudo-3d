@@ -94,11 +94,13 @@ void GameRenderer::render()
 
 void GameRenderer::render_node(BSPNode* node)
 {
+	//FIXME: If without tree it isn't working btw
 	if (node->shape)
 	{
 		render_bsp_shape(node);
 		return;
 	}
+	//FIXME: If without tree it isn't working btw
 	
 	Line node_separate_line = node->separate_line;
 	const float position_side = is_point_on_line(current_camera->position, node_separate_line);
@@ -161,9 +163,7 @@ void GameRenderer::render_shape_wall(BSPShape* shape, Wall wall)
 	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
 	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
 	
-		//FIXME: Need to make getting texture from a wall
-	int tid = 0;
-		//FIXME: Need to make getting texture from a wall
+	int tid = wall.tid;
 	
 	RendererColumn f_column = get_wall_column(wall_points[0], sector_floor_z, sector_ceiling_z);
 	RendererColumn s_column = get_wall_column(wall_points[1], sector_floor_z, sector_ceiling_z);

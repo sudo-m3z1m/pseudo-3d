@@ -19,7 +19,7 @@ public:
 	WindowComponent* window_component;
 	
 	Wall();
-	Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent* window_component);
+	Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent* window_component, int tid);
 	
 	std::vector<InspectorItemProperty> get_inspector_item_properties() override;
 	const char* get_inspector_item_name() override;

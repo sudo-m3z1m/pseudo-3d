@@ -148,6 +148,6 @@ void EditorLevelServer::add_wall_to_current_shape(int last_point_index, int new_
 	if(shape_points.size() <= 1) return;
 
 	Vector2D<float> normal = (shape_points[new_point_index] - shape_points[last_point_index]).get_vector_normal();
-	Wall new_wall = Wall(last_point_index, new_point_index, normal, nullptr);
+	Wall new_wall = Wall(last_point_index, new_point_index, normal, nullptr, 0);
 	current_shape->walls.push_back(new_wall);
 }
