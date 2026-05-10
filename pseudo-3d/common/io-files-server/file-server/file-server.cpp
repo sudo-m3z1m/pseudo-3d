@@ -52,32 +52,16 @@ void FileServer::read_file(const char* file_path)
 	std::ifstream file(file_path, std::ios::binary);
 	if (!file) return;
 	
+	std::vector<std::string> textures_names = read_textures_names(file);
+	std::vector<Sector> sectors = read_sectors(file);
+	std::vector<Camera*> cameras = read_cameras(file);
 	std::vector<ShapeComponent> file_shapes = read_shapes(file);
 	file.close();
 	
-	for(ShapeComponent shape : file_shapes)
-	{
-		level_server_ptr->add_new_polygon(shape);
-	}
-}
-
-void write_string(std::ofstream& file, std::string& string)
-{
-	uint32_t string_size = static_cast<uint32_t>(string.size());
-	char* string_data = string.data();
-	
-	file.write(SAVE_CAST(&string_size), sizeof(string_size));
-	file.write(string_data, string_size);
-}
-
-std::string read_string(std::ifstream& file)
-{
-	uint32_t string_size;
-	file.read(SAVE_CAST(&string_size), sizeof(string_size));
-	
-	std::string string(string_size, '\0');
-	file.read(string.data(), string_size);
-	return string;
+	for(std::string name : textures_names) buffer_ptr->load_texture(name);
+	for(Sector sector : sectors) level_server_ptr->add_new_sector(sector);
+	for(Camera* camera : cameras) level_server_ptr->add_camera(camera);
+	for(ShapeComponent shape : file_shapes) level_server_ptr->add_new_polygon(shape);
 }
 
 void FileServer::write_textures_names(std::ofstream& file)
@@ -85,7 +69,7 @@ void FileServer::write_textures_names(std::ofstream& file)
 	std::vector<std::string> textures_names = buffer_ptr->get_textures_names();
 	uint32_t names_size = static_cast<uint32_t>(textures_names.size());
 	
-	file.write(SAVE_CAST(names_size), sizeof(names_size));
+	file.write(SAVE_CAST(&names_size), sizeof(names_size));
 	for(std::string& name : textures_names) write_string(file, name);
 }
 
@@ -266,4 +250,23 @@ std::vector<ShapeComponent> FileServer::read_shapes(std::ifstream& file)
 		shapes[shape_index].walls = std::move(walls);
 	}
 	return shapes;
+}
+
+void FileServer::write_string(std::ofstream& file, std::string& string)
+{
+	uint32_t string_size = static_cast<uint32_t>(string.size());
+	char* string_data = string.data();
+	
+	file.write(SAVE_CAST(&string_size), sizeof(string_size));
+	file.write(string_data, string_size);
+}
+
+std::string FileServer::read_string(std::ifstream& file)
+{
+	uint32_t string_size;
+	file.read(SAVE_CAST(&string_size), sizeof(string_size));
+	
+	std::string string(string_size, '\0');
+	file.read(string.data(), string_size);
+	return string;
 }

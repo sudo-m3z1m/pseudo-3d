@@ -16,6 +16,7 @@ Wall::Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent
 	this->window_component = window_component;
 	
 	this->color = Color().get_random_color(255);
+	tid = 0;
 }
 
 std::vector<InspectorItemProperty> Wall::get_inspector_item_properties()

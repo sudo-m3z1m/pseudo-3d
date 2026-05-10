@@ -11,6 +11,11 @@ GameRenderer::GameRenderer(Camera* camera, TextureBuffer* texture_buffer, FileSe
 {
 	this->level_server = level_server;
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
+	
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplSDL3_InitForSDLRenderer(application_window, application_renderer);
+	ImGui_ImplSDLRenderer3_Init(application_renderer);
 }
 
 GameRenderer::~GameRenderer()

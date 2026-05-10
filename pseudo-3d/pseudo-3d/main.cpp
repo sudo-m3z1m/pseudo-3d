@@ -19,8 +19,8 @@
 //PhysicsServer physics_server;
 BSPLevelServer* bsp_level_server;
 EditorLevelServer* editor_level_server;
-//GameRenderer* renderer;
-EditorRenderer* renderer;
+GameRenderer* renderer;
+//EditorRenderer* renderer;
 Camera* camera;
 FileServer* file_server;
 
@@ -90,13 +90,13 @@ void create_level_server()
 	Sector s_test_sector = Sector(-1.0f, 7.0f, 0, 0, Color(), Color());
 	Sector t_test_sector = Sector(1.5f, 4.5f, 0, 1, Color(), Color());
 	
-	bsp_level_server->add_new_sector(f_test_sector);
-	bsp_level_server->add_new_sector(s_test_sector);
-	bsp_level_server->add_new_sector(t_test_sector);
+//	bsp_level_server->add_new_sector(f_test_sector);
+//	bsp_level_server->add_new_sector(s_test_sector);
+//	bsp_level_server->add_new_sector(t_test_sector);
 	
-	editor_level_server->add_new_sector(f_test_sector);
-	editor_level_server->add_new_sector(s_test_sector);
-	editor_level_server->add_new_sector(t_test_sector);
+//	editor_level_server->add_new_sector(f_test_sector);
+//	editor_level_server->add_new_sector(s_test_sector);
+//	editor_level_server->add_new_sector(t_test_sector);
 	
 	std::vector<Vector2D<float>> f_shape_points = {Vector2D<float>(6.0f, 7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(16.0f, -7.0f), Vector2D<float>(16.0f, 7.0f)};
 	std::vector<Vector2D<float>> s_shape_points = {Vector2D<float>(-4.0f, 7.0f), Vector2D<float>(-4.0f, 2.0f), Vector2D<float>(-4.0f, -2.0f), Vector2D<float>(-4.0f, -7.0f), Vector2D<float>(6.0f, -7.0f), Vector2D<float>(6.0f, 7.0f)};
@@ -123,11 +123,15 @@ void create_level_server()
 	
 //	level_server->add_new_polygon(t_shape);
 	
-	bsp_level_server->add_new_polygon(f_shape);
-	bsp_level_server->add_new_polygon(s_shape);
-	bsp_level_server->add_new_polygon(fo_shape);
+//	bsp_level_server->add_new_polygon(f_shape);
+//	bsp_level_server->add_new_polygon(s_shape);
+//	bsp_level_server->add_new_polygon(fo_shape);
 	
-	bsp_level_server->create_bsp_tree();
+//	editor_level_server->add_new_polygon(f_shape);
+//	editor_level_server->add_new_polygon(s_shape);
+//	editor_level_server->add_new_polygon(fo_shape);
+	
+//	bsp_level_server->create_bsp_tree();
 	
 	return;
 }
@@ -139,35 +143,26 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	srand(l_time->tm_sec);
 	
 	create_level_server();
-	//TODO: Probably need to make it inside level server or renderer.
-	file_server = new FileServer(editor_level_server, {});
-	//TODO: Probably need to make it inside level server or renderer.
 	
 	Vector2D<float> camera_position = Vector2D<float>(0.0f, 0.0f);
-	int camera_sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera_position);
+//	int camera_sector_index = bsp_level_server->get_sector_index_by_point(bsp_level_server->bsp_tree, camera_position);
 //	camera = new Camera((PI / 3), Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
-	camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
+//	camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
 	
 	TextureBuffer* texture_buffer = new TextureBuffer();
 	
-	const char* base_path = SDL_GetBasePath();
-	char path[512];
-	
-	snprintf(path, 512, "%s%s", base_path, "texture.bmp");
-	texture_buffer->load_texture(path);
-	snprintf(path, 512, "%s%s", base_path, "floor.bmp");
-	texture_buffer->load_texture(path);
-	
-//	renderer = new GameRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
-	renderer = new EditorRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
-	
-	std::vector<ShapeComponent> shapes = bsp_level_server->get_levels_shapes();
-	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+	//TODO: Probably need to make it inside level server or renderer.
+	file_server = new FileServer(bsp_level_server, texture_buffer);
+//	file_server = new FileServer(editor_level_server, texture_buffer);
 	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+	bsp_level_server->create_bsp_tree();
+	camera = bsp_level_server->get_camera(0);
+	//TODO: Probably need to make it inside level server or renderer.
 	
-	std::vector<ShapeComponent> editor_shapes = editor_level_server->get_levels_shapes();
-	Camera* test_camera = new Camera(DEFAULT_FOV, Vector2D<float>(0.0f, 0.0f), 0, 2, camera_sector_index);
-	editor_level_server->add_camera(test_camera);
+	renderer = new GameRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
+//	renderer = new EditorRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
+	
+//	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	
 	return SDL_APP_CONTINUE;
 }
@@ -175,6 +170,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 {
 	ImGui_ImplSDL3_ProcessEvent(event);
+	if (event->type == SDL_EVENT_QUIT) return SDL_APP_SUCCESS;
 	return SDL_APP_CONTINUE;
 }
 
@@ -193,14 +189,14 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 	Vector2D<float> direction = get_input_direction();
 	float rotation_direction = get_input_rotation();
 	
-//	float rotation_speed = 1.0f;
-	float rotation_speed = 50.0f;
+	float rotation_speed = 1.0f;
+//	float rotation_speed = 50.0f;
 	float move_speed = 5.0f;
 	
 	float new_rotation = (rotation_direction * rotation_speed) * delta;
 	
-//	camera->set_camera_rotation(camera->rotation + new_rotation);
-	camera->set_camera_fov(camera->field_of_view + new_rotation);
+	camera->set_camera_rotation(camera->rotation + new_rotation);
+//	camera->set_camera_fov(camera->field_of_view + new_rotation);
 	
 	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
 	velocity = {-velocity.y, velocity.x};
@@ -216,6 +212,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
+//	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 //	ImGui_ImplSDL3_Shutdown();
 //	ImGui_ImplSDLRenderer3_Shutdown();
 //	ImGui::DestroyContext();

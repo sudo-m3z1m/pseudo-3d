@@ -2,6 +2,11 @@
 
 EditorRenderer::EditorRenderer() : Renderer()
 {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplSDL3_InitForSDLRenderer(application_window, application_renderer);
+	ImGui_ImplSDLRenderer3_Init(application_renderer);
+	
 	grid_step = 1.0f;
 	grid_low_step = 0.1f;
 	level_server = nullptr;
