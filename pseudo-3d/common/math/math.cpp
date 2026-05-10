@@ -50,7 +50,9 @@ std::optional<Vector2D<float>> clip_line_segment_by_ray(Vector2D<float> ray, Vec
 
 float is_point_on_line(Vector2D<float> point, Line line)
 {
-	return (line.a * point.x) + (line.b * point.y) + line.c;
+	float result = (line.a * point.x) + (line.b * point.y) + line.c;
+	if(abs(result) < EPS) result = 0;
+	return result;
 }
 
 std::vector<Wall> get_walls_from_shape_points(std::vector<Vector2D<float>> points)

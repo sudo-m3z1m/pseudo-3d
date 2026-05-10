@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 #define PI 3.14159265359f
-#define EPS 1e-6f
+#define EPS 1e-4f
 
 #define WINDOW_NAME "pseudo-3d"
 
