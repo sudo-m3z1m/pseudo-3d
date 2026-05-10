@@ -75,7 +75,7 @@ std::vector<BSPShape*> BSPLevelServer::separate_shape_by_line(Line line, BSPShap
 			new_shapes[points_indeces[0] + points_indeces[1]]->add_new_wall(wall_points[0], wall_points[1], current_wall.normal, current_wall.window_component);
 			continue;
 		}
-		if(points_k[0] != points_k[1])
+		if(get_sign(points_k[0]) != get_sign(points_k[1]))
 		{
 			new_shapes[points_indeces[0]]->add_new_wall(wall_points[0], intersection_point, current_wall.normal, current_wall.window_component);
 			new_shapes[points_indeces[1]]->add_new_wall(intersection_point, wall_points[1], current_wall.normal, current_wall.window_component);

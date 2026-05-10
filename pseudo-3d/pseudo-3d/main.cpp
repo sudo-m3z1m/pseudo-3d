@@ -91,7 +91,7 @@ void init_game()
 	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	//TODO: Probably need to make it inside level server or renderer.
 	
-//	bsp_level_server->create_bsp_tree();
+	bsp_level_server->create_bsp_tree();
 	camera = bsp_level_server->get_camera(0);
 	renderer = new GameRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, bsp_level_server);
 }
