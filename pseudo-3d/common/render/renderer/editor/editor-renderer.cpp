@@ -36,7 +36,7 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, Fi
 	
 	Vector2D<float> viewport_size = Vector2D<float>((float)width, (float)height);
 	
-	inspector = new Inspector(&current_item, 140.0f, 400.0f, viewport_size);
+	inspector = new Inspector(&current_item, level_server, 140.0f, 400.0f, viewport_size);
 	sectors_inspector = new SectorsInspector(&level_server->sectors, &current_item, 150.0f, 200.0f, viewport_size);
 	textures_inspector = new TexturesInspector(200.0f, 200.0f, viewport_size);
 }
@@ -228,36 +228,18 @@ void EditorRenderer::render_menu()
 void EditorRenderer::render_toolbar()
 {
 	ImGui::SetNextWindowPos(imgui_viewport->WorkPos);
-	ImGui::SetNextWindowSize({500, 60});
+//	ImGui::SetNextWindowSize({500, 60});
 	
 	ImGui::Begin("Editor tools", NULL, window_flags);
-	if(ImGui::Button("Create new point"))
-	{
-		std::cout << "Added point to the map" << std::endl;
-	}
-	ImGui::SameLine();
-	
-	if(ImGui::Button("Create new wall"))
-	{
-		std::cout << "Started wall creation" << std::endl;
-	}
-	ImGui::SameLine();
-	
 	if(ImGui::Button("Create new shape"))
 	{
 		level_server->create_new_shape();
 	}
 	ImGui::SameLine();
-	
-	if(ImGui::Button("Mark as room"))
-	{
-		std::cout << "Started room marking" << std::endl;
-	}
 	if(ImGui::Button("Create new camera"))
 	{
 		current_item = level_server->create_new_camera();
 	}
-	ImGui::SameLine();
 	ImGui::End();
 }
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "imgui_impl_sdl3.h"
+#include "level-server.hpp"
 #include "vector2D.hpp"
 #include "inspector-item.hpp"
 #include "window-component.hpp"
@@ -18,12 +19,13 @@ private:
 	ImGuiWindowFlags_NoBringToFrontOnFocus;
 	
 	InspectorItem** current_item; //TODO: Instead of getting new properties every render need to save it when item is changes there
+	LevelServer* level_server;
 	float width, height;
 	Vector2D<float> screen_position;
 	
 public:
 	Inspector();
-	Inspector(InspectorItem** item, int width, int height, Vector2D<float>& viewport_size);
+	Inspector(InspectorItem** item, LevelServer* level_server, int width, int height, Vector2D<float>& viewport_size);
 	~Inspector();
 	
 	void render_inspector();

@@ -18,6 +18,8 @@ public:
 	Color color;
 	WindowComponent* window_component;
 	
+	bool operator==(const Wall& wall);
+	
 	Wall();
 	Wall(int f_p_index, int s_p_index, Vector2D<float> normal, WindowComponent* window_component, int tid);
 	

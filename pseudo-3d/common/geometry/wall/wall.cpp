@@ -1,5 +1,15 @@
 #include "wall.hpp"
 
+bool Wall::operator==(const Wall& wall)
+{
+	bool b_tid = tid == wall.tid;
+	bool b_points = (f_p_index == wall.f_p_index) && (s_p_index == wall.s_p_index);
+	bool b_normal = normal == wall.normal;
+	bool b_window = window_component == wall.window_component;
+	
+	return b_tid && b_points && b_normal && b_window;
+}
+
 Wall::Wall()
 {
 	f_p_index = s_p_index = 0;

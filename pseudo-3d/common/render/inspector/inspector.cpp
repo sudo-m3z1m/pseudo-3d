@@ -5,9 +5,10 @@ Inspector::Inspector()
 	
 }
 
-Inspector::Inspector(InspectorItem** item, int width, int height, Vector2D<float>& viewport_size)
+Inspector::Inspector(InspectorItem** item, LevelServer* level_server, int width, int height, Vector2D<float>& viewport_size)
 {
 	current_item = item;
+	this->level_server = level_server;
 	this->width = width;
 	this->height = height;
 	
@@ -36,6 +37,12 @@ void Inspector::render_inspector()
 	for(InspectorItemProperty& property : item_properties)
 	{
 		render_item_property(property);
+	}
+	
+	if(ImGui::Button("Remove"))
+	{
+		level_server->remove_item(*current_item);
+		*current_item = nullptr;
 	}
 	
 	ImGui::End();

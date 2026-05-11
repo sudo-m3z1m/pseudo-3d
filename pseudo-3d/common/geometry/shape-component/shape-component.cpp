@@ -1,5 +1,16 @@
 #include "shape-component.hpp"
 
+bool ShapeComponent::operator==(const ShapeComponent& shape)
+{
+	std::vector<Vector2D<float>> shape_points = shape.points;
+	if(points.size() != shape_points.size()) return false;
+	for (int point_index = 0; point_index < points.size(); point_index++)
+	{
+		if(points[point_index] != shape_points[point_index]) return false;
+	}
+	return true;
+}
+
 ShapeComponent::ShapeComponent()
 {
 	sector_index = 0;
@@ -15,6 +26,11 @@ ShapeComponent::ShapeComponent(ShapeType type, float radius, std::vector<Vector2
 	this->points = points;
 	this->walls = walls;
 	if(!walls.size()) this->walls = get_walls_from_shape_points(points); //TODO: walls will be readed from map file
+}
+
+ShapeComponent::~ShapeComponent()
+{
+	
 }
 
 std::vector<InspectorItemProperty> ShapeComponent::get_inspector_item_properties()

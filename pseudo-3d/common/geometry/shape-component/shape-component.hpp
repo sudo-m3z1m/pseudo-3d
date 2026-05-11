@@ -28,8 +28,11 @@ public:
 	std::vector<Wall> walls;
 	float radius;
 	
+	bool operator==(const ShapeComponent& shape);
+	
 	ShapeComponent();
 	ShapeComponent(ShapeType type, float radius, std::vector<Vector2D<float>> points, std::vector<Wall> walls, int sector_index);
+	~ShapeComponent();
 	
 	std::vector<InspectorItemProperty> get_inspector_item_properties() override;
 	const char* get_inspector_item_name() override;
