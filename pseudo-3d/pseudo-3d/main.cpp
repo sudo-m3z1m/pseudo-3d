@@ -88,7 +88,7 @@ void init_game()
 	
 	//TODO: Probably need to make it inside level server or renderer.
 	file_server = new FileServer(bsp_level_server, texture_buffer);
-	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M2.map");
 	//TODO: Probably need to make it inside level server or renderer.
 	
 	bsp_level_server->create_bsp_tree();
@@ -203,15 +203,15 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 	std::tm* l_time = std::localtime(&time);
 	srand(l_time->tm_sec);
 	
-//	init_game();
-	init_editor();
+	init_game();
+//	init_editor();
 	
 	return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 {
-	ImGui_ImplSDL3_ProcessEvent(event);
+//	ImGui_ImplSDL3_ProcessEvent(event);
 	if (event->type == SDL_EVENT_QUIT) return SDL_APP_SUCCESS;
 	return SDL_APP_CONTINUE;
 }
@@ -228,15 +228,15 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 	Vector2D<float> direction = get_input_direction();
 	float rotation_direction = get_input_rotation();
 	
-//	update_game(delta, direction, rotation_direction);
-	update_editor(delta, direction, rotation_direction);
+	update_game(delta, direction, rotation_direction);
+//	update_editor(delta, direction, rotation_direction);
 		
 	return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
-	ImGui_ImplSDL3_Shutdown();
-	ImGui_ImplSDLRenderer3_Shutdown();
-	ImGui::DestroyContext();
+//	ImGui_ImplSDL3_Shutdown();
+//	ImGui_ImplSDLRenderer3_Shutdown();
+//	ImGui::DestroyContext();
 }
