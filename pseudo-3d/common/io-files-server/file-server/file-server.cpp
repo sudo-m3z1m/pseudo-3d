@@ -18,16 +18,30 @@ FileServer::~FileServer()
 	buffer_ptr = nullptr;
 }
 
-std::string FileServer::get_texture_path()
+std::string FileServer::set_resource_path(const char* name, const char* ext)
 {
 	NFD::Guard guard;
 	
-	NFD::UniquePath texture_path;
-	nfdfilteritem_t filter_item[1] = {{"Textures", "bmp"}};
+	NFD::UniquePath resource_path;
+	nfdfilteritem_t filter_item[1] = {{name, ext}};
 	
-	nfdresult_t pick_result = NFD::OpenDialog(texture_path, filter_item, 1);
-	std::string path = texture_path.get();
+	nfdresult_t pick_result = NFD::SaveDialog(resource_path, filter_item, 1);
 	if(pick_result != NFD_OKAY) return nullptr;
+	std::string path = resource_path.get();
+	
+	return path;
+}
+
+std::string FileServer::get_resource_path(const char* name, const char* ext)
+{
+	NFD::Guard guard;
+	
+	NFD::UniquePath resource_path;
+	nfdfilteritem_t filter_item[1] = {{name, ext}};
+	
+	nfdresult_t pick_result = NFD::OpenDialog(resource_path, filter_item, 1);
+	if(pick_result != NFD_OKAY) return nullptr;
+	std::string path = resource_path.get();
 	
 	return path;
 }

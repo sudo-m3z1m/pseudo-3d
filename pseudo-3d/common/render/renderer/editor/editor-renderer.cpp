@@ -43,6 +43,7 @@ EditorRenderer::EditorRenderer(Camera* camera, TextureBuffer* texture_buffer, Fi
 
 EditorRenderer::~EditorRenderer()
 {
+	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	delete level_server;
 }
 
@@ -209,7 +210,13 @@ void EditorRenderer::render_menu()
 	{
 		if(ImGui::MenuItem("Save .map"))
 		{
-			std::cout << "Map Saved" << std::endl;
+			std::string map_write_path = FileServer::set_resource_path("Map file", "map");
+			file_server->write_file(map_write_path.c_str());
+		}
+		if(ImGui::MenuItem("Load .map"))
+		{
+			std::string map_path = FileServer::get_resource_path("Map file", "map");
+			file_server->read_file(map_path.c_str());
 		}
 		ImGui::EndMenu();
 	}
@@ -217,7 +224,7 @@ void EditorRenderer::render_menu()
 	{
 		if(ImGui::MenuItem("Load texture"))
 		{
-			std::string texture_path = FileServer::get_texture_path(); //FIXME: Broken stuff. Need to move back logic to level server or etc.
+			std::string texture_path = FileServer::get_resource_path("Textures", "bmp"); //FIXME: Broken stuff. Need to move back logic to level server or etc.
 			texture_buffer->load_texture(texture_path);
 		}
 		ImGui::EndMenu();

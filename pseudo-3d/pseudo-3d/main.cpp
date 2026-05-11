@@ -119,7 +119,7 @@ void init_editor()
 	
 	//TODO: Probably need to make it inside level server or renderer.
 	file_server = new FileServer(editor_level_server, texture_buffer);
-	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
+//	file_server->read_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	//TODO: Probably need to make it inside level server or renderer.
 	
 	camera = new Camera(80, Vector2D<float>(0.0f, 0.0f), 0, 2, 0);
@@ -236,7 +236,6 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
-	file_server->write_file("/Users/solgoodman/git-projects/pseudo-3d/pseudo-3d/assets/maps/E1M1.map");
 	ImGui_ImplSDL3_Shutdown();
 	ImGui_ImplSDLRenderer3_Shutdown();
 	ImGui::DestroyContext();

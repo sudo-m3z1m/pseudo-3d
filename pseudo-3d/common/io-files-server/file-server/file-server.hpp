@@ -26,7 +26,8 @@ public:
 	FileServer(LevelServer* level_server, TextureBuffer* buffer);
 	~FileServer();
 	
-	static std::string get_texture_path();
+	static std::string set_resource_path(const char* name, const char* ext);
+	static std::string get_resource_path(const char* name, const char* ext);
 	
 	void write_file(const char* file_path);
 	void read_file(const char* file_path);
