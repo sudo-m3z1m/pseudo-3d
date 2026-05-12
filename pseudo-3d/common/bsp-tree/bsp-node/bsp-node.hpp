@@ -14,7 +14,7 @@ class BSPNode
 {
 public:
 	Line separate_line;
-	BSPShape* shape;
+	std::vector<BSPShape*> shapes;
 	BSPNode* back;
 	BSPNode* front;
 	

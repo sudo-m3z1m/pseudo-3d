@@ -4,12 +4,12 @@ BSPNode::BSPNode()
 {
 	separate_line = Line();
 	front = back = nullptr;
-	shape = nullptr;
+	shapes = std::vector<BSPShape*>();
 }
 
 BSPNode::~BSPNode()
 {
 	delete front;
 	delete back;
-	delete shape;
+	shapes.clear();
 }

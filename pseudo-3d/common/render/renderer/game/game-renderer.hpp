@@ -29,7 +29,7 @@ public:
 	
 	void render() override;
 	void render_node(BSPNode* node);
-	void render_bsp_shape(BSPNode* node);
+	void render_bsp_shape(BSPShape*& shape);
 	void render_shape_wall(BSPShape* shape, Wall wall);
 	void render_window(WindowComponent* window, std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points);
 	void render_bottom_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window);

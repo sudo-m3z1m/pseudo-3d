@@ -13,7 +13,7 @@ BSPLevelServer::~BSPLevelServer()
 int BSPLevelServer::get_sector_index_by_point(BSPNode* node, Vector2D<float> point)
 {
 	if(!node) return 0;
-	if (node->shape) return node->shape->sector_index;
+	if (!node->shapes.empty()) return node->shapes[0]->sector_index;
 	
 	Line node_line = node->separate_line;
 	float point_side = is_point_on_line(point, node_line);
@@ -91,13 +91,12 @@ void BSPLevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape*> nod
 {
 	if (node_shapes.size() == 1)
 	{
-		node->shape = node_shapes[0];
+		node->shapes.push_back(node_shapes[0]);
 		return;
 	}
 	
 	for(BSPShape*& current_shape : node_shapes)
 	{
-		bool is_shape_separated = false;
 		for (Wall current_wall : current_shape->walls)
 		{
 			std::vector<BSPShape*> front, back;
@@ -105,18 +104,21 @@ void BSPLevelServer::separate_bsp_node(BSPNode* node, std::vector<BSPShape*> nod
 			Line separation_line = Line(wall_points[0], wall_points[1]);
 			
 			sort_shapes(separation_line, &front, &back, node_shapes);
-			if (!front.size() || !back.size()) continue;
+			if(front.empty() || back.empty()) continue;
 			
-			node_shapes.clear();
+//			node_shapes.clear();
 			node->front = new BSPNode(); node->back = new BSPNode();
 			node->separate_line = separation_line;
 			separate_bsp_node(node->front, front);
 			separate_bsp_node(node->back, back);
-			is_shape_separated = true;
-			break;
+			return;
 		}
-		if(is_shape_separated) break;
 	}
+	for(BSPShape*& shape : node_shapes)
+	{
+		node->shapes.push_back(shape);
+	}
+	return;
 }
 
 void BSPLevelServer::sort_shapes(Line line, std::vector<BSPShape*>* front, std::vector<BSPShape*>* back, std::vector<BSPShape*> shapes)
