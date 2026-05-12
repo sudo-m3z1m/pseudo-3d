@@ -232,7 +232,7 @@ void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<f
 	RendererColumn f_column = get_wall_column(wall_points[0], f_window_sector.floor_z, f_window_sector.ceiling_z);
 	RendererColumn s_column = get_wall_column(wall_points[1], f_window_sector.floor_z, f_window_sector.ceiling_z);
 	
-	int tid = 1;
+	int tid = window->bottom_tid;
 	
 	if(f_pos_x > s_pos_x)
 	{
@@ -270,7 +270,7 @@ void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_po
 	RendererColumn f_column = get_wall_column(wall_points[0], f_window_sector.floor_z, s_window_sector.floor_z);
 	RendererColumn s_column = get_wall_column(wall_points[1], f_window_sector.floor_z, s_window_sector.floor_z);
 	
-	int tid = 1;
+	int tid = window->bottom_tid;
 	
 	if(f_pos_x > s_pos_x)
 	{
@@ -314,7 +314,7 @@ void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_poi
 	RendererColumn f_column = get_wall_column(wall_points[0], s_window_sector.ceiling_z, f_window_sector.ceiling_z);
 	RendererColumn s_column = get_wall_column(wall_points[1], s_window_sector.ceiling_z, f_window_sector.ceiling_z);
 	
-	int tid = 1;
+	int tid = window->upper_tid;
 	
 	if(f_pos_x > s_pos_x)
 	{
