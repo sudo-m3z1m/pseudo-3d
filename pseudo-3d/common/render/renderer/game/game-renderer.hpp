@@ -23,6 +23,7 @@ public:
 	GameRenderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height, BSPLevelServer* level_server);
 	~GameRenderer() override;
 	
+	std::vector<int> get_range_limits(std::vector<RendererColumn> range);
 	int get_visplane_index(float height_z, Color color, int tid);
 	void clear_screen_width_buffer();
 	bool is_screen_space_free(int x_point, RendererColumn new_column);
@@ -55,15 +56,15 @@ public:
 		Vector2D<float> wall_offsets,
 		int f_screen_pos_x,
 		int tid,
-		std::vector<int> floor_pids,
-		std::vector<int> ceiling_pids,
 		int x_length,
 		bool is_outside
 	);
 	//FIXME: is_outside is stupid shit. Need to remade this. Need to make render_wall struct too
 	
 	Vector2D<float> get_wall_offsets(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points);
-	void paste_planes_column(std::vector<RendererColumn> column_ranges, int pos_x, std::vector<int> floor_visplanes_id, std::vector<int> ceiling_visplanes_id);
+	void paste_floor_plane_to_column(int& pos_x, int& pid, int& clip, int& bottom);
+	void paste_ceiling_plane_to_column(int& pos_x, int& pid, int& clip, int& top);
+	void paste_inner_planes_to_column(int& pos_x, std::vector<int> planes_pids, int& top, int& bottom);
 };
 
 #endif

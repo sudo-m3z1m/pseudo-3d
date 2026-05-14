@@ -27,6 +27,24 @@ GameRenderer::~GameRenderer()
 	delete color_buffer;
 }
 
+std::vector<int> GameRenderer::get_range_limits(std::vector<RendererColumn> range)
+{
+	std::vector<int> limits = std::vector<int>(2);
+	
+	int bottom = range[0].bottom, top = range[0].top;
+	
+	for (RendererColumn column : range)
+	{
+		if(top > column.top) top = column.top;
+		if(bottom < column.bottom) bottom = column.bottom;
+	}
+	
+	limits[0] = bottom;
+	limits[1] = top;
+	
+	return limits;
+}
+
 int GameRenderer::get_visplane_index(float height_z, Color color, int tid)
 {
 	for (int current_plane_index = 0; current_plane_index < visual_planes.size(); current_plane_index++)
@@ -46,8 +64,8 @@ void GameRenderer::clear_screen_width_buffer()
 {
 	for(size_t buffer_index = 0; buffer_index < screen_width_buffer.size(); buffer_index++)
 	{
-		RendererColumn default_column = RendererColumn(0, 0);
 		screen_width_buffer[buffer_index] = std::vector<RendererColumn>();
+		visplanes_clip_buffer[buffer_index] = RendererColumn(screen_height - 1, 0);
 	}
 	visual_planes.clear();
 }
@@ -157,8 +175,8 @@ void GameRenderer::render_shape_wall(BSPShape* shape, Wall wall)
 	float sector_floor_z = shape_sector.floor_z;
 	float sector_ceiling_z = shape_sector.ceiling_z;
 	
-	int floor_visplane_index = get_visplane_index(sector_floor_z, shape_sector.floor_color, shape_sector.floor_tid);
-	int ceiling_visplane_index = get_visplane_index(sector_ceiling_z, shape_sector.ceiling_color, shape_sector.ceiling_tid);
+	int floor_pid = get_visplane_index(sector_floor_z, shape_sector.floor_color, shape_sector.floor_tid);
+	int ceiling_pid = get_visplane_index(sector_ceiling_z, shape_sector.ceiling_color, shape_sector.ceiling_tid);
 	
 	int f_pos_x = get_point_on_camera_projection(wall_points[0]);
 	int s_pos_x = get_point_on_camera_projection(wall_points[1]);
@@ -178,6 +196,9 @@ void GameRenderer::render_shape_wall(BSPShape* shape, Wall wall)
 	}
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	
+	std::vector<int> floor_pids = {floor_pid};
+	std::vector<int> ceiling_pids = {ceiling_pid};
 		//FIXME: Need to make RenderWall class or smth else
 	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
 																							 wall_points,
@@ -187,11 +208,20 @@ void GameRenderer::render_shape_wall(BSPShape* shape, Wall wall)
 																							 wall_offsets,
 																							 f_pos_x,
 																							 tid,
-																							 {floor_visplane_index},
-																							 {ceiling_visplane_index},
 																							 s_pos_x - f_pos_x,
 																							 false
 																							 );
+
+	for(int column_index = 0; column_index < columns_to_render.size(); column_index++)
+	{
+		int pos_x = f_pos_x + column_index;
+		std::vector<RendererColumn>& column = columns_to_render[column_index];
+		if(column.empty()) continue;
+		
+		std::vector<int> range_limits = get_range_limits(column);
+		paste_floor_plane_to_column(pos_x, floor_pid, visplanes_clip_buffer[pos_x].bottom, range_limits[0]);
+		paste_ceiling_plane_to_column(pos_x, ceiling_pid, visplanes_clip_buffer[pos_x].top, range_limits[1]);
+	}
 		//FIXME: Need to make RenderWall class or smth else
 	render_wall_range(columns_to_render, f_pos_x, tid, wall.color);
 }
@@ -210,17 +240,17 @@ void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<f
 	int f_ceiling_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
 	int s_ceiling_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
 	
-	std::vector<int> floor_visplanes_indeces = {f_floor_visplane_index, s_floor_visplane_index};
-	std::vector<int> ceiling_visplanes_indeces = {f_ceiling_visplane_index, s_ceiling_visplane_index};
+	std::vector<int> floor_pids = {f_floor_visplane_index, s_floor_visplane_index};
+	std::vector<int> ceiling_pids = {f_ceiling_visplane_index, s_ceiling_visplane_index};
 	
 	if(floor_delta > 0)
 	{
-		floor_visplanes_indeces.clear();
+		floor_pids.clear();
 		render_bottom_window(raw_wall_points, wall_points, window);
 	}
 	if(ceiling_delta < 0)
 	{
-		ceiling_visplanes_indeces.clear();
+		ceiling_pids.clear();
 		render_upper_window(raw_wall_points, wall_points, window);
 	}
 	
@@ -248,11 +278,24 @@ void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<f
 																				   Vector2D<float>(),
 																				   f_pos_x,
 																				   tid,
-																				   floor_visplanes_indeces,
-																				   ceiling_visplanes_indeces,
 																				   s_pos_x - f_pos_x,
 																				   true
 																				   );
+	
+	for(int column_index = 0; column_index < columns.size(); column_index++)
+	{
+		int pos_x = f_pos_x + column_index;
+		std::vector<RendererColumn>& column = columns[column_index];
+		if(column.empty()) continue;
+		
+		std::vector<int> range_limits = get_range_limits(column);
+		std::vector<int> inner_visplanes = {s_floor_visplane_index, s_ceiling_visplane_index};
+		
+		paste_floor_plane_to_column(pos_x, f_floor_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[0]);
+		paste_ceiling_plane_to_column(pos_x, f_ceiling_visplane_index, visplanes_clip_buffer[pos_x].top, range_limits[1]);
+		paste_inner_planes_to_column(pos_x, inner_visplanes, range_limits[1], range_limits[0]);
+//		paste_planes_to_column(column, pos_x, floor_pids, ceiling_pids, visplanes_clip_buffer[pos_x].bottom, visplanes_clip_buffer[pos_x].top);
+	}
 }
 
 void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points, WindowComponent* window)
@@ -282,6 +325,8 @@ void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_po
 	}
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	std::vector<int> f_pids = {f_visplane_index};
+	std::vector<int> s_pids = {s_visplane_index};
 	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
 																							 wall_points,
 																							 f_column,
@@ -290,12 +335,21 @@ void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_po
 																							 wall_offsets,
 																							 f_pos_x,
 																							 tid,
-																							 {f_visplane_index},
-																							 {s_visplane_index},
 																							 s_pos_x - f_pos_x,
 																							 true
 																							 );
 	
+	for(int column_index = 0; column_index < columns_to_render.size(); column_index++)
+	{
+		int pos_x = f_pos_x + column_index;
+		std::vector<RendererColumn>& column = columns_to_render[column_index];
+		if(column.empty()) continue;
+		
+		std::vector<int> range_limits = get_range_limits(column);
+		paste_floor_plane_to_column(pos_x, f_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[0]);
+		paste_ceiling_plane_to_column(pos_x, s_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[1]);
+//		paste_planes_to_column(column, pos_x, f_pids, s_pids, visplanes_clip_buffer[pos_x].bottom, visplanes_clip_buffer[pos_x].bottom);
+	}
 	render_wall_range(columns_to_render, f_pos_x, tid, Color());
 }
 
@@ -326,6 +380,9 @@ void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_poi
 	}
 	
 	Vector2D<float> wall_offsets = get_wall_offsets(raw_wall_points, wall_points);
+	
+	std::vector<int> f_pids = {s_visplane_index};
+	std::vector<int> s_pids = {f_visplane_index};
 	std::vector<std::vector<RendererColumn>> columns_to_render = get_wall_projection_columns(
 																							 wall_points,
 																							 f_column,
@@ -334,12 +391,20 @@ void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_poi
 																							 wall_offsets,
 																							 f_pos_x,
 																							 tid,
-																							 {s_visplane_index},
-																							 {f_visplane_index},
 																							 s_pos_x - f_pos_x,
 																							 true
 																							 );
 	
+	for(int column_index = 0; column_index < columns_to_render.size(); column_index++)
+	{
+		int pos_x = f_pos_x + column_index;
+		std::vector<RendererColumn>& column = columns_to_render[column_index];
+		if(column.empty()) continue;
+		
+		std::vector<int> range_limits = get_range_limits(column);
+		paste_ceiling_plane_to_column(pos_x, f_visplane_index, visplanes_clip_buffer[pos_x].top, range_limits[1]);
+		paste_floor_plane_to_column(pos_x, s_visplane_index, visplanes_clip_buffer[pos_x].top, range_limits[0]);
+	}
 	render_wall_range(columns_to_render, f_pos_x, tid, Color());
 }
 
@@ -488,8 +553,6 @@ std::vector<std::vector<RendererColumn>> GameRenderer::get_wall_projection_colum
 																				   Vector2D<float> wall_offsets,
 																				   int f_screen_pos_x, //FIXME: It's just fields in RenderWall class
 																				   int tid,
-																				   std::vector<int> floor_pids,
-																				   std::vector<int> ceiling_pids,
 																				   int x_length,
 																				   bool is_outside
 																				   )
@@ -543,8 +606,6 @@ std::vector<std::vector<RendererColumn>> GameRenderer::get_wall_projection_colum
 		std::vector<RendererColumn> ranges_to_render = {column};
 		if(window == nullptr) ranges_to_render = get_screen_column_ranges(pos_x, column, is_outside);
 		
-		paste_planes_column(ranges_to_render, pos_x, floor_pids, ceiling_pids);
-		
 		wall_columns.push_back({column});
 	}
 	
@@ -561,44 +622,37 @@ Vector2D<float> GameRenderer::get_wall_offsets(std::vector<Vector2D<float>> raw_
 	return offsets;
 }
 
-void GameRenderer::paste_planes_column(std::vector<RendererColumn> column_ranges, int pos_x, std::vector<int> floor_visplanes_id, std::vector<int> ceiling_visplanes_id)
+void GameRenderer::paste_floor_plane_to_column(int& pos_x, int& pid, int& clip, int& bottom)
 {
-	int bottom = column_ranges[0].bottom, top = column_ranges[0].top;
+	VisPlane& floor_plane = visual_planes[pid];
+	floor_plane.set_x_range(pos_x);
+	floor_plane.plane_columns[pos_x].top = bottom;
 	
-	for (RendererColumn column : column_ranges)
+	floor_plane.plane_columns[pos_x].bottom = clip;
+	clip = bottom;
+}
+
+void GameRenderer::paste_ceiling_plane_to_column(int& pos_x, int& pid, int& clip, int& top)
+{
+	VisPlane& ceiling_plane = visual_planes[pid];
+	ceiling_plane.set_x_range(pos_x);
+	ceiling_plane.plane_columns[pos_x].bottom = top;
+	
+	ceiling_plane.plane_columns[pos_x].top = clip;
+	clip = top;
+}
+
+void GameRenderer::paste_inner_planes_to_column(int& pos_x, std::vector<int> planes_pids, int& top, int& bottom)
+{
+	for(int pid : planes_pids)
 	{
-		if(top > column.top) top = column.top;
-		if(bottom < column.bottom) bottom = column.bottom;
-	}
-	
-	if(floor_visplanes_id.size() != 0)
-	{
-		VisPlane& floor_plane = visual_planes[floor_visplanes_id[0]];
-		floor_plane.set_x_range(pos_x);
-		floor_plane.plane_columns[pos_x].bottom = visplanes_clip_buffer[pos_x].bottom;
-		floor_plane.plane_columns[pos_x].top = bottom;
-		visplanes_clip_buffer[pos_x].bottom = bottom;
-	}
-	
-	if(ceiling_visplanes_id.size() != 0)
-	{
-		VisPlane& ceiling_plane = visual_planes[ceiling_visplanes_id[0]];
-		ceiling_plane.set_x_range(pos_x);
-		ceiling_plane.plane_columns[pos_x].bottom = top;
-		ceiling_plane.plane_columns[pos_x].top = visplanes_clip_buffer[pos_x].top;
-		visplanes_clip_buffer[pos_x].top = top;
-	}
-	
-	std::vector<VisPlane*> window_planes = std::vector<VisPlane*>();
-	
-	if(floor_visplanes_id.size() == 2) window_planes.push_back(&visual_planes[floor_visplanes_id[1]]);
-	if(ceiling_visplanes_id.size() == 2) window_planes.push_back(&visual_planes[ceiling_visplanes_id[1]]);
-	
-	for (VisPlane* plane : window_planes)
-	{
-		plane->set_x_range(pos_x);
+		VisPlane& plane = visual_planes[pid];
+		plane.set_x_range(pos_x);
 		
-		plane->plane_columns[pos_x].top = top;
-		plane->plane_columns[pos_x].bottom = bottom;
+		plane.plane_columns[pos_x].top = top;
+		plane.plane_columns[pos_x].bottom = bottom;
+		
+//		floor_clip = bottom;
+//		ceiling_clip = top;
 	}
 }
