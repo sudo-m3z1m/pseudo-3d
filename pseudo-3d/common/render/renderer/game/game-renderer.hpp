@@ -64,7 +64,7 @@ public:
 	Vector2D<float> get_wall_offsets(std::vector<Vector2D<float>> raw_wall_points, std::vector<Vector2D<float>> wall_points);
 	void paste_floor_plane_to_column(int& pos_x, int& pid, int& clip, int& bottom);
 	void paste_ceiling_plane_to_column(int& pos_x, int& pid, int& clip, int& top);
-	void paste_inner_planes_to_column(int& pos_x, std::vector<int> planes_pids, int& top, int& bottom);
+//	void paste_inner_planes_to_column(int& pos_x, std::vector<int> planes_pids, int& top, int& bottom);
 };
 
 #endif

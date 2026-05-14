@@ -293,8 +293,6 @@ void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<f
 		
 		paste_floor_plane_to_column(pos_x, f_floor_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[0]);
 		paste_ceiling_plane_to_column(pos_x, f_ceiling_visplane_index, visplanes_clip_buffer[pos_x].top, range_limits[1]);
-		paste_inner_planes_to_column(pos_x, inner_visplanes, range_limits[1], range_limits[0]);
-//		paste_planes_to_column(column, pos_x, floor_pids, ceiling_pids, visplanes_clip_buffer[pos_x].bottom, visplanes_clip_buffer[pos_x].top);
 	}
 }
 
@@ -348,7 +346,6 @@ void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_po
 		std::vector<int> range_limits = get_range_limits(column);
 		paste_floor_plane_to_column(pos_x, f_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[0]);
 		paste_ceiling_plane_to_column(pos_x, s_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[1]);
-//		paste_planes_to_column(column, pos_x, f_pids, s_pids, visplanes_clip_buffer[pos_x].bottom, visplanes_clip_buffer[pos_x].bottom);
 	}
 	render_wall_range(columns_to_render, f_pos_x, tid, Color());
 }
@@ -433,16 +430,16 @@ void GameRenderer::render_horizontal()
 void GameRenderer::render_plane(const VisPlane& plane, float global_camera_height)
 {
 		//FIXME: Method is lagging
-	std::vector<RendererColumn> plane_columns = plane.plane_columns;
+	std::vector<std::vector<RendererColumn>> plane_columns = plane.plane_columns;
 	if(plane.min_x == -1 || plane.max_x == -1) return;
 	
 	float height = abs(global_camera_height - plane.height_z);
 	
 	for(int pos_x = plane.min_x; pos_x <= plane.max_x; pos_x++)
 	{
-		RendererColumn column = plane_columns[pos_x];
-		if(column.top >= column.bottom) continue;
-		render_plane_texture_column(pos_x, column, plane.tid, height);
+		std::vector<RendererColumn> column_ranges = plane_columns[pos_x];
+//		if(column.top >= column.bottom) continue;
+		for(RendererColumn column : column_ranges) render_plane_texture_column(pos_x, column, plane.tid, height);
 	}
 		//FIXME: Method is lagging
 }
@@ -626,9 +623,10 @@ void GameRenderer::paste_floor_plane_to_column(int& pos_x, int& pid, int& clip, 
 {
 	VisPlane& floor_plane = visual_planes[pid];
 	floor_plane.set_x_range(pos_x);
-	floor_plane.plane_columns[pos_x].top = bottom;
 	
-	floor_plane.plane_columns[pos_x].bottom = clip;
+	RendererColumn plane_column = {clip, bottom};
+	floor_plane.plane_columns[pos_x] = plane_column.merge_columns(floor_plane.plane_columns[pos_x]);
+
 	clip = bottom;
 }
 
@@ -636,23 +634,24 @@ void GameRenderer::paste_ceiling_plane_to_column(int& pos_x, int& pid, int& clip
 {
 	VisPlane& ceiling_plane = visual_planes[pid];
 	ceiling_plane.set_x_range(pos_x);
-	ceiling_plane.plane_columns[pos_x].bottom = top;
 	
-	ceiling_plane.plane_columns[pos_x].top = clip;
+	RendererColumn plane_column = {top, clip};
+	ceiling_plane.plane_columns[pos_x] = plane_column.merge_columns(ceiling_plane.plane_columns[pos_x]);
+	
 	clip = top;
 }
 
-void GameRenderer::paste_inner_planes_to_column(int& pos_x, std::vector<int> planes_pids, int& top, int& bottom)
-{
-	for(int pid : planes_pids)
-	{
-		VisPlane& plane = visual_planes[pid];
-		plane.set_x_range(pos_x);
-		
-		plane.plane_columns[pos_x].top = top;
-		plane.plane_columns[pos_x].bottom = bottom;
-		
+//void GameRenderer::paste_inner_planes_to_column(int& pos_x, std::vector<int> planes_pids, int& top, int& bottom)
+//{
+//	for(int pid : planes_pids)
+//	{
+//		VisPlane& plane = visual_planes[pid];
+//		plane.set_x_range(pos_x);
+//		
+//		plane.plane_columns[pos_x].top = top;
+//		plane.plane_columns[pos_x].bottom = bottom;
+//		
 //		floor_clip = bottom;
 //		ceiling_clip = top;
-	}
-}
+//	}
+//}
