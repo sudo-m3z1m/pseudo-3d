@@ -15,6 +15,7 @@ class GameRenderer : public Renderer {
 protected:
 	BSPLevelServer* level_server;
 	std::vector<std::vector<RendererColumn>> screen_width_buffer;
+	std::vector<RendererColumn> visplanes_clip_buffer;
 	std::vector<VisPlane> visual_planes;
 	
 public:

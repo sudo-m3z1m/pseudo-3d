@@ -13,7 +13,7 @@ BSPLevelServer::~BSPLevelServer()
 int BSPLevelServer::get_sector_index_by_point(BSPNode* node, Vector2D<float> point)
 {
 	if(!node) return 0;
-	if (!node->shapes.empty()) return node->shapes[0]->sector_index;
+	if (!node->shapes.empty()) return node->shapes[node->shapes.size() - 1]->sector_index;
 	
 	Line node_line = node->separate_line;
 	float point_side = is_point_on_line(point, node_line);

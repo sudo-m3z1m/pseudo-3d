@@ -4,6 +4,7 @@ GameRenderer::GameRenderer() : Renderer()
 {
 	level_server = nullptr;
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
+	visplanes_clip_buffer = std::vector<RendererColumn>(screen_width, RendererColumn(screen_height - 1, 0));
 }
 
 GameRenderer::GameRenderer(Camera* camera, TextureBuffer* texture_buffer, FileServer* file_server, int width, int height, BSPLevelServer* level_server) :
@@ -11,6 +12,7 @@ GameRenderer::GameRenderer(Camera* camera, TextureBuffer* texture_buffer, FileSe
 {
 	this->level_server = level_server;
 	screen_width_buffer = std::vector<std::vector<RendererColumn>>(screen_width, std::vector<RendererColumn>());
+	visplanes_clip_buffer = std::vector<RendererColumn>(screen_width, RendererColumn(screen_height - 1, 0));
 	
 //	IMGUI_CHECKVERSION();
 //	ImGui::CreateContext();
@@ -573,7 +575,9 @@ void GameRenderer::paste_planes_column(std::vector<RendererColumn> column_ranges
 	{
 		VisPlane& floor_plane = visual_planes[floor_visplanes_id[0]];
 		floor_plane.set_x_range(pos_x);
+		floor_plane.plane_columns[pos_x].bottom = visplanes_clip_buffer[pos_x].bottom;
 		floor_plane.plane_columns[pos_x].top = bottom;
+		visplanes_clip_buffer[pos_x].bottom = bottom;
 	}
 	
 	if(ceiling_visplanes_id.size() != 0)
@@ -581,6 +585,8 @@ void GameRenderer::paste_planes_column(std::vector<RendererColumn> column_ranges
 		VisPlane& ceiling_plane = visual_planes[ceiling_visplanes_id[0]];
 		ceiling_plane.set_x_range(pos_x);
 		ceiling_plane.plane_columns[pos_x].bottom = top;
+		ceiling_plane.plane_columns[pos_x].top = visplanes_clip_buffer[pos_x].top;
+		visplanes_clip_buffer[pos_x].top = top;
 	}
 	
 	std::vector<VisPlane*> window_planes = std::vector<VisPlane*>();
