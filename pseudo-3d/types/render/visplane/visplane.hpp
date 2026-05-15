@@ -13,7 +13,7 @@ class VisPlane
 public:
 	float height_z;
 	int min_x, max_x;
-	std::vector<RendererColumn> plane_columns;
+	std::vector<std::vector<RendererColumn>> plane_columns;
 	Color plane_color;
 	int tid;
 	
