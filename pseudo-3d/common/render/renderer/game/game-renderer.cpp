@@ -240,17 +240,12 @@ void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<f
 	int f_ceiling_visplane_index = get_visplane_index(f_window_sector.ceiling_z, f_window_sector.ceiling_color, f_window_sector.ceiling_tid);
 	int s_ceiling_visplane_index = get_visplane_index(s_window_sector.ceiling_z, s_window_sector.ceiling_color, s_window_sector.ceiling_tid);
 	
-	std::vector<int> floor_pids = {f_floor_visplane_index, s_floor_visplane_index};
-	std::vector<int> ceiling_pids = {f_ceiling_visplane_index, s_ceiling_visplane_index};
-	
 	if(floor_delta > 0)
 	{
-		floor_pids.clear();
 		render_bottom_window(raw_wall_points, wall_points, window);
 	}
 	if(ceiling_delta < 0)
 	{
-		ceiling_pids.clear();
 		render_upper_window(raw_wall_points, wall_points, window);
 	}
 	
@@ -291,8 +286,8 @@ void GameRenderer::render_window(WindowComponent* window, std::vector<Vector2D<f
 		std::vector<int> range_limits = get_range_limits(column);
 		std::vector<int> inner_visplanes = {s_floor_visplane_index, s_ceiling_visplane_index};
 		
-		paste_floor_plane_to_column(pos_x, f_floor_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[0]);
-		paste_ceiling_plane_to_column(pos_x, f_ceiling_visplane_index, visplanes_clip_buffer[pos_x].top, range_limits[1]);
+		if(floor_delta < 0) paste_floor_plane_to_column(pos_x, f_floor_visplane_index, visplanes_clip_buffer[pos_x].bottom, range_limits[0]);
+		if(ceiling_delta > 0) paste_ceiling_plane_to_column(pos_x, f_ceiling_visplane_index, visplanes_clip_buffer[pos_x].top, range_limits[1]);
 	}
 }
 
