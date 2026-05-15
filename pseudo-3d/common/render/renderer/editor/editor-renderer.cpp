@@ -108,9 +108,12 @@ void EditorRenderer::get_mouse_item()
 
 void EditorRenderer::add_zoom(float zoom_delta)
 {
-	float new_step = zoom_delta;
+	float new_step = (zoom_delta * EDITOR_ZOOM_STEP) * delta;
+	float log_zoom = std::log(current_camera->field_of_view);
+	log_zoom += new_step;
 	
-	current_camera->field_of_view += new_step;
+	log_zoom = std::clamp(log_zoom, std::logf(EDITOR_DEFAULT_MIN_ZOOM), std::logf(EDITOR_DEFAULT_MAX_ZOOM));
+	current_camera->field_of_view = std::exp(log_zoom);
 }
 
 void EditorRenderer::render()

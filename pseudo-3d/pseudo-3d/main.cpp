@@ -127,13 +127,13 @@ void init_editor()
 	renderer = new EditorRenderer(camera, texture_buffer, file_server, DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, editor_level_server, EDITOR_DEFAULT_MIN_ZOOM, EDITOR_DEFAULT_MAX_ZOOM);
 }
 
-void update_editor(float delta, Vector2D<float> direction, float rotation_direction)
+void update_editor(float delta, Vector2D<float> direction, float zoom_direction)
 {
-	float rotation_speed = 50.0f;
+//	float rotation_speed = 50.0f;
 	float move_speed = 5.0f;
 	
-	float new_rotation = (rotation_direction * rotation_speed) * delta;
-	camera->set_camera_fov(camera->field_of_view + new_rotation);
+	EditorRenderer* editor_renderer = dynamic_cast<EditorRenderer*>(renderer);
+	editor_renderer->add_zoom(zoom_direction);
 	
 	Vector2D<float> velocity = (direction.rotate_vector(camera->rotation).normalize_vector_2d() * move_speed) * delta;
 	velocity = {-velocity.y, velocity.x};
