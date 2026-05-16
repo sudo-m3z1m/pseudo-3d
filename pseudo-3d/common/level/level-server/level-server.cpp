@@ -12,6 +12,13 @@ LevelServer::~LevelServer()
 	cameras.clear();
 }
 
+void LevelServer::clear_level_data()
+{
+	cameras.clear();
+	level_polygons.clear();
+	sectors.clear();
+}
+
 void LevelServer::remove_item(InspectorItem* item)
 {
 	if(dynamic_cast<Camera*>(item) != nullptr)

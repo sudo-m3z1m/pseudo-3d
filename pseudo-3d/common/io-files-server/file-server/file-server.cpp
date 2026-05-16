@@ -72,6 +72,9 @@ void FileServer::read_file(const char* file_path)
 	std::vector<ShapeComponent> file_shapes = read_shapes(file);
 	file.close();
 	
+	level_server_ptr->clear_level_data();
+	buffer_ptr->clear_buffer();
+	
 	for(std::string name : textures_names) buffer_ptr->load_texture(name);
 	for(Sector sector : sectors) level_server_ptr->add_new_sector(sector);
 	for(Camera* camera : cameras) level_server_ptr->add_camera(camera);

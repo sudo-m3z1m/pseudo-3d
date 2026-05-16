@@ -25,6 +25,7 @@ public:
 	std::vector<std::string> get_textures_names();
 	int load_texture(std::string path);
 	void remove_texture(int tid);
+	void clear_buffer();
 	SDL_Surface* get_texture_surface(int tid);
 	Color get_texture_pixel(int tid, Vector2D<int>& pixel_pos);
 	

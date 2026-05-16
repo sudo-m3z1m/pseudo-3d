@@ -20,6 +20,8 @@ public:
 	LevelServer();
 	virtual ~LevelServer();
 	
+	void clear_level_data();
+	
 	void remove_item(InspectorItem* item);
 	
 	void add_camera(Camera* camera);

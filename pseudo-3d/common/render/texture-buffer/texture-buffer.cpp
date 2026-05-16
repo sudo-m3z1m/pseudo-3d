@@ -37,9 +37,15 @@ int TextureBuffer::load_texture(std::string path)
 
 void TextureBuffer::remove_texture(int tid)
 {
+	SDL_Surface* surface = buffer[tid];
+	SDL_DestroySurface(surface);
 	buffer.erase(buffer.begin() + tid);
 	names.erase(names.begin() + tid);
-//	free_surface
+}
+
+void TextureBuffer::clear_buffer()
+{
+	for(int tid = 0; tid < buffer.size(); tid++) remove_texture(tid);
 }
 
 SDL_Surface* TextureBuffer::get_texture_surface(int tid)
