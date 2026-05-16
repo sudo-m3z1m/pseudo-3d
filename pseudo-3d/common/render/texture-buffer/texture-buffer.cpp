@@ -26,6 +26,7 @@ std::vector<std::string> TextureBuffer::get_textures_names()
 int TextureBuffer::load_texture(std::string path)
 {
 	SDL_Surface* new_surface = SDL_LoadBMP(path.c_str());
+	if(!new_surface) return 0;
 	buffer.push_back(new_surface);
 	names.push_back(path);
 	

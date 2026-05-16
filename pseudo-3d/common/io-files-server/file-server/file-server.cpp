@@ -26,7 +26,9 @@ std::string FileServer::set_resource_path(const char* name, const char* ext)
 	nfdfilteritem_t filter_item[1] = {{name, ext}};
 	
 	nfdresult_t pick_result = NFD::SaveDialog(resource_path, filter_item, 1);
-	if(pick_result != NFD_OKAY) return nullptr;
+	
+	if(pick_result != NFD_OKAY) return "";
+	
 	std::string path = resource_path.get();
 	
 	return path;
@@ -40,7 +42,9 @@ std::string FileServer::get_resource_path(const char* name, const char* ext)
 	nfdfilteritem_t filter_item[1] = {{name, ext}};
 	
 	nfdresult_t pick_result = NFD::OpenDialog(resource_path, filter_item, 1);
-	if(pick_result != NFD_OKAY) return nullptr;
+	
+	if(pick_result != NFD_OKAY) return "";
+	
 	std::string path = resource_path.get();
 	
 	return path;
