@@ -100,8 +100,8 @@ void EditorRenderer::get_mouse_item()
 	PickRequest wall_request = level_server->get_closest_shape_wall(mouse_position);
 	
 	if(shape_request.item) item = shape_request.item;
-	if(wall_request.distance * current_zoom <= EDITOR_SCREEN_SELECT_RADIUS) item = wall_request.item;
-	if(camera_request.distance * current_zoom <= EDITOR_SCREEN_SELECT_RADIUS) item = camera_request.item;
+	if(wall_request.item && (wall_request.distance * current_zoom <= EDITOR_SCREEN_SELECT_RADIUS)) item = wall_request.item;
+	if(camera_request.item && (camera_request.distance * current_zoom <= EDITOR_SCREEN_SELECT_RADIUS)) item = camera_request.item;
 	
 	current_item = item;
 }
@@ -243,6 +243,7 @@ void EditorRenderer::render_toolbar()
 	ImGui::Begin("Editor tools", NULL, window_flags);
 	if(ImGui::Button("Create new shape"))
 	{
+		current_item = nullptr;
 		level_server->create_new_shape();
 	}
 	ImGui::SameLine();

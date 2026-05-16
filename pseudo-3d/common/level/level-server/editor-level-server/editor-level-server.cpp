@@ -52,11 +52,11 @@ PickRequest EditorLevelServer::get_closest_shape(Vector2D<float>& point)
 
 PickRequest EditorLevelServer::get_closest_shape_wall(Vector2D<float>& point)
 {
-	Wall* closest_shape_wall = &level_polygons[0].walls[0];
-	std::vector<Vector2D<float>> shape_points = level_polygons[0].points;
-	std::vector<Vector2D<float>> wall_points = closest_shape_wall->get_wall_points(shape_points);
+	Wall* closest_shape_wall = nullptr;
+	std::vector<Vector2D<float>> shape_points;
+	std::vector<Vector2D<float>> wall_points;
 	
-	float closest_wall_length = (wall_points[0] - point).length;
+	float closest_wall_length = 0.0f;
 	
 	for(ShapeComponent& shape : level_polygons)
 	{
@@ -68,7 +68,7 @@ PickRequest EditorLevelServer::get_closest_shape_wall(Vector2D<float>& point)
 			
 			Vector2D<float> wall_projection_point = get_line_projection_point(point, points);
 			float to_wall_length = ((wall_projection_point + wall.normal * 0.01) - point).length;
-			if(to_wall_length < closest_wall_length)
+			if((to_wall_length < closest_wall_length) || closest_wall_length == 0.0f)
 			{
 				closest_wall_length = to_wall_length;
 				closest_shape_wall = &wall;
@@ -86,13 +86,13 @@ PickRequest EditorLevelServer::get_closest_shape_wall(Vector2D<float>& point)
 
 PickRequest EditorLevelServer::get_closest_camera(Vector2D<float>& point)
 {
-	Camera* closest_camera = cameras[0];
-	float closest_camera_length = (closest_camera->position - point).length;
+	Camera* closest_camera = nullptr;
+	float closest_camera_length = 0.0f;
 	
 	for (Camera*& camera : cameras)
 	{
 		float to_camera_len = (camera->position - point).length;
-		if(to_camera_len < closest_camera_length)
+		if((to_camera_len < closest_camera_length) || closest_camera_length == 0.0f)
 		{
 			closest_camera_length = to_camera_len;
 			closest_camera = camera;
