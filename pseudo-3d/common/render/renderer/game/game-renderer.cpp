@@ -324,7 +324,7 @@ void GameRenderer::render_bottom_window(std::vector<Vector2D<float>> raw_wall_po
 																							 wall_points,
 																							 f_column,
 																							 s_column,
-																							 window,
+																							 nullptr,
 																							 wall_offsets,
 																							 f_pos_x,
 																							 tid,
@@ -379,7 +379,7 @@ void GameRenderer::render_upper_window(std::vector<Vector2D<float>> raw_wall_poi
 																							 wall_points,
 																							 f_column,
 																							 s_column,
-																							 window,
+																							 nullptr,
 																							 wall_offsets,
 																							 f_pos_x,
 																							 tid,
@@ -598,7 +598,7 @@ std::vector<std::vector<RendererColumn>> GameRenderer::get_wall_projection_colum
 		std::vector<RendererColumn> ranges_to_render = {column};
 		if(window == nullptr) ranges_to_render = get_screen_column_ranges(pos_x, column, is_outside);
 		
-		wall_columns.push_back({column});
+		wall_columns.push_back(ranges_to_render);
 	}
 	
 	return wall_columns;

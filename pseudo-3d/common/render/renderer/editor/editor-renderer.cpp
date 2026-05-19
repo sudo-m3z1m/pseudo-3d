@@ -338,7 +338,7 @@ void EditorRenderer::render_cameras()
 		float camera_fov = camera->field_of_view;
 		Vector2D<float> camera_pos = camera->position;
 		Vector2D<int> camera_screen_pos = get_screen_pos(camera_pos);
-		Vector2D<float> camera_direction = {cosf(camera->rotation), sinf(camera->rotation)};
+		Vector2D<float> camera_direction = {cosf(camera->rotation), -sinf(camera->rotation)};
 		
 		Vector2D<float> f_frustum_point = camera_direction.rotate_vector(-camera_fov / 2);
 		Vector2D<float> s_frustum_point = camera_direction.rotate_vector(camera_fov / 2);

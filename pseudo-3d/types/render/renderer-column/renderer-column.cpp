@@ -36,8 +36,8 @@ std::vector<RendererColumn> RendererColumn::subtract_columns(std::vector<Rendere
 				new_ranges.push_back(range);
 				continue;
 			}
-			if(range.top < current_column.top) new_ranges.push_back(RendererColumn(current_column.top, range.top));
-			if(range.bottom > current_column.bottom) new_ranges.push_back(RendererColumn(range.bottom, current_column.bottom));
+			if(range.top < current_column.top) new_ranges.push_back(RendererColumn(current_column.top, range.top, range.u, range.v_top, range.v_step));
+			if(range.bottom > current_column.bottom) new_ranges.push_back(RendererColumn(range.bottom, current_column.bottom, range.u, range.v_top, range.v_step));
 		}
 		
 		if(new_ranges.size() == 0) return std::vector<RendererColumn>();
